@@ -6,10 +6,12 @@
 
 - Created with Next.js
 - Deploying the build only
+- Run locally `npm run dev`
 
 # Backend
 
 - Using PHP and GraphQL to access the MySQL database
+- Run locally `php -S localhost:8080`
 - Test graphQL endpoint
   `curl -X POST https://research.uni-leipzig.de/leipzig-momentum-panel/api/public/index.php \
   -H "Content-Type: application/json" \
