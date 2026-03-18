@@ -2,3 +2,4 @@
 deploy.sh
 .htaccess
 .DS_Store
+backend/config/database.local.php

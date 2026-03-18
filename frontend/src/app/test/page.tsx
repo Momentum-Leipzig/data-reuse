@@ -11,7 +11,7 @@ export default function TestPage() {
     fetch(process.env.NEXT_PUBLIC_GRAPHQL_URL!, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: "{ hello }" }),
+      body: JSON.stringify({ query: "{ studies { study_name title doi } }" }),
     })
       .then((res) => res.json())
       .then(({ data, errors }) => {
@@ -30,8 +30,14 @@ export default function TestPage() {
 
   return (
     <div>
-      <h1>GraphQL Test</h1>
-      <p>{data.hello}</p>
+      <h1 className="mb-3">GraphQL Query Test</h1>
+      <ul>
+        {data.studies.map((study: any) => (
+          <li key={study.study_name}>
+            {study.study_name} - {study.title} - {study.doi}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
