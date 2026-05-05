@@ -7,35 +7,53 @@ import { useEffect, useMemo, useState } from "react";
 type StudiesListProps = {
   title?: string;
   studyNames?: string[];
+  studies?: Study[];
+  loading?: boolean;
+  error?: string | null;
 };
 
 export default function StudiesList({
   title = "All studies",
   studyNames,
+  studies: externalStudies,
+  loading: externalLoading,
+  error: externalError,
 }: StudiesListProps) {
-  const [studies, setStudies] = useState<Study[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [internalStudies, setInternalStudies] = useState<Study[]>([]);
+  const [internalLoading, setInternalLoading] = useState(
+    externalStudies ? false : true,
+  );
+  const [internalError, setInternalError] = useState<string | null>(null);
+
+  const studies = externalStudies ?? internalStudies;
+  const loading = externalLoading ?? internalLoading;
+  const error = externalError ?? internalError;
 
   useEffect(() => {
+    if (externalStudies) {
+      return;
+    }
+
     let active = true;
 
     async function loadStudies() {
       try {
-        setLoading(true);
+        setInternalLoading(true);
         const result = await getStudies();
 
         if (active) {
-          setStudies(result);
-          setError(null);
+          setInternalStudies(result);
+          setInternalError(null);
         }
       } catch (err) {
         if (active) {
-          setError(err instanceof Error ? err.message : "Unknown error");
+          setInternalError(
+            err instanceof Error ? err.message : "Unknown error",
+          );
         }
       } finally {
         if (active) {
-          setLoading(false);
+          setInternalLoading(false);
         }
       }
     }
@@ -45,7 +63,7 @@ export default function StudiesList({
     return () => {
       active = false;
     };
-  }, []);
+  }, [externalStudies]);
 
   const visibleStudies = useMemo(() => {
     if (!studyNames || studyNames.length === 0) {
