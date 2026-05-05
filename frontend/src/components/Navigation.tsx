@@ -23,10 +23,14 @@ export const Navigation: React.FC = () => {
 
   return (
     <nav className="py-4 flex justify-between items-center">
-      <h1 className="text-balance  text-xl font-bold">
-        Leipzig Momentum Panel on Worker Characteristics, Experiences, and
-        Behavior
-      </h1>
+      <div>
+        <h1 className="text-balance text-xl font-bold">
+          Leipzig Momentum Panel
+        </h1>
+        <h3 className="text-base font-bold">
+          on Worker Characteristics, Experiences, and Behavior
+        </h3>
+      </div>
       <ul className="flex space-x-4 grow">
         {navItems.map(({ href, label, buttonAction }) => {
           return (

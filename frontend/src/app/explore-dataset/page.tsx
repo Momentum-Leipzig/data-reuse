@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function ExploreDataset() {
-  return <p>explore dataset page</p>;
+  redirect("/explore-dataset/questions");
 }
