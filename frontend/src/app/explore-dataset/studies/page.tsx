@@ -123,29 +123,42 @@ function StudiesContent() {
 
       {mode === "selected" ? (
         <div>
-          <p className="font-bold">Selection</p>
-          <div className="flex flex-col gap-2">
-            {selectedStudies.map((study) => (
-              <SelectedEntity
-                key={study.study_name}
-                deselect={() => deselectStudy(study.study_name)}
-              >
-                <p>{study.study_name.split("20")[0].trim()}</p>●
-                <p>{study.publication_year ?? "No publication year"}</p>●
-                <p className="font-bold">{study.title ?? "No title"}</p>●
-                <p>{study.doi ?? "No DOI"}</p>
-              </SelectedEntity>
-            ))}
+          <div>
+            <p className="font-bold">Selection</p>
+            <div className="flex flex-col gap-2">
+              {selectedStudies.map((study) => (
+                <SelectedEntity
+                  key={study.study_name}
+                  deselect={() => deselectStudy(study.study_name)}
+                >
+                  <p>{study.study_name.split("20")[0].trim()}</p>●
+                  <p>{study.publication_year ?? "No publication year"}</p>●
+                  <p className="font-bold">{study.title ?? "No title"}</p>●
+                  <p>{study.doi ?? "No DOI"}</p>
+                </SelectedEntity>
+              ))}
 
-            {!loading && !error && selectedStudies.length === 0 && (
-              <p>No selected study details found.</p>
-            )}
+              {!loading && !error && selectedStudies.length === 0 && (
+                <p>No selected study details found.</p>
+              )}
+            </div>
+          </div>
+          <MetricsOverview />
+
+          <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
+            Included Questions
+          </div>
+          <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
+            Chart
           </div>
         </div>
       ) : null}
       {mode === "all" ? (
         <div>
           <MetricsOverview />
+          <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
+            Chart
+          </div>
           <StudiesList
             title={"All studies"}
             studies={studies}
