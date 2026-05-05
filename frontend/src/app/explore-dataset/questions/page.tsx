@@ -1,5 +1,6 @@
 "use client";
 
+import StudiesList from "@/components/explore/StudiesList";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -29,6 +30,8 @@ function QuestionsContent() {
           /explore-dataset/questions?ids=q1
         </Link>
       </p>
+
+      <StudiesList title={"The following studies are based on this data"} />
     </section>
   );
 }
