@@ -31,21 +31,21 @@ export const Navigation: React.FC = () => {
           on Worker Characteristics, Experiences, and Behavior
         </h3>
       </div>
-      <ul className="flex space-x-4 grow">
+      <ul className="flex space-x-4 grow justify-end items-center">
         {navItems.map(({ href, label, buttonAction }) => {
           return (
             <li key={href || label}>
               {buttonAction ? (
                 <button
                   onClick={buttonAction}
-                  className="text-lmp-text hover:text-lmp-text/70 cursor-pointer transition"
+                  className="text-lmp-text hover:text-lmp-text font-bold bg-lmp-gray3 hover:bg-lmp-gray3/70 px-5 py-2 rounded-4xl cursor-pointer transition"
                 >
                   {label}
                 </button>
               ) : (
                 <Link
                   href={href}
-                  className={`text-lmp-text hover:text-lmp-text/70 cursor-pointer transition ${
+                  className={`text-lmp-text hover:text-lmp-text/70 font-bold cursor-pointer py-2 transition ${
                     (
                       href === "/"
                         ? pathname === href
