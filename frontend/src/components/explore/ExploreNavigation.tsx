@@ -7,33 +7,32 @@ export default function ExploreNavigation() {
   const pathname = usePathname();
 
   const navItems = [
-    { href: "/explore-dataset/questions", label: "Questions & Constructs" },
+    { href: "/explore-dataset/questions", label: "by Questions & Constructs" },
     {
       href: "/explore-dataset/measurement-points",
-      label: "Measurement Points",
+      label: "by Measurement Points",
     },
-    { href: "/explore-dataset/studies", label: "Studies" },
+    { href: "/explore-dataset/studies", label: "by Studies" },
   ];
   return (
-    <nav className="py-4 flex justify-between items-center">
-      <h1 className="text-balance text-xl font-bold">Explore the Dataset</h1>
-      <ul className="flex space-x-4 grow">
-        {navItems.map(({ href, label }) => {
-          const isActive = pathname === href || pathname === `${href}/`;
+    <nav className="py-4 flex justify-start items-center gap-4">
+      <h1 className="text-balance text-xl font-bold mr-8">
+        Explore the Dataset
+      </h1>
+      {navItems.map(({ href, label }) => {
+        const isActive = pathname === href || pathname === `${href}/`;
 
-          return (
-            <li key={href}>
-              <Link
-                href={href}
-                aria-current={isActive ? "page" : undefined}
-                className={`text-black hover:text-gray-800 ${isActive ? "font-bold" : ""}`}
-              >
-                {label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+        return (
+          <Link
+            key={href}
+            href={href}
+            aria-current={isActive ? "page" : undefined}
+            className={`text-lmp-text px-5 py-2 rounded-4xl cursor-pointer transition ${isActive ? "bg-lmp-green hover:bg-lmp-green/70 " : "hover:bg-lmp-green/70 "}`}
+          >
+            {label}
+          </Link>
+        );
+      })}
     </nav>
   );
 }

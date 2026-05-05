@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import StudiesList from "@/components/explore/StudiesList";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -17,17 +17,12 @@ function StudiesContent() {
   return (
     <section className="space-y-2">
       <p>
-        Mode: {selectedIds.length > 0 ? "some studies (1..n)" : "all studies"}
-      </p>
-      <p>
         Selected IDs: {selectedIds.length > 0 ? selectedIds.join(", ") : "none"}
       </p>
-      <p>
-        Example detail link:{" "}
-        <Link className="underline" href="/explore-dataset/studies?ids=s1">
-          /explore-dataset/studies?ids=s1
-        </Link>
-      </p>
+      <StudiesList
+        title={selectedIds.length > 0 ? "Selected studies" : "All studies"}
+        studyNames={selectedIds}
+      />
     </section>
   );
 }

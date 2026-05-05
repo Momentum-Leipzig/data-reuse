@@ -38,15 +38,21 @@ export const Navigation: React.FC = () => {
               {buttonAction ? (
                 <button
                   onClick={buttonAction}
-                  className="text-black hover:text-gray-800"
+                  className="text-lmp-text hover:text-lmp-text/70 cursor-pointer transition"
                 >
                   {label}
                 </button>
               ) : (
                 <Link
                   href={href}
-                  className={`text-black hover:text-gray-800 ${
-                    pathname === href ? "font-bold" : ""
+                  className={`text-lmp-text hover:text-lmp-text/70 cursor-pointer transition ${
+                    (
+                      href === "/"
+                        ? pathname === href
+                        : pathname.startsWith(href)
+                    )
+                      ? "border-b-3 border-lmp-green"
+                      : ""
                   }`}
                 >
                   {label}
