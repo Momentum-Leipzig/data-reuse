@@ -41,7 +41,7 @@ export const Navigation: React.FC = () => {
           </h3>
         </div>
       </div>
-      <ul className="flex gap-6 grow justify-end items-center">
+      <ul className="flex gap-6 grow justify-end items-center list-none">
         {navItems.map(({ href, label, buttonAction }) => {
           return (
             <li key={href || label}>
