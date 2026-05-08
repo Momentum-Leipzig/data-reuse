@@ -6,7 +6,7 @@ import "./globals.css";
 const firaSans = Fira_Sans({
   variable: "--font-fira-sans",
   subsets: ["latin"],
-  weight: ["200", "400", "600", "800"],
+  weight: ["200", "300", "400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
