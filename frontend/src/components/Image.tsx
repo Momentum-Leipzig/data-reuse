@@ -1,10 +1,21 @@
 import NextImage, { ImageProps } from "next/image";
 
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+const basePath = (process.env.NEXT_PUBLIC_BASE_PATH || "").replace(/\/$/, "");
+
+function withBasePath(src: string): string {
+  if (!src.startsWith("/")) {
+    return src;
+  }
+
+  if (!basePath || src === basePath || src.startsWith(`${basePath}/`)) {
+    return src;
+  }
+
+  return `${basePath}${src}`;
+}
 
 export const Image: React.FC<ImageProps> = ({ src, ...rest }) => {
-  const normalizedSrc =
-    typeof src === "string" && src.startsWith("/") ? src.slice(1) : src;
+  const resolvedSrc = typeof src === "string" ? withBasePath(src) : src;
 
-  return <NextImage src={`${basePath}/${normalizedSrc}`} {...rest} />;
+  return <NextImage src={resolvedSrc} {...rest} />;
 };

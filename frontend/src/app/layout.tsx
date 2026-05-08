@@ -24,13 +24,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${firaSans.variable} antialiased`}>
         <div className="px-4 bg-lmp-gray1">
-          <main className="w-full max-w-6xl mx-auto flex-col">
+          <main className="w-full max-w-7xl mx-auto flex-col">
             <Navigation />
           </main>
         </div>
 
         <div className="flex min-h-screen px-4">
-          <main className="flex min-h-screen w-full max-w-6xl mx-auto flex-col py-16">
+          <main className="flex min-h-screen w-full max-w-7xl mx-auto flex-col py-16">
             {children}
           </main>
         </div>
