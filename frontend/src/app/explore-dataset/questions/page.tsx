@@ -67,7 +67,7 @@ function QuestionsContent() {
         <p>
           Example detail link:{" "}
           <Link className="underline" href="/explore-dataset/questions?ids=q1">
-            /explore-dataset/questions?ids=q1
+            /explore-dataset/questions?ids=age_ST4
           </Link>
         </p>
       </div>
