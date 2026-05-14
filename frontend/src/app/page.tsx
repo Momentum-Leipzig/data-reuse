@@ -1,3 +1,36 @@
+import { Image } from "@/components/Image";
+
+const TEAM_MEMBERS = [
+  {
+    name: "Dr. Maie Stein",
+    imageSrc: "/assets/Team_Maie_Stein.png",
+    description:
+      "Postdoctoral researcher at the Chair of Work and Organizational Psychology at Leipzig University. Her research focuses on occupational health and well-being, recovery, and ecological sustainability in organizations, using methods such as longitudinal studies, experiments, and experience sampling.",
+    contact: "maie.stein@uni-leipzig.de",
+  },
+  {
+    name: "Prof. Dr. Hannes Zacher",
+    imageSrc: "/assets/Team_Hannes_Zacher.png",
+    description:
+      "Professor and Chair of Work and Organizational Psychology at Leipzig University. His research focuses on occupational health and well-being, proactive and adaptive work behavior, aging at work, career development, and environmentally sustainable behavior in organizations.",
+    contact: "hannes.zacher@uni-leipzig.de",
+  },
+  {
+    name: "Richard Janzen",
+    imageSrc: "/assets/Team_Richard_Janzen.png",
+    description:
+      "Research associate and doctoral researcher at the Chair of Work and Organizational Psychology at Leipzig University. His work combines research on work, health, stress, and recovery with a strong interest in statistical methods and longitudinal change processes.",
+    contact: "richard.janzen@uni-leipzig.de",
+  },
+  {
+    name: "Dr. Cort W. Rudolph",
+    imageSrc: "/assets/Team_Cort_Rudolph.png",
+    description:
+      "Industrial and Organizational Psychologist and Professor of Psychology at Wayne State University in Detroit, MI (USA). His research research focuses broadly on topics ranging from aging workers and lifespan development, to occupational health, employee wellbeing, environmental sustainability, and leadership.",
+    contact: null,
+  },
+];
+
 export default function Home() {
   return (
     <div className="flex flex-col gap-20">
@@ -165,6 +198,60 @@ export default function Home() {
             </p>
           </div>
         </div>
+      </div>
+
+      <div className="flex flex-col gap-6">
+        <h3 className="text-3xl font-medium">Project team</h3>
+        <div className="flex flex-row gap-4 flex-wrap">
+          {TEAM_MEMBERS.map(({ name, imageSrc, description, contact }) => (
+            <div
+              key={name}
+              className="bg-lmp-gray1 p-5 flex flex-col gap-2 flex-1"
+            >
+              <p className="font-bold">{name}</p>
+              <Image
+                src={imageSrc}
+                alt={name}
+                className="w-full h-auto min-w-58.75 object-cover"
+                width={235}
+                height={235}
+              />
+              <p className="mt-2">
+                {description}
+                <br />
+                <a href={`mailto:${contact}`} className="underline font-bold">
+                  {contact}
+                </a>
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-6">
+        <h3 className="text-3xl font-medium">Funding</h3>
+        <p className="leading-relaxed">
+          This project was funded by{" "}
+          <a
+            href="https://www.volkswagenstiftung.de/en"
+            className="underline font-bold"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Volkswagen Foundation
+          </a>
+          . The funding suppported the preparation, documentation, and
+          open-access sharing of the dataset, as well as the development of an
+          exploration tool that helps other researchers assess the structure and
+          suitability of the data for secondary use.
+        </p>
+        <Image
+          src="/assets/logo-vwstiftung-dark1.png"
+          alt="Volkswagen Foundation Logo"
+          className="w-66.5 h-auto"
+          width={266}
+          height={52}
+        />
       </div>
     </div>
   );
