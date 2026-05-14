@@ -7,7 +7,9 @@ import StudiesList from "@/components/explore/StudiesList";
 import SearchPreview from "@/components/search/SearchPreview";
 import {
   getAllQuestions,
+  getStudiesByQuestions,
   type Question,
+  type Study,
   type TopicGroup,
 } from "@/lib/graphql/studies";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -33,6 +35,10 @@ function QuestionsContent() {
   const [topics, setTopics] = useState<TopicGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [studiesByQuestions, setStudiesByQuestions] = useState<Study[]>([]);
+  const [studiesLoading, setStudiesLoading] = useState(false);
+  const [studiesError, setStudiesError] = useState<string | null>(null);
 
   const allQuestions = useMemo(() => {
     return topics.flatMap((topic) =>
@@ -121,6 +127,37 @@ function QuestionsContent() {
     };
   }, []);
 
+  useEffect(() => {
+    if (selectedIds.length === 0) {
+      setStudiesByQuestions([]);
+      return;
+    }
+
+    let active = true;
+
+    async function loadStudies() {
+      try {
+        setStudiesLoading(true);
+        const result = await getStudiesByQuestions(selectedIds);
+        if (active) {
+          setStudiesByQuestions(result);
+          setStudiesError(null);
+        }
+      } catch (err) {
+        if (active) {
+          setStudiesError(err instanceof Error ? err.message : "Unknown error");
+        }
+      } finally {
+        if (active) setStudiesLoading(false);
+      }
+    }
+
+    loadStudies();
+    return () => {
+      active = false;
+    };
+  }, [selectedIds]);
+
   return (
     <section className="flex flex-col gap-12">
       <SearchPreview
@@ -178,7 +215,6 @@ function QuestionsContent() {
               <QuestionsByTopic
                 topics={topics}
                 headline="Topics, Constructs and Subfacets"
-                expanded
               />
             )}
           </div>
@@ -212,7 +248,7 @@ function QuestionsContent() {
           </div>
 
           <div>
-            <h2 className="font-bold text-3xl">
+            <h2 className="font-semibold text-3xl">
               Details on the selected question
               {selectedQuestions.length > 0 ? `s` : ""}
             </h2>
@@ -221,7 +257,12 @@ function QuestionsContent() {
             all questions listed again or just highlighting the topics /
             constructs / subfacets
           </div>
-          <div>all studies where the selected questions were used</div>
+          <StudiesList
+            title={`Studies using ${selectedQuestions.length > 1 ? "any of" : ""} the selected question${selectedQuestions.length > 1 ? "s" : ""}`}
+            studies={studiesByQuestions}
+            loading={studiesLoading}
+            error={studiesError}
+          />
         </div>
       )}
     </section>

@@ -89,7 +89,7 @@ export default function StudiesList({
         <ul className="flex flex-col items-start gap-2 m-0 p-0 list-none">
           {visibleStudies.map((study) => (
             <Link
-              href={`/explore-dataset/studies?ids=${study.study_name}`}
+              href={`/explore-dataset/studies?ids=${encodeURIComponent(study.study_name)}`}
               key={study.study_name}
               className="rounded-2xl px-4 py-2 bg-lmp-gray3 flex flex-wrap gap-1 cursor-pointer hover:bg-lmp-gray3/70 transition text-sm"
             >

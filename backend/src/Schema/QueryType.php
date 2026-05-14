@@ -72,6 +72,19 @@ class QueryType extends ObjectType
                     'resolve' => fn($root, array $args) => $questionResolver->getByStudy($args['study_name']),
                 ],
 
+                // Query: { studiesByQuestions(item_names: ["a", "b"]) { study_name title } }
+                'studiesByQuestions' => [
+                    'type'        => Type::nonNull(Type::listOf(Type::nonNull($studyType))),
+                    'description' => 'Returns all studies that use at least one of the given item_names',
+                    'args'        => [
+                        'item_names' => [
+                            'type'        => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+                            'description' => 'List of item_name values to filter by',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $studyResolver->getByItems($args['item_names']),
+                ],
+
             ],
         ]);
     }

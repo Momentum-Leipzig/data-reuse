@@ -30,4 +30,33 @@ class StudyResolver
         $result = $stmt->fetch();
         return $result ?: null;
     }
+
+    /**
+     * Fetch all studies that use at least one of the given item_names.
+     *
+     * @param string[] $itemNames
+     * @return array
+     */
+    public function getByItems(array $itemNames): array
+    {
+        if (empty($itemNames)) {
+            return [];
+        }
+
+        $pdo = Connection::get();
+        $placeholders = implode(',', array_fill(0, count($itemNames), '?'));
+
+        $sql = "
+            SELECT DISTINCT s.*
+            FROM study s
+            JOIN study_item_wave siw ON siw.study_name = s.study_name
+            JOIN item_wave iw        ON iw.item_wave_id = siw.item_wave_id
+            WHERE iw.item_name IN ($placeholders)
+            ORDER BY s.study_name
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array_values($itemNames));
+        return $stmt->fetchAll();
+    }
 }
