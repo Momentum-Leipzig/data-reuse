@@ -40,7 +40,6 @@ class QuestionResolver
             FROM study_item_wave siw
             JOIN  item_wave iw   ON iw.item_wave_id   = siw.item_wave_id
             JOIN  item      i    ON i.item_name        = iw.item_name
-                                AND i.item_language    = iw.item_language
             -- subfacet path (items that have a subfacet)
             LEFT JOIN subfacet  s    ON s.subfacet_name     = i.subfacet_name
             LEFT JOIN construct c_sf ON c_sf.construct_name = s.construct_name

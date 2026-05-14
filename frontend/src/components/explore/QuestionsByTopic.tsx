@@ -7,9 +7,20 @@ type Props = {
   expanded?: boolean;
 };
 
-export default function QuestionsByTopic({ topics, headline, expanded }: Props) {
+export default function QuestionsByTopic({
+  topics,
+  headline,
+  expanded,
+}: Props) {
   if (topics.length === 0) {
-    return <p className="text-sm text-gray-500">No questions found.</p>;
+    return (
+      <div className="flex flex-col gap-4">
+        <h2 className="font-bold text-3xl">
+          {headline ?? "Questions by Topic"}
+        </h2>
+        <p className="text-sm text-gray-500">No questions found.</p>
+      </div>
+    );
   }
 
   return (
@@ -19,7 +30,7 @@ export default function QuestionsByTopic({ topics, headline, expanded }: Props) 
         {topics.map((topic) => (
           <details
             key={topic.topic_name}
-            name="topics"
+            name={expanded ? undefined : "topics"}
             open={expanded}
             className="break-inside-avoid border-t border-lmp-text pt-2 mb-3"
           >
@@ -32,7 +43,7 @@ export default function QuestionsByTopic({ topics, headline, expanded }: Props) 
               {topic.constructs.map((construct) => (
                 <details
                   key={construct.construct_name}
-                  name="constructs"
+                  name={expanded ? undefined : "constructs"}
                   open={expanded}
                   className="break-inside-avoid"
                 >
@@ -67,7 +78,7 @@ export default function QuestionsByTopic({ topics, headline, expanded }: Props) 
                       return subfacet.subfacet_name ? (
                         <details
                           key={subfacet.subfacet_name}
-                          name="subfacets"
+                          name={expanded ? undefined : "subfacets"}
                           open={expanded}
                           className="break-inside-avoid"
                         >
