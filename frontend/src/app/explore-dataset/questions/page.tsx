@@ -4,12 +4,12 @@ import MetricsOverview from "@/components/explore/MetricsOverview";
 import QuestionsByTopic from "@/components/explore/QuestionsByTopic";
 import SelectedEntity from "@/components/explore/SelectedEntity";
 import StudiesList from "@/components/explore/StudiesList";
+import SearchPreview from "@/components/search/SearchPreview";
 import {
   getAllQuestions,
   type Question,
   type TopicGroup,
 } from "@/lib/graphql/studies";
-import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
@@ -42,6 +42,21 @@ function QuestionsContent() {
     );
   }, [topics]);
 
+  const questionsWithContext = useMemo(() => {
+    return topics.flatMap((topic) =>
+      topic.constructs.flatMap((construct) =>
+        construct.subfacets.flatMap((subfacet) =>
+          subfacet.questions.map((q) => ({
+            ...q,
+            topic_name: topic.topic_name,
+            construct_name: construct.construct_name,
+            subfacet_name: subfacet.subfacet_name,
+          })),
+        ),
+      ),
+    );
+  }, [topics]);
+
   const questionsById = useMemo(() => {
     return new Map(allQuestions.map((q) => [q.item_name, q]));
   }, [allQuestions]);
@@ -51,6 +66,18 @@ function QuestionsContent() {
       .map((id) => questionsById.get(id))
       .filter((q): q is Question => Boolean(q));
   }, [selectedIds, questionsById]);
+
+  function selectQuestion(itemName: string) {
+    const nextSearchParams = new URLSearchParams(searchParams.toString());
+    const nextSelectedIds = selectedIds.includes(itemName)
+      ? selectedIds
+      : [...selectedIds, itemName];
+    nextSearchParams.set("ids", nextSelectedIds.join(","));
+    const nextQueryString = nextSearchParams.toString();
+    router.replace(
+      nextQueryString ? `${pathname}?${nextQueryString}` : pathname,
+    );
+  }
 
   function deselectQuestion(itemName: string) {
     const nextSelectedIds = selectedIds.filter((id) => id !== itemName);
@@ -96,7 +123,37 @@ function QuestionsContent() {
 
   return (
     <section className="flex flex-col gap-12">
-      <div>search field</div>
+      <SearchPreview
+        items={questionsWithContext}
+        loading={loading}
+        error={error}
+        placeholder="Search by keyword or ID"
+        getItemKey={(q) => `${q.item_name}-${q.item_language}`}
+        getSearchFields={(q) => [
+          q.item_name,
+          q.item_text,
+          q.item_language,
+          q.topic_name,
+          q.construct_name,
+          q.subfacet_name,
+        ]}
+        onSelect={(q) => selectQuestion(q.item_name)}
+        renderItem={(q) => (
+          <div className="flex flex-col gap-0.5 text-sm">
+            <p className="text-xs text-gray-600">
+              {q.topic_name}
+              {q.construct_name ? ` › ${q.construct_name}` : ""}
+              {q.subfacet_name ? ` › ${q.subfacet_name}` : ""}
+            </p>
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="font-mono text-xs text-gray-600">
+                [{q.item_name}]
+              </span>
+              <span className="font-medium">{q.item_text ?? "No text"}</span>
+            </div>
+          </div>
+        )}
+      />
 
       {mode === "all" ? (
         <div className="flex flex-col gap-15">
@@ -121,6 +178,7 @@ function QuestionsContent() {
               <QuestionsByTopic
                 topics={topics}
                 headline="Topics, Constructs and Subfacets"
+                expanded
               />
             )}
           </div>

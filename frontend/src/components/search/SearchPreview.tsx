@@ -71,6 +71,8 @@ export default function SearchPreview<T>({
       .slice(0, maxResults);
   }, [canSearch, getSearchFields, items, maxResults, normalizedQuery]);
 
+  console.log("SearchPreview", { query, normalizedQuery, filteredResults });
+
   return (
     <section ref={containerRef} className="">
       <label className="block">
@@ -84,11 +86,11 @@ export default function SearchPreview<T>({
         />
       </label>
 
-      {loading && <p>Loading search data...</p>}
+      {/* {loading && <p>Loading search data...</p>} */}
       {error && <p className="text-red-700">Error: {error}</p>}
 
       {!loading && !error && canSearch && (
-        <div className="rounded-bl-2xl rounded-br-2xl pt-8 -mt-6 bg-white p-2 border border-lmp-gray2">
+        <div className="rounded-bl-2xl rounded-br-2xl bg-white p-4 border-l border-r border-b border-lmp-gray2 max-h-65 w-[98%] mx-auto overflow-y-auto">
           {filteredResults.length === 0 ? (
             <p className="px-2 py-1 text-sm">{noResultsText}</p>
           ) : (
@@ -116,8 +118,8 @@ export default function SearchPreview<T>({
       )}
 
       {!loading && !error && !canSearch && query.length > 0 && (
-        <p className="text-sm text-lmp-text/70">
-          Enter at least {MIN_CHARACTERS} characters to see search preview.
+        <p className="text-sm text-lmp-text/70 mt-1 ml-4">
+          Enter at least {MIN_CHARACTERS} characters to see a search preview.
         </p>
       )}
     </section>

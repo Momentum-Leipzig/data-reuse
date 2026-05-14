@@ -4,9 +4,10 @@ import Link from "next/link";
 type Props = {
   topics: TopicGroup[];
   headline?: string;
+  expanded?: boolean;
 };
 
-export default function QuestionsByTopic({ topics, headline }: Props) {
+export default function QuestionsByTopic({ topics, headline, expanded }: Props) {
   if (topics.length === 0) {
     return <p className="text-sm text-gray-500">No questions found.</p>;
   }
@@ -19,6 +20,7 @@ export default function QuestionsByTopic({ topics, headline }: Props) {
           <details
             key={topic.topic_name}
             name="topics"
+            open={expanded}
             className="break-inside-avoid border-t border-lmp-text pt-2 mb-3"
           >
             <summary className="cursor-pointer">
@@ -31,6 +33,7 @@ export default function QuestionsByTopic({ topics, headline }: Props) {
                 <details
                   key={construct.construct_name}
                   name="constructs"
+                  open={expanded}
                   className="break-inside-avoid"
                 >
                   <summary className="cursor-pointer">
@@ -65,6 +68,7 @@ export default function QuestionsByTopic({ topics, headline }: Props) {
                         <details
                           key={subfacet.subfacet_name}
                           name="subfacets"
+                          open={expanded}
                           className="break-inside-avoid"
                         >
                           <summary className="cursor-pointer text-sm">
