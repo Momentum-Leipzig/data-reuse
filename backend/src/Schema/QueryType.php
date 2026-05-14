@@ -2,8 +2,13 @@
 
 namespace App\Schema;
 
+use App\Resolvers\QuestionResolver;
 use App\Resolvers\StudyResolver;
+use App\Types\ConstructGroupType;
+use App\Types\QuestionType;
 use App\Types\StudyType;
+use App\Types\SubfacetGroupType;
+use App\Types\TopicGroupType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
@@ -16,6 +21,12 @@ class QueryType extends ObjectType
     {
         $studyType     = new StudyType();
         $studyResolver = new StudyResolver();
+
+        $questionType      = new QuestionType();
+        $subfacetGroupType = new SubfacetGroupType($questionType);
+        $constructGroupType = new ConstructGroupType($subfacetGroupType);
+        $topicGroupType    = new TopicGroupType($constructGroupType);
+        $questionResolver  = new QuestionResolver();
 
         parent::__construct([
             'name'   => 'Query',
@@ -39,6 +50,26 @@ class QueryType extends ObjectType
                         ],
                     ],
                     'resolve' => fn($root, array $args) => $studyResolver->getByName($args['study_name']),
+                ],
+
+                // Query: { allQuestions { topic_name constructs { ... } } }
+                'allQuestions' => [
+                    'type'        => Type::nonNull(Type::listOf(Type::nonNull($topicGroupType))),
+                    'description' => 'Returns all questions grouped by topic → construct → subfacet',
+                    'resolve'     => fn() => $questionResolver->getAll(),
+                ],
+
+                // Query: { studyQuestions(study_name: "abc") { topic_name constructs { ... } } }
+                'studyQuestions' => [
+                    'type'        => Type::nonNull(Type::listOf(Type::nonNull($topicGroupType))),
+                    'description' => 'Returns all questions in a study grouped by topic → construct → subfacet',
+                    'args'        => [
+                        'study_name' => [
+                            'type'        => Type::nonNull(Type::string()),
+                            'description' => 'The study_name to fetch questions for',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $questionResolver->getByStudy($args['study_name']),
                 ],
 
             ],

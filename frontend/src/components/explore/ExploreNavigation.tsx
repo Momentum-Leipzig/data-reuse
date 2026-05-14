@@ -16,7 +16,7 @@ export default function ExploreNavigation() {
   ];
   return (
     <nav className="py-4 flex justify-start items-center gap-4">
-      <h1 className="text-balance text-xl font-bold mr-8">
+      <h1 className="text-balance text-3xl font-bold mr-8">
         Explore the Dataset
       </h1>
       {navItems.map(({ href, label }) => {

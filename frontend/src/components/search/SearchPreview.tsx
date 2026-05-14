@@ -92,7 +92,7 @@ export default function SearchPreview<T>({
           {filteredResults.length === 0 ? (
             <p className="px-2 py-1 text-sm">{noResultsText}</p>
           ) : (
-            <ul className="space-y-2 px-6">
+            <ul className="space-y-2 px-6 list-none">
               {filteredResults.map((item) => (
                 <li key={getItemKey(item)}>
                   {onSelect ? (
