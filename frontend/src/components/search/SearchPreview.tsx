@@ -71,8 +71,6 @@ export default function SearchPreview<T>({
       .slice(0, maxResults);
   }, [canSearch, getSearchFields, items, maxResults, normalizedQuery]);
 
-  console.log("SearchPreview", { query, normalizedQuery, filteredResults });
-
   return (
     <section ref={containerRef} className="">
       <label className="block">

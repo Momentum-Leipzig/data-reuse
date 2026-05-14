@@ -4,6 +4,7 @@ import MetricsOverview from "@/components/explore/MetricsOverview";
 import QuestionsByTopic from "@/components/explore/QuestionsByTopic";
 import SelectedEntity from "@/components/explore/SelectedEntity";
 import StudiesList from "@/components/explore/StudiesList";
+import WaveParticipantsChart from "@/components/explore/WaveParticipantsChart";
 import SearchPreview from "@/components/search/SearchPreview";
 import {
   getStudies,
@@ -16,6 +17,11 @@ import {
   getMetricsByStudies,
   type Metrics,
 } from "@/lib/graphql/metrics";
+import {
+  getGlobalWaveParticipants,
+  getWaveParticipantsByStudies,
+  type WaveParticipants,
+} from "@/lib/graphql/waves";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
@@ -44,6 +50,10 @@ function StudiesContent() {
   const [questionsError, setQuestionsError] = useState<string | null>(null);
 
   const [metrics, setMetrics] = useState<Metrics | null>(null);
+  const [waveData, setWaveData] = useState<WaveParticipants[] | null>(null);
+  const [globalWaveData, setGlobalWaveData] = useState<
+    WaveParticipants[] | undefined
+  >(undefined);
 
   console.log("Selected study IDs:", selectedIds);
   console.log("questionsByStudy:", questionsByStudy);
@@ -78,15 +88,22 @@ function StudiesContent() {
     };
   }, []);
 
-  // Re-fetch metrics whenever the selection changes.
+  // Fetch global wave data once — used to keep the Y axis stable when filtering.
+  useEffect(() => {
+    getGlobalWaveParticipants().then(setGlobalWaveData);
+  }, []);
+
+  // Re-fetch metrics and wave data whenever the selection changes.
   useEffect(() => {
     if (selectedIds.length === 0) {
-      // Selection cleared — restore global metrics (instant: already cached).
       getGlobalMetrics().then(setMetrics);
+      getGlobalWaveParticipants().then(setWaveData);
       return;
     }
     setMetrics(null);
+    setWaveData(null);
     getMetricsByStudies(selectedIds).then(setMetrics);
+    getWaveParticipantsByStudies(selectedIds).then(setWaveData);
   }, [selectedIds]);
 
   useEffect(() => {
@@ -218,6 +235,7 @@ function StudiesContent() {
             </div>
           </div>
           <MetricsOverview metrics={metrics} />
+          <WaveParticipantsChart data={waveData} globalData={globalWaveData} />
 
           <div className="space-y-4">
             {questionsLoading && <p>Loading questions…</p>}
@@ -242,17 +260,12 @@ function StudiesContent() {
                 );
               })}
           </div>
-          <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
-            Chart
-          </div>
         </div>
       ) : null}
       {mode === "all" ? (
         <div className="flex flex-col gap-12">
           <MetricsOverview metrics={metrics} />
-          <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
-            Chart
-          </div>
+          <WaveParticipantsChart data={waveData} globalData={globalWaveData} />
           <StudiesList
             title={"All studies"}
             studies={studies}

@@ -5,12 +5,14 @@ namespace App\Schema;
 use App\Resolvers\MetricsResolver;
 use App\Resolvers\QuestionResolver;
 use App\Resolvers\StudyResolver;
+use App\Resolvers\WaveResolver;
 use App\Types\ConstructGroupType;
 use App\Types\MetricsType;
 use App\Types\QuestionType;
 use App\Types\StudyType;
 use App\Types\SubfacetGroupType;
 use App\Types\TopicGroupType;
+use App\Types\WaveParticipantsType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
@@ -23,6 +25,9 @@ class QueryType extends ObjectType
     {
         $metricsType     = new MetricsType();
         $metricsResolver = new MetricsResolver();
+
+        $waveParticipantsType = new WaveParticipantsType();
+        $waveResolver         = new WaveResolver();
 
         $studyType     = new StudyType();
         $studyResolver = new StudyResolver();
@@ -108,6 +113,39 @@ class QueryType extends ObjectType
                         ],
                     ],
                     'resolve' => fn($root, array $args) => $questionResolver->getByStudy($args['study_name']),
+                ],
+
+                // Query: { waveParticipants { wave month participants } }
+                'waveParticipants' => [
+                    'type'        => Type::nonNull(Type::listOf(Type::nonNull($waveParticipantsType))),
+                    'description' => 'Participant count per wave for the entire dataset',
+                    'resolve'     => fn() => $waveResolver->getAll(),
+                ],
+
+                // Query: { waveParticipantsByStudies(study_names: ["..."]){ wave month participants } }
+                'waveParticipantsByStudies' => [
+                    'type'        => Type::nonNull(Type::listOf(Type::nonNull($waveParticipantsType))),
+                    'description' => 'Participant count per wave, restricted to the given studies',
+                    'args'        => [
+                        'study_names' => [
+                            'type'        => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+                            'description' => 'List of study_name values to filter by',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $waveResolver->getByStudies($args['study_names']),
+                ],
+
+                // Query: { waveParticipantsByQuestions(item_names: ["..."]){ wave month participants } }
+                'waveParticipantsByQuestions' => [
+                    'type'        => Type::nonNull(Type::listOf(Type::nonNull($waveParticipantsType))),
+                    'description' => 'Participant count per wave, restricted to the given questions',
+                    'args'        => [
+                        'item_names' => [
+                            'type'        => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+                            'description' => 'List of item_name values to filter by',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $waveResolver->getByQuestions($args['item_names']),
                 ],
 
                 // Query: { studiesByQuestions(item_names: ["a", "b"]) { study_name title } }
