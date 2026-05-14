@@ -1,13 +1,21 @@
 "use client";
 
+import MetricsOverview from "@/components/explore/MetricsOverview";
 import QuestionsByTopic from "@/components/explore/QuestionsByTopic";
+import SelectedEntity from "@/components/explore/SelectedEntity";
 import StudiesList from "@/components/explore/StudiesList";
-import { getAllQuestions, type TopicGroup } from "@/lib/graphql/studies";
+import {
+  getAllQuestions,
+  type Question,
+  type TopicGroup,
+} from "@/lib/graphql/studies";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
 function QuestionsContent() {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const ids = searchParams.get("ids") ?? undefined;
   const selectedIds = useMemo(
@@ -25,6 +33,40 @@ function QuestionsContent() {
   const [topics, setTopics] = useState<TopicGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const allQuestions = useMemo(() => {
+    return topics.flatMap((topic) =>
+      topic.constructs.flatMap((construct) =>
+        construct.subfacets.flatMap((subfacet) => subfacet.questions),
+      ),
+    );
+  }, [topics]);
+
+  const questionsById = useMemo(() => {
+    return new Map(allQuestions.map((q) => [q.item_name, q]));
+  }, [allQuestions]);
+
+  const selectedQuestions = useMemo(() => {
+    return selectedIds
+      .map((id) => questionsById.get(id))
+      .filter((q): q is Question => Boolean(q));
+  }, [selectedIds, questionsById]);
+
+  function deselectQuestion(itemName: string) {
+    const nextSelectedIds = selectedIds.filter((id) => id !== itemName);
+    const nextSearchParams = new URLSearchParams(searchParams.toString());
+
+    if (nextSelectedIds.length > 0) {
+      nextSearchParams.set("ids", nextSelectedIds.join(","));
+    } else {
+      nextSearchParams.delete("ids");
+    }
+
+    const nextQueryString = nextSearchParams.toString();
+    router.replace(
+      nextQueryString ? `${pathname}?${nextQueryString}` : pathname,
+    );
+  }
 
   useEffect(() => {
     let active = true;
@@ -54,26 +96,16 @@ function QuestionsContent() {
 
   return (
     <section className="flex flex-col gap-12">
-      <div className="flex flex-row gap-2">
-        <p> Temporary Debug Content: </p>
-        <p>
-          Mode:{" "}
-          {selectedIds.length > 0 ? "some questions (1..n)" : "all questions"}
-        </p>
-        <p>
-          Selected IDs:{" "}
-          {selectedIds.length > 0 ? selectedIds.join(", ") : "none"}
-        </p>
-        <p>
-          Example detail link:{" "}
-          <Link className="underline" href="/explore-dataset/questions?ids=q1">
-            /explore-dataset/questions?ids=age_ST4
-          </Link>
-        </p>
-      </div>
+      <div>search field</div>
 
       {mode === "all" ? (
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-15">
+          <MetricsOverview />
+
+          <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
+            Chart
+          </div>
+
           {/* all questions section */}
           <div>
             {loading && (
@@ -97,10 +129,41 @@ function QuestionsContent() {
           <StudiesList title={"The following studies are based on this data"} />
         </div>
       ) : (
-        <div>
-          <p className="text-sm text-gray-500">
-            Selected IDs: {selectedIds.join(", ")}
-          </p>
+        <div className="flex flex-col gap-12">
+          <div className="flex flex-col gap-2">
+            <p className="font-bold">Selection</p>
+            <div className="flex flex-col gap-2">
+              {selectedQuestions.map((question) => (
+                <SelectedEntity
+                  key={question.item_name}
+                  deselect={() => deselectQuestion(question.item_name)}
+                >
+                  <p>[{question.item_name}]</p>
+                  <p className="font-bold">{question.item_text ?? "No text"}</p>
+                </SelectedEntity>
+              ))}
+
+              {!loading && !error && selectedQuestions.length === 0 && (
+                <p>No selected question details found.</p>
+              )}
+            </div>
+          </div>
+          <MetricsOverview />
+          <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
+            Chart
+          </div>
+
+          <div>
+            <h2 className="font-bold text-3xl">
+              Details on the selected question
+              {selectedQuestions.length > 0 ? `s` : ""}
+            </h2>
+          </div>
+          <div>
+            all questions listed again or just highlighting the topics /
+            constructs / subfacets
+          </div>
+          <div>all studies where the selected questions were used</div>
         </div>
       )}
     </section>

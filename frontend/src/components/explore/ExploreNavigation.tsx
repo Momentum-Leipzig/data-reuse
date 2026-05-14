@@ -27,7 +27,7 @@ export default function ExploreNavigation() {
             key={href}
             href={href}
             aria-current={isActive ? "page" : undefined}
-            className={`text-lmp-text px-5 py-2 rounded-4xl cursor-pointer transition ${isActive ? "bg-lmp-green hover:bg-lmp-green/70 " : "hover:bg-lmp-green/70 "}`}
+            className={`text-lmp-text font-bold px-6 py-2 rounded-4xl cursor-pointer transition ${isActive ? "bg-lmp-green hover:bg-lmp-green/70 " : "bg-lmp-gray1 hover:bg-lmp-green/70 "}`}
           >
             {label}
           </Link>
