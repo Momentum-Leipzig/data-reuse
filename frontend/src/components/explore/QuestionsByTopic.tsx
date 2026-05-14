@@ -1,4 +1,5 @@
 import type { TopicGroup } from "@/lib/graphql/studies";
+import Link from "next/link";
 
 type Props = {
   topics: TopicGroup[];
@@ -13,45 +14,67 @@ export default function QuestionsByTopic({ topics, headline }: Props) {
   return (
     <div className="flex flex-col gap-4">
       <h2 className="font-bold text-3xl">{headline ?? "Questions by Topic"}</h2>
-      <div>
+      <div className="columns-2 gap-10 w-full">
         {topics.map((topic) => (
-          <details key={topic.topic_name} className="mb-2">
-            <summary className="cursor-pointer font-medium">
-              {topic.topic_name}
+          <details
+            key={topic.topic_name}
+            name="topics"
+            className="break-inside-avoid border-t border-lmp-text pt-2 mb-3"
+          >
+            <summary className="cursor-pointer">
+              <span className="font-medium text-xl">{topic.topic_name}</span>{" "}
+              <br />
+              <span className="ml-4 block">{topic.description}</span>
             </summary>
-            <div className="pl-4 mt-1 space-y-2">
+            <div className="pl-4 mt-1 flex flex-col gap-2">
               {topic.constructs.map((construct) => (
-                <details key={construct.construct_name}>
+                <details
+                  key={construct.construct_name}
+                  name="constructs"
+                  className="break-inside-avoid"
+                >
                   <summary className="cursor-pointer">
-                    {construct.construct_name}
+                    <span className="font-medium text-base">
+                      {construct.construct_name}
+                    </span>
+                    <br />
+                    <span className="text-sm ml-4 block">
+                      {construct.description}
+                    </span>
                   </summary>
-                  <div className="pl-4 mt-1 space-y-2">
+                  <div className="pl-8 mt-1 flex flex-col gap-2">
                     {construct.subfacets.map((subfacet, si) => {
                       const questions = (
-                        <ul className="pl-4 mt-1 space-y-1">
+                        <ul className="pl-4 mt-1 flex flex-col gap-1 list-none">
                           {subfacet.questions.map((q) => (
-                            <li
+                            <Link
                               key={`${q.item_name}-${q.item_language}`}
-                              className="text-sm"
+                              href={`/explore-dataset/questions?ids=${q.item_name}`}
+                              className="text-sm bg-lmp-gray3 hover:bg-lmp-gray3/70 rounded-xl px-3 py-2 transition"
                             >
                               <span className="font-mono text-xs text-gray-500 mr-2">
                                 [{q.item_name}]
                               </span>
                               {q.item_text ?? "—"}
-                              {q.reverse_coded && (
-                                <span className="ml-1 text-xs text-gray-400">
-                                  (R)
-                                </span>
-                              )}
-                            </li>
+                            </Link>
                           ))}
                         </ul>
                       );
 
                       return subfacet.subfacet_name ? (
-                        <details key={subfacet.subfacet_name}>
+                        <details
+                          key={subfacet.subfacet_name}
+                          name="subfacets"
+                          className="break-inside-avoid"
+                        >
                           <summary className="cursor-pointer text-sm">
-                            {subfacet.subfacet_name}
+                            <span className="font-medium">
+                              {subfacet.subfacet_name}
+                            </span>
+                            <br />
+                            <span className="text-sm ml-4">
+                              {subfacet.description}
+                            </span>
                           </summary>
                           {questions}
                         </details>

@@ -56,6 +56,10 @@ class QuestionResolver
             LEFT JOIN topic     t_ic ON t_ic.topic_name     = c_ic.topic_name
             WHERE siw.study_name = ?
               AND COALESCE(c_sf.construct_name, c_ic.construct_name) IS NOT NULL
+              AND (i.item_language = \'en\' OR NOT EXISTS (
+                  SELECT 1 FROM item i2
+                  WHERE i2.item_name = i.item_name AND i2.item_language = \'en\'
+              ))
             ORDER BY
                 COALESCE(t_sf.topic_name,     t_ic.topic_name),
                 COALESCE(c_sf.construct_name, c_ic.construct_name),
@@ -106,6 +110,10 @@ class QuestionResolver
             LEFT JOIN construct c_ic ON c_ic.construct_name = ic.construct_name
             LEFT JOIN topic     t_ic ON t_ic.topic_name     = c_ic.topic_name
             WHERE COALESCE(c_sf.construct_name, c_ic.construct_name) IS NOT NULL
+              AND (i.item_language = \'en\' OR NOT EXISTS (
+                  SELECT 1 FROM item i2
+                  WHERE i2.item_name = i.item_name AND i2.item_language = \'en\'
+              ))
             ORDER BY
                 COALESCE(t_sf.topic_name,     t_ic.topic_name),
                 COALESCE(c_sf.construct_name, c_ic.construct_name),
