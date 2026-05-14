@@ -27,7 +27,7 @@ export default function MetricsOverview() {
           <p className="text-sm font-bold text-lmp-text text-center text-balance">
             {metric.label}
           </p>
-          <p className="text-2xl font-bold">{metric.value}</p>
+          <p className="text-6xl">{metric.value}</p>
         </div>
       ))}
     </div>
