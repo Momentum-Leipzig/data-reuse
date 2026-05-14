@@ -129,3 +129,30 @@ export async function getAllQuestions(): Promise<TopicGroup[]> {
   );
   return data.allQuestions;
 }
+
+type GetStudiesByQuestionsResponse = {
+  studiesByQuestions: Study[];
+};
+
+const GET_STUDIES_BY_QUESTIONS_QUERY = `
+  query GetStudiesByQuestions($item_names: [String!]!) {
+    studiesByQuestions(item_names: $item_names) {
+      study_name
+      title
+      doi
+      publication_year
+      citation
+      journal
+    }
+  }
+`;
+
+export async function getStudiesByQuestions(
+  itemNames: string[],
+): Promise<Study[]> {
+  const data = await graphqlRequest<
+    GetStudiesByQuestionsResponse,
+    { item_names: string[] }
+  >(GET_STUDIES_BY_QUESTIONS_QUERY, { item_names: itemNames });
+  return data.studiesByQuestions;
+}

@@ -153,7 +153,7 @@ function StudiesContent() {
   }
 
   return (
-    <section className="space-y-2">
+    <section className="flex flex-col gap-12">
       <SearchPreview
         items={studies}
         loading={loading}
