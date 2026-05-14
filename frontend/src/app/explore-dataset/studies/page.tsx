@@ -178,8 +178,8 @@ function StudiesContent() {
       />
 
       {mode === "selected" ? (
-        <div>
-          <div>
+        <div className="flex flex-col gap-12">
+          <div className="flex flex-col gap-2">
             <p className="font-bold">Selection</p>
             <div className="flex flex-col gap-2">
               {selectedStudies.map((study) => (
