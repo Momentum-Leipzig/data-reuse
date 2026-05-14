@@ -4,6 +4,7 @@ import MetricsOverview from "@/components/explore/MetricsOverview";
 import QuestionsByTopic from "@/components/explore/QuestionsByTopic";
 import SelectedEntity from "@/components/explore/SelectedEntity";
 import StudiesList from "@/components/explore/StudiesList";
+import WaveParticipantsChart from "@/components/explore/WaveParticipantsChart";
 import SearchPreview from "@/components/search/SearchPreview";
 import {
   getAllQuestions,
@@ -17,6 +18,11 @@ import {
   getMetricsByQuestions,
   type Metrics,
 } from "@/lib/graphql/metrics";
+import {
+  getGlobalWaveParticipants,
+  getWaveParticipantsByQuestions,
+  type WaveParticipants,
+} from "@/lib/graphql/waves";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
@@ -46,6 +52,10 @@ function QuestionsContent() {
   const [studiesError, setStudiesError] = useState<string | null>(null);
 
   const [metrics, setMetrics] = useState<Metrics | null>(null);
+  const [waveData, setWaveData] = useState<WaveParticipants[] | null>(null);
+  const [globalWaveData, setGlobalWaveData] = useState<
+    WaveParticipants[] | undefined
+  >(undefined);
 
   const allQuestions = useMemo(() => {
     return topics.flatMap((topic) =>
@@ -80,18 +90,26 @@ function QuestionsContent() {
       .filter((q): q is Question => Boolean(q));
   }, [selectedIds, questionsById]);
 
-  // Re-fetch metrics whenever the selection changes.
+  // Fetch global wave data once — used to keep the Y axis stable when filtering.
+  useEffect(() => {
+    getGlobalWaveParticipants().then(setGlobalWaveData);
+  }, []);
+
+  // Re-fetch metrics and wave data whenever the selection changes.
   useEffect(() => {
     if (selectedIds.length === 0) {
-      // Selection cleared — restore global metrics (instant: already cached).
+      // Selection cleared — restore global data (already cached).
       getGlobalMetrics().then(setMetrics);
+      getGlobalWaveParticipants().then(setWaveData);
       return;
     }
     setMetrics(null);
+    setWaveData(null);
     getMetricsByQuestions(selectedIds).then((fetched) => {
       // Override questions count with the number of selected IDs (client-side decision).
       setMetrics({ ...fetched, questions: selectedIds.length });
     });
+    getWaveParticipantsByQuestions(selectedIds).then(setWaveData);
   }, [selectedIds]);
 
   function selectQuestion(itemName: string) {
@@ -217,6 +235,8 @@ function QuestionsContent() {
         <div className="flex flex-col gap-15">
           <MetricsOverview metrics={metrics} />
 
+          <WaveParticipantsChart data={waveData} globalData={globalWaveData} />
+
           <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
             Chart
           </div>
@@ -264,10 +284,7 @@ function QuestionsContent() {
             </div>
           </div>
           <MetricsOverview metrics={metrics} />
-          <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
-            Chart
-          </div>
-
+          <WaveParticipantsChart data={waveData} globalData={globalWaveData} />
           <div>
             <h2 className="font-semibold text-3xl">
               Details on the selected question
