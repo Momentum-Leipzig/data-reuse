@@ -218,6 +218,7 @@ function StudiesContent() {
                     <QuestionsByTopic
                       topics={topics}
                       headline="Included Questions"
+                      expanded
                     />
                   </div>
                 );
