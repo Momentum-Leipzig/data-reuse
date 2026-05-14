@@ -1,4 +1,5 @@
 import { Image } from "@/components/Image";
+import Link from "next/link";
 
 const FOOTER_PAGES = [
   {
@@ -67,13 +68,13 @@ export default function Footer() {
 
           <div>
             {FOOTER_PAGES.map(({ href, label }) => (
-              <a
+              <Link
                 key={href}
                 href={href}
                 className="text-lmp-text hover:text-lmp-text/70 text-sm font-bold cursor-pointer py-2 transition block underline"
               >
                 {label}
-              </a>
+              </Link>
             ))}
           </div>
           <div>
@@ -94,18 +95,18 @@ export default function Footer() {
           </div>
         </div>
         <div className="flex flex-row flex-wrap gap-12 justify-center items-center">
-          <a
+          <Link
             href="/privacy-policy"
             className="text-lmp-text hover:text-lmp-text/70 text-sm font-bold cursor-pointer py-2 transition block underline"
           >
             Privacy Policy
-          </a>
-          <a
+          </Link>
+          <Link
             href="/imprint"
             className="text-lmp-text hover:text-lmp-text/70 text-sm font-bold cursor-pointer py-2 transition block underline"
           >
             Imprint
-          </a>
+          </Link>
           <div className="flex flex-row items-center gap-3">
             <p>Funded by</p>
             <Image
