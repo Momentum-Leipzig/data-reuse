@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fira_Sans } from "next/font/google";
 import { Navigation } from "@/components/Navigation";
 import "./globals.css";
+import Footer from "@/components/Footer";
 
 const firaSans = Fira_Sans({
   variable: "--font-fira-sans",
@@ -34,6 +35,8 @@ export default function RootLayout({
             {children}
           </main>
         </div>
+
+        <Footer />
       </body>
     </html>
   );
