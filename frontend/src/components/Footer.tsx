@@ -17,6 +17,7 @@ const FOOTER_PAGES = [
   {
     label: "Download the Dataset",
     href: "https://osf.io/rabzm/overview",
+    openInNewTab: true,
   },
 ];
 
@@ -67,10 +68,12 @@ export default function Footer() {
           </p>
 
           <div>
-            {FOOTER_PAGES.map(({ href, label }) => (
+            {FOOTER_PAGES.map(({ href, label, openInNewTab }) => (
               <Link
                 key={href}
                 href={href}
+                target={openInNewTab ? "_blank" : undefined}
+                rel={openInNewTab ? "noopener noreferrer" : undefined}
                 className="text-lmp-text hover:text-lmp-text/70 text-sm font-bold cursor-pointer py-2 transition block underline"
               >
                 {label}
