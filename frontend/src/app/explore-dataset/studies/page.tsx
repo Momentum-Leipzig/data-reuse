@@ -1,10 +1,16 @@
 "use client";
 
 import MetricsOverview from "@/components/explore/MetricsOverview";
+import QuestionsByTopic from "@/components/explore/QuestionsByTopic";
 import SelectedEntity from "@/components/explore/SelectedEntity";
 import StudiesList from "@/components/explore/StudiesList";
 import SearchPreview from "@/components/search/SearchPreview";
-import { getStudies, type Study } from "@/lib/graphql/studies";
+import {
+  getStudies,
+  getStudyQuestions,
+  type Study,
+  type TopicGroup,
+} from "@/lib/graphql/studies";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
@@ -25,6 +31,15 @@ function StudiesContent() {
   const [studies, setStudies] = useState<Study[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [questionsByStudy, setQuestionsByStudy] = useState<
+    Record<string, TopicGroup[]>
+  >({});
+  const [questionsLoading, setQuestionsLoading] = useState(false);
+  const [questionsError, setQuestionsError] = useState<string | null>(null);
+
+  console.log("Selected study IDs:", selectedIds);
+  console.log("questionsByStudy:", questionsByStudy);
 
   useEffect(() => {
     let active = true;
@@ -55,6 +70,47 @@ function StudiesContent() {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (selectedIds.length === 0) {
+      setQuestionsByStudy({});
+      return;
+    }
+
+    let active = true;
+
+    async function loadQuestions() {
+      try {
+        setQuestionsLoading(true);
+        const results = await Promise.all(
+          selectedIds.map((id) =>
+            getStudyQuestions(id).then((topics) => ({ id, topics })),
+          ),
+        );
+        if (active) {
+          const map: Record<string, TopicGroup[]> = {};
+          for (const { id, topics } of results) {
+            map[id] = topics;
+          }
+          setQuestionsByStudy(map);
+          setQuestionsError(null);
+        }
+      } catch (err) {
+        if (active) {
+          setQuestionsError(
+            err instanceof Error ? err.message : "Unknown error",
+          );
+        }
+      } finally {
+        if (active) setQuestionsLoading(false);
+      }
+    }
+
+    loadQuestions();
+    return () => {
+      active = false;
+    };
+  }, [selectedIds]);
 
   const studiesById = useMemo(() => {
     return new Map(studies.map((study) => [study.study_name, study]));
@@ -145,8 +201,27 @@ function StudiesContent() {
           </div>
           <MetricsOverview />
 
-          <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
-            Included Questions
+          <div className="space-y-4">
+            {questionsLoading && <p>Loading questions…</p>}
+            {questionsError && (
+              <p className="text-red-600">Error: {questionsError}</p>
+            )}
+            {!questionsLoading &&
+              !questionsError &&
+              selectedIds.map((studyId) => {
+                const topics = questionsByStudy[studyId] ?? [];
+                return (
+                  <div key={studyId}>
+                    {selectedIds.length > 1 && (
+                      <p className="font-semibold text-sm mb-1">{studyId}</p>
+                    )}
+                    <QuestionsByTopic
+                      topics={topics}
+                      headline="Included Questions"
+                    />
+                  </div>
+                );
+              })}
           </div>
           <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
             Chart

@@ -75,8 +75,8 @@ export default function StudiesList({
   }, [studies, studyNames]);
 
   return (
-    <section className="space-y-3">
-      <h2 className="text-2xl font-semibold">{title}</h2>
+    <section className="flex flex-col gap-4">
+      <h2 className="text-3xl font-semibold">{title}</h2>
 
       {loading && <p>Loading studies...</p>}
       {error && <p className="text-red-700">Error: {error}</p>}
@@ -86,12 +86,12 @@ export default function StudiesList({
       )}
 
       {!loading && !error && visibleStudies.length > 0 && (
-        <ul className="space-y-2">
+        <ul className="flex flex-col items-start gap-2 m-0 p-0 list-none">
           {visibleStudies.map((study) => (
             <Link
               href={`/explore-dataset/studies?ids=${study.study_name}`}
               key={study.study_name}
-              className="rounded-2xl p-3 bg-lmp-gray3 flex flex-wrap gap-1 cursor-pointer hover:bg-lmp-gray3/70 transition text-sm"
+              className="rounded-2xl px-4 py-2 bg-lmp-gray3 flex flex-wrap gap-1 cursor-pointer hover:bg-lmp-gray3/70 transition text-sm"
             >
               <p>{study.study_name.split("20")[0].trim()}</p>●
               <p>{study.publication_year ?? "No publication year"}</p>●
