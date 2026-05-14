@@ -12,6 +12,11 @@ import {
   type Study,
   type TopicGroup,
 } from "@/lib/graphql/studies";
+import {
+  getGlobalMetrics,
+  getMetricsByQuestions,
+  type Metrics,
+} from "@/lib/graphql/metrics";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
@@ -39,6 +44,8 @@ function QuestionsContent() {
   const [studiesByQuestions, setStudiesByQuestions] = useState<Study[]>([]);
   const [studiesLoading, setStudiesLoading] = useState(false);
   const [studiesError, setStudiesError] = useState<string | null>(null);
+
+  const [metrics, setMetrics] = useState<Metrics | null>(null);
 
   const allQuestions = useMemo(() => {
     return topics.flatMap((topic) =>
@@ -72,6 +79,20 @@ function QuestionsContent() {
       .map((id) => questionsById.get(id))
       .filter((q): q is Question => Boolean(q));
   }, [selectedIds, questionsById]);
+
+  // Re-fetch metrics whenever the selection changes.
+  useEffect(() => {
+    if (selectedIds.length === 0) {
+      // Selection cleared — restore global metrics (instant: already cached).
+      getGlobalMetrics().then(setMetrics);
+      return;
+    }
+    setMetrics(null);
+    getMetricsByQuestions(selectedIds).then((fetched) => {
+      // Override questions count with the number of selected IDs (client-side decision).
+      setMetrics({ ...fetched, questions: selectedIds.length });
+    });
+  }, [selectedIds]);
 
   function selectQuestion(itemName: string) {
     const nextSearchParams = new URLSearchParams(searchParams.toString());
@@ -194,7 +215,7 @@ function QuestionsContent() {
 
       {mode === "all" ? (
         <div className="flex flex-col gap-15">
-          <MetricsOverview />
+          <MetricsOverview metrics={metrics} />
 
           <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
             Chart
@@ -242,7 +263,7 @@ function QuestionsContent() {
               )}
             </div>
           </div>
-          <MetricsOverview />
+          <MetricsOverview metrics={metrics} />
           <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
             Chart
           </div>

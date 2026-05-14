@@ -1,0 +1,190 @@
+<?php
+
+namespace App\Resolvers;
+
+use App\Database\Connection;
+
+/**
+ * Resolver for aggregate dataset metrics shown in MetricsOverview.
+ *
+ * Each public method returns an associative array with the four keys that
+ * MetricsType exposes: questions, participants, measurementPoints, dataPoints.
+ *
+ * "participants" is always COUNT(DISTINCT participant_id) FROM response (i.e.
+ * participants who actually responded), filtered to the relevant scope.
+ */
+class MetricsResolver
+{
+    /**
+     * Counts for the entire dataset.
+     *
+     * The result is stored in a temp file and reused until it expires (24 h).
+     * This avoids running COUNT(DISTINCT …) on 17 M+ response rows on every
+     * page load, and prevents a slow first request from blocking other API
+     * calls on single-worker dev servers.
+     *
+     * To force a refresh, delete /tmp/lmp_global_metrics.json on the server.
+     */
+    public function getGlobal(): array
+    {
+        $cacheFile = sys_get_temp_dir() . '/lmp_global_metrics.json';
+        $ttl       = 60 * 60 * 24; // 24 hours
+
+        if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $ttl) {
+            $cached = json_decode(file_get_contents($cacheFile), true);
+            if (is_array($cached)) {
+                return $cached;
+            }
+        }
+
+        $pdo = Connection::get();
+
+        $row = $pdo->query('
+            SELECT
+                (SELECT COUNT(DISTINCT item_name)      FROM item)         AS questions,
+                (SELECT COUNT(DISTINCT participant_id) FROM response)     AS participants,
+                (SELECT COUNT(*)                       FROM wave)         AS measurementPoints,
+                (SELECT COUNT(*)                       FROM response)     AS dataPoints
+        ')->fetch();
+
+        $result = $this->mapRow($row);
+
+        // Atomic write — prevents a concurrent request reading a partial file.
+        $tmp = $cacheFile . '.tmp.' . getmypid();
+        file_put_contents($tmp, json_encode($result));
+        rename($tmp, $cacheFile);
+
+        return $result;
+    }
+
+    /**
+     * Counts restricted to the given studies.
+     *
+     * @param string[] $studyNames
+     */
+    public function getByStudies(array $studyNames): array
+    {
+        if (empty($studyNames)) {
+            return $this->zeros();
+        }
+
+        $pdo          = Connection::get();
+        $placeholders = implode(',', array_fill(0, count($studyNames), '?'));
+
+        // All four metrics share the same base filter: item_waves that belong
+        // to the requested studies via study_item_wave.
+        $sql = "
+            SELECT
+                (
+                    SELECT COUNT(DISTINCT iw.item_name)
+                    FROM   study_item_wave siw
+                    JOIN   item_wave iw ON iw.item_wave_id = siw.item_wave_id
+                    WHERE  siw.study_name IN ($placeholders)
+                ) AS questions,
+                (
+                    SELECT COUNT(DISTINCT r.participant_id)
+                    FROM   study_item_wave siw
+                    JOIN   response r ON r.item_wave_id = siw.item_wave_id
+                    WHERE  siw.study_name IN ($placeholders)
+                ) AS participants,
+                (
+                    SELECT COUNT(DISTINCT iw.wave)
+                    FROM   study_item_wave siw
+                    JOIN   item_wave iw ON iw.item_wave_id = siw.item_wave_id
+                    WHERE  siw.study_name IN ($placeholders)
+                ) AS measurementPoints,
+                (
+                    SELECT COUNT(*)
+                    FROM   study_item_wave siw
+                    JOIN   response r ON r.item_wave_id = siw.item_wave_id
+                    WHERE  siw.study_name IN ($placeholders)
+                ) AS dataPoints
+        ";
+
+        // Each sub-SELECT needs its own copy of the placeholder values.
+        $params = array_merge(
+            array_values($studyNames),
+            array_values($studyNames),
+            array_values($studyNames),
+            array_values($studyNames),
+        );
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $this->mapRow($stmt->fetch());
+    }
+
+    /**
+     * Counts restricted to the given item_names (questions).
+     *
+     * @param string[] $itemNames
+     */
+    public function getByQuestions(array $itemNames): array
+    {
+        if (empty($itemNames)) {
+            return $this->zeros();
+        }
+
+        $pdo          = Connection::get();
+        $placeholders = implode(',', array_fill(0, count($itemNames), '?'));
+
+        $sql = "
+            SELECT
+                (
+                    SELECT COUNT(DISTINCT iw.item_name)
+                    FROM   item_wave iw
+                    WHERE  iw.item_name IN ($placeholders)
+                ) AS questions,
+                (
+                    SELECT COUNT(DISTINCT r.participant_id)
+                    FROM   item_wave iw
+                    JOIN   response r ON r.item_wave_id = iw.item_wave_id
+                    WHERE  iw.item_name IN ($placeholders)
+                ) AS participants,
+                (
+                    SELECT COUNT(DISTINCT iw.wave)
+                    FROM   item_wave iw
+                    WHERE  iw.item_name IN ($placeholders)
+                ) AS measurementPoints,
+                (
+                    SELECT COUNT(*)
+                    FROM   item_wave iw
+                    JOIN   response r ON r.item_wave_id = iw.item_wave_id
+                    WHERE  iw.item_name IN ($placeholders)
+                ) AS dataPoints
+        ";
+
+        $params = array_merge(
+            array_values($itemNames),
+            array_values($itemNames),
+            array_values($itemNames),
+            array_values($itemNames),
+        );
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $this->mapRow($stmt->fetch());
+    }
+
+    // -------------------------------------------------------------------------
+
+    private function mapRow(array $row): array
+    {
+        return [
+            'questions'         => (int) $row['questions'],
+            'participants'      => (int) $row['participants'],
+            'measurementPoints' => (int) $row['measurementPoints'],
+            'dataPoints'        => (int) $row['dataPoints'],
+        ];
+    }
+
+    private function zeros(): array
+    {
+        return [
+            'questions'         => 0,
+            'participants'      => 0,
+            'measurementPoints' => 0,
+            'dataPoints'        => 0,
+        ];
+    }
+}
