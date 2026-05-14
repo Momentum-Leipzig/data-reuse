@@ -37,7 +37,7 @@ const FOOTER_CONTACTS = [
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-lmp-gray3 py-6 px-4 mt-12">
+    <footer className="w-full bg-lmp-gray3 py-10 px-4 mt-12">
       <div className="w-full max-w-7xl mx-auto flex flex-col gap-12">
         <div className="flex flex-row flex-wrap gap-12 justify-between items-center">
           <div className="flex gap-4 items-center">
