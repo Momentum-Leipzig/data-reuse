@@ -7,18 +7,14 @@ import { Image } from "@/components/Image";
 export const Navigation: React.FC = () => {
   const pathname = usePathname();
 
-  function downloadDataset() {
-    // Implement the logic to download the dataset here
-    console.log("Downloading dataset...");
-  }
-
   const navItems = [
     { href: "/", label: "About the Project" },
     { href: "/about-dataset/", label: "About the Dataset" },
     { href: "/explore-dataset/", label: "Explore the Dataset" },
     {
       label: "Download the Dataset",
-      buttonAction: () => downloadDataset(),
+      href: "https://osf.io/rabzm/overview",
+      isButton: true,
     },
   ];
 
@@ -42,16 +38,18 @@ export const Navigation: React.FC = () => {
         </div>
       </div>
       <ul className="flex gap-6 grow justify-end items-center list-none">
-        {navItems.map(({ href, label, buttonAction }) => {
+        {navItems.map(({ href, label, isButton }) => {
           return (
             <li key={href || label}>
-              {buttonAction ? (
-                <button
-                  onClick={buttonAction}
+              {isButton ? (
+                <Link
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-lmp-text hover:text-lmp-text text-sm font-bold bg-lmp-gray3 hover:bg-lmp-gray3/70 px-6 py-3 rounded-3xl cursor-pointer transition"
                 >
                   {label}
-                </button>
+                </Link>
               ) : (
                 <Link
                   href={href}

@@ -80,8 +80,9 @@ export default function Home() {
               longitudinal online survey study. Data collection was conducted
               within the research project{" "}
               <a
-                href="#"
+                href="https://projektdatenbank.volkswagenstiftung.de/projekt/0065586"
                 target="_blank"
+                rel="noopener noreferrer"
                 className="text-lmp-text hover:text-lmp-text/70 font-bold transition underline"
               >
                 “The Role of Work in the Development of Civilization Diseases”
