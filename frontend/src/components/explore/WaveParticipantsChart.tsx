@@ -4,7 +4,7 @@ import { type WaveParticipants } from "@/lib/graphql/waves";
 import * as d3 from "d3";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const MARGIN = { top: 16, right: 16, bottom: 80, left: 56 };
+const MARGIN = { top: 16, right: 16, bottom: 90, left: 45 };
 
 // Module-level D3 formatters — created once, not on every render.
 const parseDate = d3.utcParse("%Y-%m-%d");
@@ -41,12 +41,25 @@ export default function WaveParticipantsChart({
     const innerWidth = width - MARGIN.left - MARGIN.right;
     const innerHeight = height - MARGIN.top - MARGIN.bottom;
 
-    const dated = data.map((d) => ({
-      ...d,
-      date: parseDate(d.month) ?? new Date(d.month),
-    }));
+    const dated = data
+      .filter((d) => !d.wave.toLowerCase().includes("dd"))
+      .map((d) => ({
+        ...d,
+        date: parseDate(d.month) ?? new Date(d.month),
+      }));
 
-    const [minDate, maxDate] = d3.extent(dated, (d) => d.date) as [Date, Date];
+    // Use global data for X extents and grey background bars, so both stay stable in filtered views.
+    const globalDated = (globalData ?? data)
+      .filter((d) => !d.wave.toLowerCase().includes("dd"))
+      .map((d) => ({
+        ...d,
+        date: parseDate(d.month) ?? new Date(d.month),
+      }));
+
+    const [minDate, maxDate] = d3.extent(globalDated, (d) => d.date) as [
+      Date,
+      Date,
+    ];
     const xDomainStart = d3.utcMonth.offset(minDate, -1);
     const xDomainEnd = d3.utcMonth.offset(maxDate, 1);
 
@@ -58,7 +71,10 @@ export default function WaveParticipantsChart({
     const oneMonthPx = xScale(d3.utcMonth.offset(minDate, 1)) - xScale(minDate);
     const barWidth = Math.max(2, oneMonthPx * 0.7);
 
-    const yMax = d3.max(globalData ?? data, (d) => d.participants) ?? 0;
+    const yMaxSource = (globalData ?? data).filter(
+      (d) => !d.wave.toLowerCase().includes("dd"),
+    );
+    const yMax = d3.max(yMaxSource, (d) => d.participants) ?? 0;
     const yScale = d3
       .scaleLinear()
       .domain([0, yMax * 1.1])
@@ -73,18 +89,25 @@ export default function WaveParticipantsChart({
     const yTicks = yScale.ticks(5);
     const dataMonthSet = new Set(data.map((d) => d.month.substring(0, 7)));
 
+    // January 1st dates within the x domain — rendered as year-change dividers.
+    const yearLines = d3.utcYear.range(xDomainStart, xDomainEnd);
+
     return {
       width,
       height,
       innerWidth,
       innerHeight,
       dated,
+      globalDated,
       xScale,
       yScale,
       barWidth,
+      oneMonthPx,
       xTicks,
       yTicks,
       dataMonthSet,
+      yMax,
+      yearLines,
     };
   }, [data, globalData, size]);
 
@@ -111,6 +134,29 @@ export default function WaveParticipantsChart({
             viewBox={`0 0 ${chart.width} ${chart.height}`}
           >
             <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
+              {/* Grey background bars — all global waves, always visible */}
+              {chart.globalDated.map((d) => (
+                <rect
+                  key={`bg-${d.wave}`}
+                  x={chart.xScale(d.date) - chart.barWidth / 2}
+                  y={chart.yScale(chart.yMax)}
+                  width={chart.barWidth}
+                  height={chart.innerHeight - chart.yScale(chart.yMax)}
+                  fill="#F3F4F8"
+                />
+              ))}
+
+              {/* Green bars — filtered data only */}
+              {chart.dated.map((d) => (
+                <rect
+                  key={`bar-${d.wave}`}
+                  x={chart.xScale(d.date) - chart.barWidth / 2}
+                  y={chart.yScale(d.participants)}
+                  width={chart.barWidth}
+                  height={chart.innerHeight - chart.yScale(d.participants)}
+                  fill="#adde00"
+                />
+              ))}
               {/* Y gridlines */}
               {chart.yTicks.map((tick) => (
                 <line
@@ -119,31 +165,42 @@ export default function WaveParticipantsChart({
                   x2={chart.innerWidth}
                   y1={chart.yScale(tick)}
                   y2={chart.yScale(tick)}
-                  stroke="#dae0ea"
-                  strokeDasharray="3,3"
+                  stroke="#001C42"
+                  strokeOpacity={0.5}
+                  strokeWidth={0.25}
+                />
+              ))}
+              {/* Year-change vertical dividers */}
+              {chart.yearLines.map((date) => (
+                <line
+                  key={date.getTime()}
+                  x1={chart.xScale(date) - chart.oneMonthPx / 2}
+                  x2={chart.xScale(date) - chart.oneMonthPx / 2}
+                  y1={0}
+                  y2={chart.innerHeight + MARGIN.bottom - 18}
+                  stroke="#001C42"
+                  strokeWidth={1}
                 />
               ))}
 
-              {/* Bars */}
-              {chart.dated.map((d) => (
-                <rect
-                  key={d.wave}
-                  x={chart.xScale(d.date) - chart.barWidth / 2}
-                  y={chart.yScale(d.participants)}
-                  width={chart.barWidth}
-                  height={chart.innerHeight - chart.yScale(d.participants)}
-                  fill="#adde00"
-                />
+              {/* Wave labels — rotated upward, starting at the bar's bottom edge */}
+              {chart.globalDated.map((d) => (
+                <g
+                  key={`wl-${d.wave}`}
+                  transform={`translate(${chart.xScale(d.date)},${chart.innerHeight})`}
+                >
+                  <text
+                    dx="0.3em"
+                    dy="0.35em"
+                    transform="rotate(-90)"
+                    textAnchor="start"
+                    fontSize={11}
+                    fill="#001a3a"
+                  >
+                    {d.wave}
+                  </text>
+                </g>
               ))}
-
-              {/* X axis baseline */}
-              <line
-                x1={0}
-                x2={chart.innerWidth}
-                y1={chart.innerHeight}
-                y2={chart.innerHeight}
-                stroke="#cbd4e2"
-              />
 
               {/* X axis tick labels — one per month, rotated upward */}
               {chart.xTicks.map((tick) => (
@@ -171,7 +228,7 @@ export default function WaveParticipantsChart({
               {/* Y axis tick marks and labels */}
               {chart.yTicks.map((tick) => (
                 <g key={tick} transform={`translate(0,${chart.yScale(tick)})`}>
-                  <line x1={-4} x2={0} stroke="#cbd4e2" />
+                  {/* <line x1={-4} x2={0} stroke="#cbd4e2" /> */}
                   <text
                     x={-8}
                     dy="0.32em"
@@ -183,6 +240,29 @@ export default function WaveParticipantsChart({
                   </text>
                 </g>
               ))}
+
+              {/* Y axis title — top left, above the plot area */}
+              <text
+                x={-MARGIN.left + 2}
+                y={-6}
+                textAnchor="start"
+                fontSize={12}
+                fill="#001a3a"
+              >
+                Number of Participants
+              </text>
+
+              {/* X axis title — bottom left, below the tick labels */}
+              <text
+                x={12}
+                y={chart.innerHeight + MARGIN.bottom - 6}
+                textAnchor="start"
+                fontSize={12}
+                fill="#001a3a"
+                dominantBaseline="middle"
+              >
+                Measurement points
+              </text>
             </g>
           </svg>
         )}

@@ -237,10 +237,6 @@ function QuestionsContent() {
 
           <WaveParticipantsChart data={waveData} globalData={globalWaveData} />
 
-          <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
-            Chart
-          </div>
-
           {/* all questions section */}
           <div>
             {loading && (
@@ -265,7 +261,7 @@ function QuestionsContent() {
         </div>
       ) : (
         <div className="flex flex-col gap-12">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 items-start">
             <p className="font-bold">Selection</p>
             <div className="flex flex-col gap-2">
               {selectedQuestions.map((question) => (
@@ -273,8 +269,12 @@ function QuestionsContent() {
                   key={question.item_name}
                   deselect={() => deselectQuestion(question.item_name)}
                 >
-                  <p>[{question.item_name}]</p>
-                  <p className="font-bold">{question.item_text ?? "No text"}</p>
+                  <div className="flex flex-row items-start gap-2">
+                    <p>[{question.item_name}]</p>
+                    <p className="font-bold">
+                      {question.item_text ?? "No text"}
+                    </p>
+                  </div>
                 </SelectedEntity>
               ))}
 
