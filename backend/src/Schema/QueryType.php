@@ -2,9 +2,11 @@
 
 namespace App\Schema;
 
+use App\Resolvers\MetricsResolver;
 use App\Resolvers\QuestionResolver;
 use App\Resolvers\StudyResolver;
 use App\Types\ConstructGroupType;
+use App\Types\MetricsType;
 use App\Types\QuestionType;
 use App\Types\StudyType;
 use App\Types\SubfacetGroupType;
@@ -19,6 +21,9 @@ class QueryType extends ObjectType
 {
     public function __construct()
     {
+        $metricsType     = new MetricsType();
+        $metricsResolver = new MetricsResolver();
+
         $studyType     = new StudyType();
         $studyResolver = new StudyResolver();
 
@@ -31,6 +36,39 @@ class QueryType extends ObjectType
         parent::__construct([
             'name'   => 'Query',
             'fields' => [
+
+                // Query: { globalMetrics { questions participants measurementPoints dataPoints } }
+                'globalMetrics' => [
+                    'type'        => Type::nonNull($metricsType),
+                    'description' => 'Aggregate counts for the entire dataset',
+                    'resolve'     => fn() => $metricsResolver->getGlobal(),
+                ],
+
+                // Query: { metricsByStudies(study_names: ["..."]){ questions participants ... } }
+                'metricsByStudies' => [
+                    'type'        => Type::nonNull($metricsType),
+                    'description' => 'Aggregate counts filtered to the given studies',
+                    'args'        => [
+                        'study_names' => [
+                            'type'        => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+                            'description' => 'List of study_name values to filter by',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $metricsResolver->getByStudies($args['study_names']),
+                ],
+
+                // Query: { metricsByQuestions(item_names: ["..."]){ questions participants ... } }
+                'metricsByQuestions' => [
+                    'type'        => Type::nonNull($metricsType),
+                    'description' => 'Aggregate counts filtered to the given questions',
+                    'args'        => [
+                        'item_names' => [
+                            'type'        => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+                            'description' => 'List of item_name values to filter by',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $metricsResolver->getByQuestions($args['item_names']),
+                ],
 
                 // Query: { studies { study_name title doi } }
                 'studies' => [

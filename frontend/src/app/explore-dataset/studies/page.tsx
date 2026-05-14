@@ -11,6 +11,11 @@ import {
   type Study,
   type TopicGroup,
 } from "@/lib/graphql/studies";
+import {
+  getGlobalMetrics,
+  getMetricsByStudies,
+  type Metrics,
+} from "@/lib/graphql/metrics";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
@@ -37,6 +42,8 @@ function StudiesContent() {
   >({});
   const [questionsLoading, setQuestionsLoading] = useState(false);
   const [questionsError, setQuestionsError] = useState<string | null>(null);
+
+  const [metrics, setMetrics] = useState<Metrics | null>(null);
 
   console.log("Selected study IDs:", selectedIds);
   console.log("questionsByStudy:", questionsByStudy);
@@ -70,6 +77,17 @@ function StudiesContent() {
       active = false;
     };
   }, []);
+
+  // Re-fetch metrics whenever the selection changes.
+  useEffect(() => {
+    if (selectedIds.length === 0) {
+      // Selection cleared — restore global metrics (instant: already cached).
+      getGlobalMetrics().then(setMetrics);
+      return;
+    }
+    setMetrics(null);
+    getMetricsByStudies(selectedIds).then(setMetrics);
+  }, [selectedIds]);
 
   useEffect(() => {
     if (selectedIds.length === 0) {
@@ -199,7 +217,7 @@ function StudiesContent() {
               )}
             </div>
           </div>
-          <MetricsOverview />
+          <MetricsOverview metrics={metrics} />
 
           <div className="space-y-4">
             {questionsLoading && <p>Loading questions…</p>}
@@ -230,8 +248,8 @@ function StudiesContent() {
         </div>
       ) : null}
       {mode === "all" ? (
-        <div>
-          <MetricsOverview />
+        <div className="flex flex-col gap-12">
+          <MetricsOverview metrics={metrics} />
           <div className="mb-4 w-full h-75 bg-lmp-gray1 flex items-center justify-center">
             Chart
           </div>
