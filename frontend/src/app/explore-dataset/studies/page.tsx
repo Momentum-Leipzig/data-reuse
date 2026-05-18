@@ -222,10 +222,20 @@ function StudiesContent() {
                   key={study.study_name}
                   deselect={() => deselectStudy(study.study_name)}
                 >
-                  <p>{study.study_name.split("20")[0].trim()}</p>●
-                  <p>{study.publication_year ?? "No publication year"}</p>●
-                  <p className="font-bold">{study.title ?? "No title"}</p>●
-                  <p>{study.doi ?? "No DOI"}</p>
+                  <div>
+                    <span className="mr-1">
+                      {study.study_name.split("20")[0].trim()}
+                    </span>
+                    ●
+                    <span className="ml-1 mr-1">
+                      {study.publication_year ?? "No publication year"}
+                    </span>
+                    ●
+                    <span className="ml-1 mr-1 font-bold">
+                      {study.title ?? "No title"}
+                    </span>
+                    ●<span className="ml-1">{study.doi ?? "No DOI"}</span>
+                  </div>
                 </SelectedEntity>
               ))}
 
