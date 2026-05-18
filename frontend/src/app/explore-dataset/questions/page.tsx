@@ -1,18 +1,20 @@
 "use client";
 
 import MetricsOverview from "@/components/explore/MetricsOverview";
+import QuestionDetailCard from "@/components/explore/QuestionDetailCard";
 import QuestionsByTopic from "@/components/explore/QuestionsByTopic";
 import SelectedEntity from "@/components/explore/SelectedEntity";
-import StudiesList from "@/components/explore/StudiesList";
 import WaveParticipantsChart from "@/components/explore/WaveParticipantsChart";
 import SearchPreview from "@/components/search/SearchPreview";
 import {
   getAllQuestions,
-  getStudiesByQuestions,
   type Question,
-  type Study,
   type TopicGroup,
 } from "@/lib/graphql/studies";
+import {
+  getQuestionDetails,
+  type QuestionDetail,
+} from "@/lib/graphql/questions";
 import {
   getGlobalMetrics,
   getMetricsByQuestions,
@@ -47,9 +49,9 @@ function QuestionsContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [studiesByQuestions, setStudiesByQuestions] = useState<Study[]>([]);
-  const [studiesLoading, setStudiesLoading] = useState(false);
-  const [studiesError, setStudiesError] = useState<string | null>(null);
+  const [language, setLanguage] = useState<"en" | "de">("en");
+  const [questionDetails, setQuestionDetails] = useState<QuestionDetail[]>([]);
+  const [detailsLoading, setDetailsLoading] = useState(false);
 
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [waveData, setWaveData] = useState<WaveParticipants[] | null>(null);
@@ -83,6 +85,19 @@ function QuestionsContent() {
   const questionsById = useMemo(() => {
     return new Map(allQuestions.map((q) => [q.item_name, q]));
   }, [allQuestions]);
+
+  const contextByItemName = useMemo(() => {
+    return new Map(
+      questionsWithContext.map((q) => [
+        q.item_name,
+        {
+          topic_name: q.topic_name,
+          construct_name: q.construct_name,
+          subfacet_name: q.subfacet_name ?? null,
+        },
+      ]),
+    );
+  }, [questionsWithContext]);
 
   const selectedQuestions = useMemo(() => {
     return selectedIds
@@ -168,34 +183,29 @@ function QuestionsContent() {
 
   useEffect(() => {
     if (selectedIds.length === 0) {
-      setStudiesByQuestions([]);
+      setQuestionDetails([]);
       return;
     }
 
     let active = true;
 
-    async function loadStudies() {
+    async function loadDetails() {
       try {
-        setStudiesLoading(true);
-        const result = await getStudiesByQuestions(selectedIds);
+        setDetailsLoading(true);
+        const result = await getQuestionDetails(selectedIds, language);
         if (active) {
-          setStudiesByQuestions(result);
-          setStudiesError(null);
-        }
-      } catch (err) {
-        if (active) {
-          setStudiesError(err instanceof Error ? err.message : "Unknown error");
+          setQuestionDetails(result);
         }
       } finally {
-        if (active) setStudiesLoading(false);
+        if (active) setDetailsLoading(false);
       }
     }
 
-    loadStudies();
+    loadDetails();
     return () => {
       active = false;
     };
-  }, [selectedIds]);
+  }, [selectedIds, language]);
 
   return (
     <section className="flex flex-col gap-12">
@@ -242,7 +252,7 @@ function QuestionsContent() {
             {loading && (
               <div className="flex flex-col gap-4">
                 <h2 className="font-bold text-3xl">
-                  Topics, Constructs and Subfacets
+                  All Topics, Constructs and Subfacets
                 </h2>
                 <p>Loading questions…</p>
               </div>
@@ -251,16 +261,18 @@ function QuestionsContent() {
             {!loading && !error && (
               <QuestionsByTopic
                 topics={topics}
-                headline="Topics, Constructs and Subfacets"
+                headline="All Topics, Constructs and Subfacets"
+                selectedQuestionIds={selectedIds}
               />
             )}
           </div>
 
           {/* all studies section */}
-          <StudiesList title={"The following studies are based on this data"} />
+          {/* <StudiesList title={"The following studies are based on this data"} /> */}
         </div>
       ) : (
         <div className="flex flex-col gap-12">
+          {/* Selection  */}
           <div className="flex flex-col gap-2 items-start">
             <p className="font-bold">Selection</p>
             <div className="flex flex-col gap-2">
@@ -283,24 +295,66 @@ function QuestionsContent() {
               )}
             </div>
           </div>
+
           <MetricsOverview metrics={metrics} />
+
           <WaveParticipantsChart data={waveData} globalData={globalWaveData} />
-          <div>
-            <h2 className="font-semibold text-3xl">
-              Details on the selected question
-              {selectedQuestions.length > 0 ? `s` : ""}
-            </h2>
+
+          {/* Details on the selected questions */}
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <h2 className="font-semibold text-3xl">
+                Details on the Selected Question
+                {selectedIds.length > 1 ? "s" : ""}
+              </h2>
+              <div className="flex rounded-lg border border-lmp-text overflow-hidden text-sm">
+                <button
+                  onClick={() => setLanguage("en")}
+                  className={`px-4 py-1.5 transition cursor-pointer ${language === "en" ? "bg-lmp-text text-white" : "hover:bg-lmp-gray3"}`}
+                >
+                  EN
+                </button>
+                <button
+                  onClick={() => setLanguage("de")}
+                  className={`px-4 py-1.5 transition cursor-pointer ${language === "de" ? "bg-lmp-text text-white" : "hover:bg-lmp-gray3"}`}
+                >
+                  DE
+                </button>
+              </div>
+            </div>
+            {detailsLoading && (
+              <p className="text-sm text-gray-500">Loading details…</p>
+            )}
+            {!detailsLoading &&
+              questionDetails.map((qd) => (
+                <QuestionDetailCard
+                  key={qd.item_name}
+                  question={qd}
+                  language={language}
+                  context={contextByItemName.get(qd.item_name)}
+                  onDeselect={() => deselectQuestion(qd.item_name)}
+                />
+              ))}
           </div>
+
           <div>
-            all questions listed again or just highlighting the topics /
-            constructs / subfacets
+            {loading && (
+              <div className="flex flex-col gap-4">
+                <h2 className="font-bold text-3xl">
+                  All Topics, Constructs and Subfacets
+                </h2>
+                <p>Loading questions…</p>
+              </div>
+            )}
+            {error && <p className="text-red-600">Error: {error}</p>}
+            {!loading && !error && (
+              <QuestionsByTopic
+                topics={topics}
+                headline="All Topics, Constructs and Subfacets"
+                selectedQuestionIds={selectedIds}
+              />
+            )}
           </div>
-          <StudiesList
-            title={`Studies using ${selectedQuestions.length > 1 ? "any of" : ""} the selected question${selectedQuestions.length > 1 ? "s" : ""}`}
-            studies={studiesByQuestions}
-            loading={studiesLoading}
-            error={studiesError}
-          />
         </div>
       )}
     </section>

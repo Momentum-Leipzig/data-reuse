@@ -35,8 +35,8 @@ function MeasurementPointsContent() {
 
   return (
     <section className="flex flex-col gap-12">
-      <MetricsOverview metrics={metrics} />
       <WaveParticipantsChart data={waveData} />
+      <MetricsOverview metrics={metrics} />
     </section>
   );
 }
