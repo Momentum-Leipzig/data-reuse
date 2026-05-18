@@ -257,6 +257,15 @@ function StudiesContent() {
               />
             ))}
           </div>
+
+          {/* all studies */}
+          <StudiesList
+            title={"All Studies"}
+            studies={studies}
+            loading={loading}
+            error={error}
+            selectedStudyIds={selectedIds}
+          />
         </div>
       ) : null}
       {mode === "all" ? (
@@ -268,6 +277,7 @@ function StudiesContent() {
             studies={studies}
             loading={loading}
             error={error}
+            selectedStudyIds={selectedIds}
           />
         </div>
       ) : null}

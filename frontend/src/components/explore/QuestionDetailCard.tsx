@@ -30,7 +30,7 @@ export default function QuestionDetailCard({
     <div className="flex flex-col items-start gap-4 border border-lmp-text rounded-2xl p-6">
       {/* Breadcrumb */}
       {context && (context.topic_name || context.construct_name) && (
-        <p className="text-xs text-gray-500">
+        <p className="text-sm">
           {[context.topic_name, context.construct_name, context.subfacet_name]
             .filter(Boolean)
             .join(" › ")}
@@ -61,11 +61,9 @@ export default function QuestionDetailCard({
       {/* Scale + response options */}
       {question.scale_name && (
         <div className="flex flex-col gap-2">
+          <p className="text-lg font-medium">Scale</p>
           <p className="text-sm font-medium">
-            Scale:{" "}
-            <span className="font-normal text-gray-700">
-              {question.scale_name}
-            </span>
+            <span className="font-normal">{question.scale_name}</span>
             {/* {question.scale_type && (
               <span className="ml-2 text-xs text-gray-400">
                 ({question.scale_type})
@@ -73,7 +71,7 @@ export default function QuestionDetailCard({
             )} */}
           </p>
           {question.response_options.length > 0 && (
-            <ol className="flex flex-col gap-1 list-none">
+            <ol className="flex flex-row gap-1 list-none">
               {question.response_options.map((opt) => (
                 <li key={opt.option_id} className="flex gap-1 text-sm">
                   {opt.numeric_value !== null && (
@@ -92,13 +90,11 @@ export default function QuestionDetailCard({
       {/* Instrument */}
       {question.instrument_name && (
         <div className="flex flex-col gap-1">
-          <p className="text-sm font-medium">Instrument</p>
+          {/* <p className="text-sm font-medium">Instrument</p>
           <p className="text-sm text-gray-700">{question.instrument_name}</p>
-          {intro && <p className="text-sm text-gray-600 italic">{intro}</p>}
+          {intro && <p className="text-sm text-gray-600 italic">{intro}</p>} */}
           {question.instrument_citation && (
-            <p className="text-xs text-gray-500">
-              {question.instrument_citation}
-            </p>
+            <p className="text-sm">{question.instrument_citation}</p>
           )}
         </div>
       )}
@@ -106,7 +102,7 @@ export default function QuestionDetailCard({
       {/* Studies */}
       {question.studies.length > 0 && (
         <div className="flex flex-col gap-2">
-          <p className="text-sm font-medium">
+          <p className="text-lg font-medium">
             Used in {question.studies.length} stud
             {question.studies.length === 1 ? "y" : "ies"}
           </p>
