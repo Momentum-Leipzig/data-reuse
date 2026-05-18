@@ -105,10 +105,10 @@ export default function Footer() {
             Privacy Policy
           </Link>
           <Link
-            href="/imprint"
+            href="/legal-notice"
             className="text-lmp-text hover:text-lmp-text/70 text-sm font-bold cursor-pointer py-2 transition block underline"
           >
-            Imprint
+            Legal Notice
           </Link>
           <div className="flex flex-row items-center gap-3">
             <p>Funded by</p>
