@@ -8,7 +8,9 @@ use App\Resolvers\StudyResolver;
 use App\Resolvers\WaveResolver;
 use App\Types\ConstructGroupType;
 use App\Types\MetricsType;
+use App\Types\QuestionDetailType;
 use App\Types\QuestionType;
+use App\Types\ResponseOptionType;
 use App\Types\StudyType;
 use App\Types\SubfacetGroupType;
 use App\Types\TopicGroupType;
@@ -37,6 +39,9 @@ class QueryType extends ObjectType
         $constructGroupType = new ConstructGroupType($subfacetGroupType);
         $topicGroupType    = new TopicGroupType($constructGroupType);
         $questionResolver  = new QuestionResolver();
+
+        $responseOptionType = new ResponseOptionType();
+        $questionDetailType = new QuestionDetailType($responseOptionType, $studyType);
 
         parent::__construct([
             'name'   => 'Query',
@@ -159,6 +164,27 @@ class QueryType extends ObjectType
                         ],
                     ],
                     'resolve' => fn($root, array $args) => $studyResolver->getByItems($args['item_names']),
+                ],
+
+                // Query: { questionDetails(item_names: ["a"], language: "en") { item_name item_text ... } }
+                'questionDetails' => [
+                    'type'        => Type::nonNull(Type::listOf(Type::nonNull($questionDetailType))),
+                    'description' => 'Detailed view of specific questions including scale, instrument and studies',
+                    'args'        => [
+                        'item_names' => [
+                            'type'        => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+                            'description' => 'List of item_name values to fetch details for',
+                        ],
+                        'language' => [
+                            'type'         => Type::string(),
+                            'description'  => 'Preferred language code ("en" or "de"). Defaults to "en".',
+                            'defaultValue' => 'en',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $questionResolver->getDetails(
+                        $args['item_names'],
+                        $args['language'] ?? 'en'
+                    ),
                 ],
 
             ],

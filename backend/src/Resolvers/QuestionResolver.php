@@ -183,4 +183,143 @@ class QuestionResolver
             return $topic;
         }, $topics));
     }
+
+    /**
+     * Returns detailed information for a list of items (by item_name).
+     *
+     * Each result contains:
+     *   - item text in the requested language (falls back if no translation exists)
+     *   - scale name + type
+     *   - response options (ordered) in the same language
+     *   - instrument name, citation, and bilingual intros
+     *   - studies that used the question
+     *
+     * @param string[] $itemNames
+     * @param string   $language  Preferred language code ('en' or 'de'). Defaults to 'en'.
+     * @return array
+     */
+    public function getDetails(array $itemNames, string $language = 'en'): array
+    {
+        if (empty($itemNames)) {
+            return [];
+        }
+
+        $pdo          = Connection::get();
+        $placeholders = implode(',', array_fill(0, count($itemNames), '?'));
+
+        // ── Query 1: item metadata + scale + response options + instrument ────
+        $sql1 = "
+            SELECT
+                i.item_name,
+                i.item_text,
+                i.item_language,
+                i.reverse_coded,
+                i.data_type,
+                i.scale_name,
+                sc.scale_type,
+                i.instrument_name,
+                inst.citation        AS instrument_citation,
+                inst.general_intro_en,
+                inst.general_intro_de,
+                ro.option_id,
+                ro.label             AS option_label,
+                ro.numeric_value     AS option_value
+            FROM item i
+            LEFT JOIN scale           sc   ON sc.scale_name   = i.scale_name
+                                          AND sc.language      = i.item_language
+            LEFT JOIN response_option ro   ON ro.scale_name   = i.scale_name
+                                          AND ro.language      = i.item_language
+            LEFT JOIN instrument      inst ON inst.instrument_name = i.instrument_name
+            WHERE i.item_name IN ($placeholders)
+              AND (
+                  i.item_language = ?
+                  OR NOT EXISTS (
+                      SELECT 1 FROM item i2
+                      WHERE i2.item_name     = i.item_name
+                        AND i2.item_language = ?
+                  )
+              )
+            ORDER BY i.item_name, ro.numeric_value, ro.option_id
+        ";
+
+        $params1 = array_merge(array_values($itemNames), [$language, $language]);
+        $stmt1   = $pdo->prepare($sql1);
+        $stmt1->execute($params1);
+        $rows1 = $stmt1->fetchAll();
+
+        // Build detail map keyed by item_name
+        $details = [];
+        foreach ($rows1 as $row) {
+            $key = $row['item_name'];
+            if (!isset($details[$key])) {
+                $details[$key] = [
+                    'item_name'           => $row['item_name'],
+                    'item_text'           => $row['item_text'],
+                    'item_language'       => $row['item_language'],
+                    'reverse_coded'       => isset($row['reverse_coded']) ? (bool) $row['reverse_coded'] : null,
+                    'data_type'           => $row['data_type'],
+                    'scale_name'          => $row['scale_name'],
+                    'scale_type'          => $row['scale_type'],
+                    'instrument_name'     => $row['instrument_name'],
+                    'instrument_citation' => $row['instrument_citation'],
+                    'instrument_intro_en' => $row['general_intro_en'],
+                    'instrument_intro_de' => $row['general_intro_de'],
+                    'response_options'    => [],
+                    'studies'             => [],
+                ];
+            }
+            if ($row['option_id'] !== null) {
+                $details[$key]['response_options'][] = [
+                    'option_id'     => (int) $row['option_id'],
+                    'label'         => $row['option_label'],
+                    'numeric_value' => $row['option_value'] !== null ? (float) $row['option_value'] : null,
+                ];
+            }
+        }
+
+        // ── Query 2: studies per item ─────────────────────────────────────────
+        $sql2 = "
+            SELECT DISTINCT
+                iw.item_name,
+                s.study_name,
+                s.title,
+                s.doi,
+                s.publication_year,
+                s.citation,
+                s.journal
+            FROM study_item_wave siw
+            JOIN item_wave iw ON iw.item_wave_id = siw.item_wave_id
+            JOIN study     s  ON s.study_name    = siw.study_name
+            WHERE iw.item_name IN ($placeholders)
+            ORDER BY iw.item_name, s.study_name
+        ";
+
+        $stmt2 = $pdo->prepare($sql2);
+        $stmt2->execute(array_values($itemNames));
+        $rows2 = $stmt2->fetchAll();
+
+        foreach ($rows2 as $row) {
+            $key = $row['item_name'];
+            if (isset($details[$key])) {
+                $details[$key]['studies'][] = [
+                    'study_name'       => $row['study_name'],
+                    'title'            => $row['title'],
+                    'doi'              => $row['doi'],
+                    'publication_year' => $row['publication_year'] !== null ? (int) $row['publication_year'] : null,
+                    'citation'         => $row['citation'],
+                    'journal'          => $row['journal'],
+                ];
+            }
+        }
+
+        // Return in the same order the caller passed item_names
+        $ordered = [];
+        foreach ($itemNames as $name) {
+            if (isset($details[$name])) {
+                $ordered[] = $details[$name];
+            }
+        }
+
+        return $ordered;
+    }
 }

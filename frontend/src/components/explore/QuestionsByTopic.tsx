@@ -5,12 +5,14 @@ type Props = {
   topics: TopicGroup[];
   headline?: string;
   expanded?: boolean;
+  selectedQuestionIds?: string[];
 };
 
 export default function QuestionsByTopic({
   topics,
   headline,
   expanded,
+  selectedQuestionIds = [],
 }: Props) {
   if (topics.length === 0) {
     return (
@@ -23,9 +25,19 @@ export default function QuestionsByTopic({
     );
   }
 
+  function getQuestionHref(itemName: string) {
+    const nextSelectedQuestionIds = selectedQuestionIds.includes(itemName)
+      ? selectedQuestionIds
+      : [...selectedQuestionIds, itemName];
+
+    return `/explore-dataset/questions?ids=${nextSelectedQuestionIds.join(",")}`;
+  }
+
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="font-bold text-3xl">{headline ?? "Questions by Topic"}</h2>
+      <h2 className="font-semibold text-3xl">
+        {headline ?? "Questions by Topic"}
+      </h2>
       <div className="columns-2 gap-10 w-full">
         {topics.map((topic) => (
           <details
@@ -63,7 +75,7 @@ export default function QuestionsByTopic({
                           {subfacet.questions.map((q) => (
                             <Link
                               key={`${q.item_name}-${q.item_language}`}
-                              href={`/explore-dataset/questions?ids=${q.item_name}`}
+                              href={getQuestionHref(q.item_name)}
                               className="text-sm bg-lmp-gray3 hover:bg-lmp-gray3/70 rounded-xl px-3 py-2 transition"
                             >
                               <span className="font-mono text-xs text-gray-500 mr-2">
@@ -87,7 +99,7 @@ export default function QuestionsByTopic({
                               {subfacet.subfacet_name}
                             </span>
                             <br />
-                            <span className="text-sm ml-4">
+                            <span className="text-sm ml-4 block">
                               {subfacet.description}
                             </span>
                           </summary>
