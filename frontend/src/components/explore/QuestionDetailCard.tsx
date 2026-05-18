@@ -64,7 +64,7 @@ export default function QuestionDetailCard({
             )} */}
           </p>
           {question.response_options.length > 0 && (
-            <ol className="flex flex-row gap-1 list-none">
+            <ol className="flex flex-row flex-wrap gap-1 list-none">
               {question.response_options.map((opt) => (
                 <li key={opt.option_id} className="flex gap-1 text-sm">
                   {opt.numeric_value !== null && (

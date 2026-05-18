@@ -19,8 +19,8 @@ export const Navigation: React.FC = () => {
   ];
 
   return (
-    <nav className="py-4 flex justify-between items-center">
-      <div className="flex gap-4 items-center">
+    <nav className="py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <Link href="/" className="flex gap-4 items-center">
         <Image
           src="/assets/lmp_logo.svg"
           alt="Leipzig Momentum Panel Logo"
@@ -36,8 +36,8 @@ export const Navigation: React.FC = () => {
             on Worker Characteristics, Experiences, and Behavior
           </h3>
         </div>
-      </div>
-      <ul className="flex gap-6 grow justify-end items-center list-none">
+      </Link>
+      <ul className="flex flex-wrap flex-col sm:flex-row gap-6 grow justify-end items-center list-none">
         {navItems.map(({ href, label, isButton }) => {
           return (
             <li key={href || label}>

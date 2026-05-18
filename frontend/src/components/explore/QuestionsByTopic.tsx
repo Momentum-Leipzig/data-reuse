@@ -44,7 +44,7 @@ export default function QuestionsByTopic({
       >
         {headline ?? "Questions by Topic"}
       </h2>
-      <div className="columns-2 gap-10 w-full">
+      <div className="sm:columns-2 gap-10 w-full">
         {topics.map((topic) => (
           <details
             key={topic.topic_name}
