@@ -168,6 +168,60 @@ class MetricsResolver
 
     // -------------------------------------------------------------------------
 
+    /**
+     * Counts restricted to the given wave names.
+     *
+     * @param string[] $waveNames
+     */
+    public function getByWaves(array $waveNames): array
+    {
+        if (empty($waveNames)) {
+            return $this->zeros();
+        }
+
+        $pdo          = Connection::get();
+        $placeholders = implode(',', array_fill(0, count($waveNames), '?'));
+
+        $sql = "
+            SELECT
+                (
+                    SELECT COUNT(DISTINCT iw.item_name)
+                    FROM   item_wave iw
+                    WHERE  iw.wave IN ($placeholders)
+                ) AS questions,
+                (
+                    SELECT COUNT(DISTINCT r.participant_id)
+                    FROM   item_wave iw
+                    JOIN   response r ON r.item_wave_id = iw.item_wave_id
+                    WHERE  iw.wave IN ($placeholders)
+                ) AS participants,
+                (
+                    SELECT COUNT(DISTINCT iw.wave)
+                    FROM   item_wave iw
+                    WHERE  iw.wave IN ($placeholders)
+                ) AS measurementPoints,
+                (
+                    SELECT COUNT(*)
+                    FROM   item_wave iw
+                    JOIN   response r ON r.item_wave_id = iw.item_wave_id
+                    WHERE  iw.wave IN ($placeholders)
+                ) AS dataPoints
+        ";
+
+        $params = array_merge(
+            array_values($waveNames),
+            array_values($waveNames),
+            array_values($waveNames),
+            array_values($waveNames),
+        );
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $this->mapRow($stmt->fetch());
+    }
+
+    // -------------------------------------------------------------------------
+
     private function mapRow(array $row): array
     {
         return [

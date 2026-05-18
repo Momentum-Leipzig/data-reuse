@@ -16,12 +16,19 @@ export default function WaveParticipantsChart({
   data,
   globalData,
   headline,
+  selectedWaves,
+  onWaveToggle,
 }: {
   data: WaveParticipants[] | null;
   /** When provided, the Y axis maximum is derived from this instead of `data`, keeping the scale stable across filtered views. */
   globalData?: WaveParticipants[];
   headline?: string;
+  /** When provided together with onWaveToggle, the chart enters select mode. */
+  selectedWaves?: string[];
+  /** Called with the wave name when the user clicks a bar in select mode. */
+  onWaveToggle?: (wave: string) => void;
 }) {
+  const selectMode = !!onWaveToggle;
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
 
@@ -148,17 +155,48 @@ export default function WaveParticipantsChart({
                 />
               ))}
 
-              {/* Green bars — filtered data only */}
-              {chart.dated.map((d) => (
-                <rect
-                  key={`bar-${d.wave}`}
-                  x={chart.xScale(d.date) - chart.barWidth / 2}
-                  y={chart.yScale(d.participants)}
-                  width={chart.barWidth}
-                  height={chart.innerHeight - chart.yScale(d.participants)}
-                  fill="#adde00"
-                />
-              ))}
+              {/* Green/blue bars — filtered data only; in select mode only selected waves are highlighted */}
+              {selectMode
+                ? chart.globalDated.map((d) => {
+                    const isSelected = selectedWaves?.includes(d.wave);
+                    return (
+                      <rect
+                        key={`bar-${d.wave}`}
+                        x={chart.xScale(d.date) - chart.barWidth / 2}
+                        y={chart.yScale(d.participants)}
+                        width={chart.barWidth}
+                        height={
+                          chart.innerHeight - chart.yScale(d.participants)
+                        }
+                        fill={isSelected ? "#adde00" : "#cbd4e2"}
+                      />
+                    );
+                  })
+                : chart.dated.map((d) => (
+                    <rect
+                      key={`bar-${d.wave}`}
+                      x={chart.xScale(d.date) - chart.barWidth / 2}
+                      y={chart.yScale(d.participants)}
+                      width={chart.barWidth}
+                      height={chart.innerHeight - chart.yScale(d.participants)}
+                      fill="#adde00"
+                    />
+                  ))}
+
+              {/* Transparent click targets in select mode — one per wave, full height */}
+              {selectMode &&
+                chart.globalDated.map((d) => (
+                  <rect
+                    key={`hit-${d.wave}`}
+                    x={chart.xScale(d.date) - chart.barWidth / 2}
+                    y={0}
+                    width={chart.barWidth}
+                    height={chart.innerHeight}
+                    fill="transparent"
+                    className="cursor-pointer"
+                    onClick={() => onWaveToggle?.(d.wave)}
+                  />
+                ))}
               {/* Y gridlines */}
               {chart.yTicks.map((tick) => (
                 <line

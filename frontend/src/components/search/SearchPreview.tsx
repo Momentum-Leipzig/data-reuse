@@ -32,7 +32,7 @@ export default function SearchPreview<T>({
   noResultsText = "No matching results.",
 }: SearchPreviewProps<T>) {
   const [query, setQuery] = useState("");
-  const containerRef = useRef<HTMLElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const normalizedQuery = query.trim().toLowerCase();
   const canSearch = normalizedQuery.length >= MIN_CHARACTERS;
 

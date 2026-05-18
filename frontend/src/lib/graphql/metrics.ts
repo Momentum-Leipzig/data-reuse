@@ -42,6 +42,14 @@ const METRICS_BY_QUESTIONS_QUERY = `
   }
 `;
 
+const METRICS_BY_WAVES_QUERY = `
+  query MetricsByWaves($wave_names: [String!]!) {
+    metricsByWaves(wave_names: $wave_names) {
+      ${METRICS_FIELDS}
+    }
+  }
+`;
+
 // ---------------------------------------------------------------------------
 // Fetch functions
 // ---------------------------------------------------------------------------
@@ -76,4 +84,12 @@ export async function getMetricsByQuestions(
     { item_names: string[] }
   >(METRICS_BY_QUESTIONS_QUERY, { item_names: itemNames });
   return data.metricsByQuestions;
+}
+
+export async function getMetricsByWaves(waveNames: string[]): Promise<Metrics> {
+  const data = await graphqlRequest<
+    { metricsByWaves: Metrics },
+    { wave_names: string[] }
+  >(METRICS_BY_WAVES_QUERY, { wave_names: waveNames });
+  return data.metricsByWaves;
 }

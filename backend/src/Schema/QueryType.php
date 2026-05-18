@@ -80,6 +80,19 @@ class QueryType extends ObjectType
                     'resolve' => fn($root, array $args) => $metricsResolver->getByQuestions($args['item_names']),
                 ],
 
+                // Query: { metricsByWaves(wave_names: ["..."]){ questions participants ... } }
+                'metricsByWaves' => [
+                    'type'        => Type::nonNull($metricsType),
+                    'description' => 'Aggregate counts filtered to the given waves',
+                    'args'        => [
+                        'wave_names' => [
+                            'type'        => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+                            'description' => 'List of wave names to filter by',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $metricsResolver->getByWaves($args['wave_names']),
+                ],
+
                 // Query: { studies { study_name title doi } }
                 'studies' => [
                     'type'        => Type::listOf($studyType),
