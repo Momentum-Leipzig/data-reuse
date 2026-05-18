@@ -133,6 +133,19 @@ class QueryType extends ObjectType
                     'resolve' => fn($root, array $args) => $questionResolver->getByStudy($args['study_name']),
                 ],
 
+                // Query: { waveQuestions(wave_names: ["..."]){ topic_name constructs { ... } } }
+                'waveQuestions' => [
+                    'type'        => Type::nonNull(Type::listOf(Type::nonNull($topicGroupType))),
+                    'description' => 'Returns all questions in any of the given waves grouped by topic → construct → subfacet',
+                    'args'        => [
+                        'wave_names' => [
+                            'type'        => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+                            'description' => 'List of wave names to fetch questions for',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $questionResolver->getByWaves($args['wave_names']),
+                ],
+
                 // Query: { waveParticipants { wave month participants } }
                 'waveParticipants' => [
                     'type'        => Type::nonNull(Type::listOf(Type::nonNull($waveParticipantsType))),

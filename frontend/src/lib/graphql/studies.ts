@@ -97,6 +97,44 @@ export async function getStudyQuestions(
   return data.studyQuestions;
 }
 
+type GetWaveQuestionsResponse = {
+  waveQuestions: TopicGroup[];
+};
+
+const GET_WAVE_QUESTIONS_QUERY = `
+  query GetWaveQuestions($wave_names: [String!]!) {
+    waveQuestions(wave_names: $wave_names) {
+      topic_name
+      description
+      constructs {
+        construct_name
+        description
+        subfacets {
+          subfacet_name
+          description
+          questions {
+            item_name
+            item_language
+            item_text
+            reverse_coded
+            data_type
+          }
+        }
+      }
+    }
+  }
+`;
+
+export async function getQuestionsByWaves(
+  waveNames: string[],
+): Promise<TopicGroup[]> {
+  const data = await graphqlRequest<
+    GetWaveQuestionsResponse,
+    { wave_names: string[] }
+  >(GET_WAVE_QUESTIONS_QUERY, { wave_names: waveNames });
+  return data.waveQuestions;
+}
+
 type GetAllQuestionsResponse = {
   allQuestions: TopicGroup[];
 };
