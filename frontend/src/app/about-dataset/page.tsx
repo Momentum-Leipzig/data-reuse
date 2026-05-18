@@ -1,10 +1,12 @@
 import MetricsOverview from "@/components/explore/MetricsOverview";
+import { getGlobalMetrics } from "@/lib/graphql/metrics";
 import Link from "next/link";
 
-export default function AboutDataset() {
+export default async function AboutDataset() {
+  const metrics = await getGlobalMetrics();
   return (
     <div className="flex flex-col gap-20">
-      <div className="grid grid-cols-[70%_auto] gap-4 mb-6">
+      <div className="flex flex-colsm:grid grid-cols-[70%_auto] gap-4 mb-6">
         <div className="col-span-1 flex flex-col gap-4">
           <h1 className="text-5xl leading-[125%] font-medium text-balance">
             The Dataset
@@ -14,7 +16,7 @@ export default function AboutDataset() {
           </h2>
         </div>
       </div>
-      <div className="grid grid-cols-[70%_auto] gap-6">
+      <div className="flex flex-col sm:grid grid-cols-[70%_auto] gap-6">
         <div className="col-span-1 flex flex-col gap-16.5">
           <div className="flex flex-col gap-6">
             <h3 className="text-3xl font-medium">Longitudinal structure</h3>
@@ -58,10 +60,10 @@ export default function AboutDataset() {
       </div>
 
       <div>
-        <MetricsOverview />
+        <MetricsOverview metrics={metrics} />
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="flex flex-col sm:grid grid-cols-2 gap-6">
         <div className="col-span-1 bg-lmp-gray1 p-6 flex flex-col gap-6">
           <h3 className="text-3xl font-medium">How the data is structured</h3>
           <p className="leading-relaxed">
@@ -87,7 +89,7 @@ export default function AboutDataset() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-6 max-w-[70%]">
+      <div className="flex flex-col gap-6 sm:max-w-[70%]">
         <h3 className="text-3xl font-medium">
           What the exploration tool provides
         </h3>
@@ -99,7 +101,7 @@ export default function AboutDataset() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="flex flex-col sm:grid grid-cols-2 gap-6">
         <div className="col-span-1 flex flex-col items-start gap-6">
           <h3 className="text-3xl font-medium">How to explore the dataset</h3>
           <p className="leading-relaxed">

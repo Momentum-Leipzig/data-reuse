@@ -15,24 +15,26 @@ export default function ExploreNavigation() {
     { href: "/explore-dataset/studies", label: "by Studies" },
   ];
   return (
-    <nav className="pt-4 pb-10 flex justify-start items-center gap-4">
+    <nav className="pt-4 pb-10 flex flex-wrap justify-start items-center gap-4">
       <h1 className="text-balance text-3xl font-bold mr-8">
         Explore the Dataset
       </h1>
-      {navItems.map(({ href, label }) => {
-        const isActive = pathname === href || pathname === `${href}/`;
+      <div className="flex flex-col sm:flex-row justify-start items-start gap-4">
+        {navItems.map(({ href, label }) => {
+          const isActive = pathname === href || pathname === `${href}/`;
 
-        return (
-          <Link
-            key={href}
-            href={href}
-            aria-current={isActive ? "page" : undefined}
-            className={`text-lmp-text font-bold px-6 py-2 rounded-4xl cursor-pointer transition ${isActive ? "bg-lmp-green hover:bg-lmp-green/70 " : "bg-lmp-gray1 hover:bg-lmp-green/70 "}`}
-          >
-            {label}
-          </Link>
-        );
-      })}
+          return (
+            <Link
+              key={href}
+              href={href}
+              aria-current={isActive ? "page" : undefined}
+              className={`text-lmp-text font-bold px-6 py-2 rounded-4xl cursor-pointer transition ${isActive ? "bg-lmp-green hover:bg-lmp-green/70 " : "bg-lmp-gray1 hover:bg-lmp-green/70 "}`}
+            >
+              {label}
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }

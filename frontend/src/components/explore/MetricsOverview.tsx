@@ -10,10 +10,10 @@ const METRIC_LABELS: { key: keyof Metrics; label: string }[] = [
 export default function MetricsOverview({
   metrics,
 }: {
-  metrics: Metrics | null;
+  metrics: Metrics | null | undefined;
 }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-4">
       {METRIC_LABELS.map(({ key, label }) => (
         <div
           key={key}
@@ -22,7 +22,7 @@ export default function MetricsOverview({
           <p className="text-sm font-bold text-lmp-text text-center text-balance">
             {label}
           </p>
-          {metrics === null ? (
+          {metrics == null ? (
             <div className="h-16 w-24 rounded-lg bg-lmp-gray1 animate-pulse" />
           ) : (
             <p className="text-6xl">{metrics[key].toLocaleString()}</p>

@@ -43,41 +43,43 @@ export default function StudyDetailCard({
       )}
 
       {/* Metadata grid */}
-      <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1 text-sm">
+      <div className="w-full grid grid-cols-[auto_1fr] gap-x-6 gap-y-1 text-sm min-w-0">
         {study.publication_year && (
           <>
-            <dt className="font-medium text-lg">Year</dt>
-            <dd className="text-lg">{study.publication_year}</dd>
+            <p className="font-medium text-lg">Year</p>
+            <p className="text-lg min-w-0 break-words">
+              {study.publication_year}
+            </p>
           </>
         )}
         {study.journal && (
           <>
-            <dt className="font-medium text-lg">Journal</dt>
-            <dd className="text-lg">{study.journal}</dd>
+            <p className="font-medium text-lg">Journal</p>
+            <p className="text-lg min-w-0 break-words">{study.journal}</p>
           </>
         )}
         {study.doi && (
           <>
-            <dt className="font-medium text-lg">DOI</dt>
-            <dd className="text-lg">
+            <p className="font-medium text-lg">DOI</p>
+            <p className="text-lg min-w-0 break-all">
               <a
                 href={`https://doi.org/${study.doi}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline hover:text-gray-600 break-all"
+                className="underline hover:text-gray-600"
               >
                 {study.doi}
               </a>
-            </dd>
+            </p>
           </>
         )}
         {study.citation && (
           <>
-            <dt className="font-medium text-lg">Citation</dt>
-            <dd className="text-lg">{study.citation}</dd>
+            <p className="font-medium text-lg">Citation</p>
+            <p className="text-lg min-w-0 break-words">{study.citation}</p>
           </>
         )}
-      </dl>
+      </div>
 
       {/* Comment */}
       {study.comment && (

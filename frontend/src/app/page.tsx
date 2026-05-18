@@ -34,7 +34,7 @@ const TEAM_MEMBERS = [
 export default function Home() {
   return (
     <div className="flex flex-col gap-20">
-      <div className="grid grid-cols-[70%_auto] gap-4 mb-6">
+      <div className="flex flex-col sm:grid grid-cols-[70%_auto] gap-4 mb-6">
         <div className="col-span-1 flex flex-col gap-4">
           <h1 className="text-5xl leading-[125%] font-medium text-balance">
             Leipzig Momentum Panel on Worker Characteristics, Experiences, and
@@ -46,7 +46,7 @@ export default function Home() {
           </h2>
         </div>
       </div>
-      <div className="grid grid-cols-[70%_auto] gap-6">
+      <div className="flex flex-col sm:grid grid-cols-[70%_auto] gap-6">
         <div className="col-span-1 flex flex-col gap-16.5">
           <div className="flex flex-col gap-6">
             <h3 className="text-3xl font-medium">What the project is about</h3>
