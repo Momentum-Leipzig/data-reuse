@@ -3,7 +3,7 @@ import { getGlobalMetrics } from "@/lib/graphql/metrics";
 import Link from "next/link";
 
 export default async function AboutDataset() {
-  const metrics = await getGlobalMetrics();
+  const metrics = await getGlobalMetrics().catch(() => null);
   return (
     <div className="flex flex-col gap-20">
       <div className="flex flex-colsm:grid grid-cols-[70%_auto] gap-4 mb-6">
