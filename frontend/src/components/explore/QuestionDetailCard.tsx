@@ -10,22 +10,15 @@ type Context = {
 
 type Props = {
   question: QuestionDetail;
-  language: "en" | "de";
   context?: Context;
   onDeselect: () => void;
 };
 
 export default function QuestionDetailCard({
   question,
-  language,
   context,
   onDeselect,
 }: Props) {
-  const intro =
-    language === "de"
-      ? question.instrument_intro_de
-      : question.instrument_intro_en;
-
   return (
     <div className="flex flex-col items-start gap-4 border border-lmp-text rounded-2xl p-6">
       {/* Breadcrumb */}

@@ -144,7 +144,7 @@ function MeasurementPointsContent() {
                 Questions in Selected Wave{selectedIds.length > 1 ? "s" : ""} by
                 Topic, Construct, and Subfacet
               </h2>
-              <p className="text-sm text-gray-500">Loading questions…</p>
+              <p>Loading questions…</p>
             </div>
           )}
           {topicsError && (

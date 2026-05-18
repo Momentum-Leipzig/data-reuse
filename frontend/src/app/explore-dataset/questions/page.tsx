@@ -284,12 +284,12 @@ function QuestionsContent() {
                   key={question.item_name}
                   deselect={() => deselectQuestion(question.item_name)}
                 >
-                  <div className="flex flex-row items-start gap-2">
-                    <p>[{question.item_name}]</p>
-                    <p className="font-bold">
+                  <p>
+                    [{question.item_name}]
+                    <span className="font-bold ml-2">
                       {question.item_text ?? "No text"}
-                    </p>
-                  </div>
+                    </span>
+                  </p>
                 </SelectedEntity>
               ))}
 
@@ -329,15 +329,12 @@ function QuestionsContent() {
                 </button>
               </div>
             </div>
-            {detailsLoading && (
-              <p className="text-sm text-gray-500">Loading details…</p>
-            )}
+            {detailsLoading && <p>Loading details…</p>}
             {!detailsLoading &&
               questionDetails.map((qd) => (
                 <QuestionDetailCard
                   key={qd.item_name}
                   question={qd}
-                  language={language}
                   context={contextByItemName.get(qd.item_name)}
                   onDeselect={() => deselectQuestion(qd.item_name)}
                 />
