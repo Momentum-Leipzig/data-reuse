@@ -20,7 +20,7 @@ export default function QuestionsByTopic({
     return (
       <div className="flex flex-col gap-4">
         <h2
-          className={compact ? "font-semibold text-xl" : "font-bold text-3xl"}
+          className={compact ? "font-medium text-lg" : "font-semibold text-3xl"}
         >
           {headline ?? "Questions by Topic"}
         </h2>

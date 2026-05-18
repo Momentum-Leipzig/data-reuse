@@ -34,7 +34,7 @@ function MeasurementPointsContent() {
   }, []);
 
   return (
-    <section className="flex flex-col gap-12">
+    <section className="flex flex-col gap-15">
       <WaveParticipantsChart data={waveData} />
       <MetricsOverview metrics={metrics} />
     </section>
@@ -45,7 +45,7 @@ export default function MeasurementPointsPage() {
   return (
     <Suspense
       fallback={
-        <section className="space-y-4">
+        <section>
           <p>Loading...</p>
         </section>
       }

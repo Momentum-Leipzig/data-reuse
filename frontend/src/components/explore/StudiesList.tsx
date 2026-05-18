@@ -10,6 +10,7 @@ type StudiesListProps = {
   studies?: Study[];
   loading?: boolean;
   error?: string | null;
+  selectedStudyIds?: string[];
 };
 
 export default function StudiesList({
@@ -18,7 +19,14 @@ export default function StudiesList({
   studies: externalStudies,
   loading: externalLoading,
   error: externalError,
+  selectedStudyIds = [],
 }: StudiesListProps) {
+  function getStudyHref(studyName: string) {
+    const next = selectedStudyIds.includes(studyName)
+      ? selectedStudyIds
+      : [...selectedStudyIds, studyName];
+    return `/explore-dataset/studies?ids=${next.map(encodeURIComponent).join(",")}`;
+  }
   const [internalStudies, setInternalStudies] = useState<Study[]>([]);
   const [internalLoading, setInternalLoading] = useState(
     externalStudies ? false : true,
@@ -89,7 +97,7 @@ export default function StudiesList({
         <ul className="flex flex-col items-start gap-2 m-0 p-0 list-none">
           {visibleStudies.map((study) => (
             <Link
-              href={`/explore-dataset/studies?ids=${encodeURIComponent(study.study_name)}`}
+              href={getStudyHref(study.study_name)}
               key={study.study_name}
               className="rounded-2xl px-4 py-2 bg-lmp-gray3 flex flex-wrap gap-1 cursor-pointer hover:bg-lmp-gray3/70 transition text-sm"
             >

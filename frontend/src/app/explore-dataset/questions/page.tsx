@@ -251,8 +251,8 @@ function QuestionsContent() {
           <div>
             {loading && (
               <div className="flex flex-col gap-4">
-                <h2 className="font-bold text-3xl">
-                  All Topics, Constructs and Subfacets
+                <h2 className="font-semibold text-3xl">
+                  All Questions by Topic, Construct and Subfacet
                 </h2>
                 <p>Loading questions…</p>
               </div>
@@ -261,7 +261,7 @@ function QuestionsContent() {
             {!loading && !error && (
               <QuestionsByTopic
                 topics={topics}
-                headline="All Topics, Constructs and Subfacets"
+                headline="All Questions by Topic, Construct and Subfacet"
                 selectedQuestionIds={selectedIds}
               />
             )}
@@ -344,8 +344,8 @@ function QuestionsContent() {
           <div>
             {loading && (
               <div className="flex flex-col gap-4">
-                <h2 className="font-bold text-3xl">
-                  All Topics, Constructs and Subfacets
+                <h2 className="font-semibold text-3xl">
+                  All Questions by Topic, Construct and Subfacet
                 </h2>
                 <p>Loading questions…</p>
               </div>
@@ -354,7 +354,7 @@ function QuestionsContent() {
             {!loading && !error && (
               <QuestionsByTopic
                 topics={topics}
-                headline="All Topics, Constructs and Subfacets"
+                headline="All Questions by Topic, Construct and Subfacet"
                 selectedQuestionIds={selectedIds}
               />
             )}
