@@ -207,6 +207,30 @@ function QuestionsContent() {
     };
   }, [selectedIds, language]);
 
+  {
+    /* all questions section */
+  }
+  const allQuestionsBlock = (
+    <div>
+      {loading && (
+        <div className="flex flex-col gap-4">
+          <h2 className="font-semibold text-3xl">
+            All Questions by Topic, Construct, and Subfacet
+          </h2>
+          <p>Loading questions…</p>
+        </div>
+      )}
+      {error && <p className="text-red-600">Error: {error}</p>}
+      {!loading && !error && (
+        <QuestionsByTopic
+          topics={topics}
+          headline="All Questions by Topic, Construct, and Subfacet"
+          selectedQuestionIds={selectedIds}
+        />
+      )}
+    </div>
+  );
+
   return (
     <section className="flex flex-col gap-15">
       <SearchPreview
@@ -247,28 +271,7 @@ function QuestionsContent() {
 
           <WaveParticipantsChart data={waveData} globalData={globalWaveData} />
 
-          {/* all questions section */}
-          <div>
-            {loading && (
-              <div className="flex flex-col gap-4">
-                <h2 className="font-semibold text-3xl">
-                  All Questions by Topic, Construct and Subfacet
-                </h2>
-                <p>Loading questions…</p>
-              </div>
-            )}
-            {error && <p className="text-red-600">Error: {error}</p>}
-            {!loading && !error && (
-              <QuestionsByTopic
-                topics={topics}
-                headline="All Questions by Topic, Construct and Subfacet"
-                selectedQuestionIds={selectedIds}
-              />
-            )}
-          </div>
-
-          {/* all studies section */}
-          {/* <StudiesList title={"The following studies are based on this data"} /> */}
+          {allQuestionsBlock}
         </div>
       ) : (
         <div className="flex flex-col gap-12">
@@ -341,24 +344,8 @@ function QuestionsContent() {
               ))}
           </div>
 
-          <div>
-            {loading && (
-              <div className="flex flex-col gap-4">
-                <h2 className="font-semibold text-3xl">
-                  All Questions by Topic, Construct and Subfacet
-                </h2>
-                <p>Loading questions…</p>
-              </div>
-            )}
-            {error && <p className="text-red-600">Error: {error}</p>}
-            {!loading && !error && (
-              <QuestionsByTopic
-                topics={topics}
-                headline="All Questions by Topic, Construct and Subfacet"
-                selectedQuestionIds={selectedIds}
-              />
-            )}
-          </div>
+          {/* all questions section */}
+          {allQuestionsBlock}
         </div>
       )}
     </section>

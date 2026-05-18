@@ -76,6 +76,69 @@ class QuestionResolver
     }
 
     /**
+     * Returns all questions that were included in any of the given waves,
+     * grouped as: Topic → Construct → Subfacet → Questions.
+     *
+     * @param string[] $waveNames
+     */
+    public function getByWaves(array $waveNames): array
+    {
+        if (empty($waveNames)) {
+            return [];
+        }
+
+        $pdo          = Connection::get();
+        $placeholders = implode(',', array_fill(0, count($waveNames), '?'));
+
+        $sql = "
+            SELECT DISTINCT
+                COALESCE(t_sf.topic_name,     t_ic.topic_name)     AS topic_name,
+                COALESCE(t_sf.description,    t_ic.description)    AS topic_description,
+                COALESCE(c_sf.construct_name, c_ic.construct_name) AS construct_name,
+                COALESCE(c_sf.description,    c_ic.description)    AS construct_description,
+                s.subfacet_name,
+                s.description                                       AS subfacet_description,
+                i.item_name,
+                i.item_language,
+                i.item_text,
+                i.reverse_coded,
+                i.data_type
+            FROM item_wave iw
+            JOIN  item      i    ON i.item_name        = iw.item_name
+            LEFT JOIN subfacet  s    ON s.subfacet_name     = i.subfacet_name
+            LEFT JOIN construct c_sf ON c_sf.construct_name = s.construct_name
+            LEFT JOIN topic     t_sf ON t_sf.topic_name     = c_sf.topic_name
+            LEFT JOIN (
+                SELECT instrument_name, MIN(construct_name) AS construct_name
+                FROM   instrument_construct
+                WHERE  subfacet_name IS NULL
+                GROUP  BY instrument_name
+            ) ic ON ic.instrument_name = i.instrument_name AND i.subfacet_name IS NULL
+            LEFT JOIN construct c_ic ON c_ic.construct_name = ic.construct_name
+            LEFT JOIN topic     t_ic ON t_ic.topic_name     = c_ic.topic_name
+            WHERE iw.wave IN ($placeholders)
+              AND COALESCE(c_sf.construct_name, c_ic.construct_name) IS NOT NULL
+              AND (i.item_language = 'en' OR NOT EXISTS (
+                  SELECT 1 FROM item i2
+                  WHERE i2.item_name = i.item_name AND i2.item_language = 'en'
+              ))
+            ORDER BY
+                COALESCE(t_sf.topic_name,     t_ic.topic_name),
+                COALESCE(c_sf.construct_name, c_ic.construct_name),
+                s.subfacet_name IS NULL,
+                s.subfacet_name,
+                i.item_name,
+                i.item_language
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array_values($waveNames));
+        $rows = $stmt->fetchAll();
+
+        return $this->groupRows($rows);
+    }
+
+    /**
      * Returns every question in the database grouped as:
      *   Topic → Construct → Subfacet → Questions
      */
