@@ -286,7 +286,8 @@ class QuestionResolver
                 s.doi,
                 s.publication_year,
                 s.citation,
-                s.journal
+                s.journal,
+                s.comment
             FROM study_item_wave siw
             JOIN item_wave iw ON iw.item_wave_id = siw.item_wave_id
             JOIN study     s  ON s.study_name    = siw.study_name
@@ -308,6 +309,7 @@ class QuestionResolver
                     'publication_year' => $row['publication_year'] !== null ? (int) $row['publication_year'] : null,
                     'citation'         => $row['citation'],
                     'journal'          => $row['journal'],
+                    'comment'          => $row['comment'],
                 ];
             }
         }

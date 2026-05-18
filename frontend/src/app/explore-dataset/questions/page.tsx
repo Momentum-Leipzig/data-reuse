@@ -208,12 +208,12 @@ function QuestionsContent() {
   }, [selectedIds, language]);
 
   return (
-    <section className="flex flex-col gap-12">
+    <section className="flex flex-col gap-15">
       <SearchPreview
         items={questionsWithContext}
         loading={loading}
         error={error}
-        placeholder="Search by keyword or ID"
+        placeholder="Search by keyword or question ID"
         getItemKey={(q) => `${q.item_name}-${q.item_language}`}
         getSearchFields={(q) => [
           q.item_name,
@@ -298,7 +298,11 @@ function QuestionsContent() {
 
           <MetricsOverview metrics={metrics} />
 
-          <WaveParticipantsChart data={waveData} globalData={globalWaveData} />
+          <WaveParticipantsChart
+            data={waveData}
+            globalData={globalWaveData}
+            headline={`Participants per Measurement Points that Answered ${selectedIds.length > 1 ? "Any of the Selected Questions" : "the Selected Question"}`}
+          />
 
           {/* Details on the selected questions */}
           <div className="flex flex-col gap-6">
@@ -365,7 +369,7 @@ export default function QuestionsPage() {
   return (
     <Suspense
       fallback={
-        <section className="space-y-4">
+        <section>
           <p>Loading…</p>
         </section>
       }

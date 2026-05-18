@@ -7,6 +7,7 @@ export type Study = {
   publication_year: number | null;
   citation: string | null;
   journal: string | null;
+  comment: string | null;
 };
 
 export type Question = {
@@ -48,6 +49,7 @@ const GET_STUDIES_QUERY = `
       publication_year
       citation
       journal
+      comment
     }
   }
 `;
@@ -143,6 +145,7 @@ const GET_STUDIES_BY_QUESTIONS_QUERY = `
       publication_year
       citation
       journal
+      comment
     }
   }
 `;

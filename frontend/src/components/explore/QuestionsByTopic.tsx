@@ -6,6 +6,7 @@ type Props = {
   headline?: string;
   expanded?: boolean;
   selectedQuestionIds?: string[];
+  compact?: boolean;
 };
 
 export default function QuestionsByTopic({
@@ -13,11 +14,14 @@ export default function QuestionsByTopic({
   headline,
   expanded,
   selectedQuestionIds = [],
+  compact = false,
 }: Props) {
   if (topics.length === 0) {
     return (
       <div className="flex flex-col gap-4">
-        <h2 className="font-bold text-3xl">
+        <h2
+          className={compact ? "font-semibold text-xl" : "font-bold text-3xl"}
+        >
           {headline ?? "Questions by Topic"}
         </h2>
         <p className="text-sm text-gray-500">No questions found.</p>
@@ -35,7 +39,9 @@ export default function QuestionsByTopic({
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="font-semibold text-3xl">
+      <h2
+        className={compact ? "font-medium text-lg" : "font-semibold text-3xl"}
+      >
         {headline ?? "Questions by Topic"}
       </h2>
       <div className="columns-2 gap-10 w-full">
@@ -44,10 +50,16 @@ export default function QuestionsByTopic({
             key={topic.topic_name}
             name={expanded ? undefined : "topics"}
             open={expanded}
-            className="break-inside-avoid border-t border-lmp-text pt-2 mb-3"
+            className="break-inside-avoid border-t border-lmp-gray3 pt-2 mb-3"
           >
             <summary className="cursor-pointer">
-              <span className="font-medium text-xl">{topic.topic_name}</span>{" "}
+              <span
+                className={
+                  compact ? "font-medium text-lg" : "font-medium text-xl"
+                }
+              >
+                {topic.topic_name}
+              </span>{" "}
               <br />
               <span className="ml-4 block">{topic.description}</span>
             </summary>
