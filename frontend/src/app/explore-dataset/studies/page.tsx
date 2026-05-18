@@ -1,9 +1,9 @@
 "use client";
 
 import MetricsOverview from "@/components/explore/MetricsOverview";
-import QuestionsByTopic from "@/components/explore/QuestionsByTopic";
 import SelectedEntity from "@/components/explore/SelectedEntity";
 import StudiesList from "@/components/explore/StudiesList";
+import StudyDetailCard from "@/components/explore/StudyDetailCard";
 import WaveParticipantsChart from "@/components/explore/WaveParticipantsChart";
 import SearchPreview from "@/components/search/SearchPreview";
 import {
@@ -188,7 +188,7 @@ function StudiesContent() {
   }
 
   return (
-    <section className="flex flex-col gap-12">
+    <section className="flex flex-col gap-15">
       <SearchPreview
         items={studies}
         loading={loading}
@@ -213,7 +213,7 @@ function StudiesContent() {
       />
 
       {mode === "selected" ? (
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-15">
           <div className="flex flex-col gap-2">
             <p className="font-bold">Selection</p>
             <div className="flex flex-col gap-2">
@@ -235,39 +235,36 @@ function StudiesContent() {
             </div>
           </div>
           <MetricsOverview metrics={metrics} />
-          <WaveParticipantsChart data={waveData} globalData={globalWaveData} />
+          <WaveParticipantsChart
+            data={waveData}
+            globalData={globalWaveData}
+            headline={`Participants per Measurement Point that Answered Questions ${selectedStudies.length > 1 ? "in Any of the Selected Studies" : "in the Selected Study"}`}
+          />
 
-          <div className="space-y-4">
-            {questionsLoading && <p>Loading questions…</p>}
-            {questionsError && (
-              <p className="text-red-600">Error: {questionsError}</p>
-            )}
-            {!questionsLoading &&
-              !questionsError &&
-              selectedIds.map((studyId) => {
-                const topics = questionsByStudy[studyId] ?? [];
-                return (
-                  <div key={studyId}>
-                    {selectedIds.length > 1 && (
-                      <p className="font-semibold text-sm mb-1">{studyId}</p>
-                    )}
-                    <QuestionsByTopic
-                      topics={topics}
-                      headline="Included Questions"
-                      expanded
-                    />
-                  </div>
-                );
-              })}
+          {/* Study detail cards */}
+          <div className="flex flex-col gap-6">
+            <h2 className="font-semibold text-3xl">
+              Selected Stud{selectedStudies.length > 1 ? "ies" : "y"}
+            </h2>
+            {selectedStudies.map((study) => (
+              <StudyDetailCard
+                key={study.study_name}
+                study={study}
+                onDeselect={() => deselectStudy(study.study_name)}
+                topics={questionsByStudy[study.study_name]}
+                topicsLoading={questionsLoading}
+                topicsError={questionsError}
+              />
+            ))}
           </div>
         </div>
       ) : null}
       {mode === "all" ? (
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-15">
           <MetricsOverview metrics={metrics} />
           <WaveParticipantsChart data={waveData} globalData={globalWaveData} />
           <StudiesList
-            title={"All studies"}
+            title={"All Studies"}
             studies={studies}
             loading={loading}
             error={error}
@@ -282,7 +279,7 @@ export default function StudiesPage() {
   return (
     <Suspense
       fallback={
-        <section className="space-y-4">
+        <section>
           <p>Loading...</p>
         </section>
       }

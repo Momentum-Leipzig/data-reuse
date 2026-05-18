@@ -40,6 +40,10 @@ class StudyType extends ObjectType
                     'type'        => Type::string(),
                     'description' => 'Journal name',
                 ],
+                'comment' => [
+                    'type'        => Type::string(),
+                    'description' => 'Optional comment or note about the study',
+                ],
             ],
         ]);
     }

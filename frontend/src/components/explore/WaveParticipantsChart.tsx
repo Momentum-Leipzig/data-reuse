@@ -15,10 +15,12 @@ const formatY = (v: number) => v.toLocaleString("de-DE");
 export default function WaveParticipantsChart({
   data,
   globalData,
+  headline,
 }: {
   data: WaveParticipants[] | null;
   /** When provided, the Y axis maximum is derived from this instead of `data`, keeping the scale stable across filtered views. */
   globalData?: WaveParticipants[];
+  headline?: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -122,7 +124,7 @@ export default function WaveParticipantsChart({
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm font-bold text-lmp-text">
-        Participants per Measurement Point
+        {headline || "Participants per Measurement Point for All Questions"}
       </p>
       <div ref={containerRef} className="w-full h-80 relative">
         {data === null || !chart ? (

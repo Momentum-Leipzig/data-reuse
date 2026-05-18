@@ -6,9 +6,9 @@ type ExploreLayoutProps = {
 
 export default function ExploreLayout({ children }: ExploreLayoutProps) {
   return (
-    <section className="space-y-4">
+    <div>
       <ExploreNavigation />
       {children}
-    </section>
+    </div>
   );
 }

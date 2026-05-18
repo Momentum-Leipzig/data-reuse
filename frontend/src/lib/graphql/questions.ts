@@ -53,6 +53,7 @@ const GET_QUESTION_DETAILS_QUERY = `
         publication_year
         citation
         journal
+        comment
       }
     }
   }

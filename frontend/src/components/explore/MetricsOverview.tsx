@@ -17,7 +17,7 @@ export default function MetricsOverview({
       {METRIC_LABELS.map(({ key, label }) => (
         <div
           key={key}
-          className="rounded-2xl p-4  flex flex-col gap-2 items-center"
+          className="rounded-2xl px-4  flex flex-col gap-2 items-center"
         >
           <p className="text-sm font-bold text-lmp-text text-center text-balance">
             {label}

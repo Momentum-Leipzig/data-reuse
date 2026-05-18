@@ -72,7 +72,7 @@ export default function SearchPreview<T>({
   }, [canSearch, getSearchFields, items, maxResults, normalizedQuery]);
 
   return (
-    <section ref={containerRef} className="">
+    <div ref={containerRef}>
       <label className="block">
         {/* <span className="mb-1 block font-semibold">{label}</span> */}
         <input
@@ -120,6 +120,6 @@ export default function SearchPreview<T>({
           Enter at least {MIN_CHARACTERS} characters to see a search preview.
         </p>
       )}
-    </section>
+    </div>
   );
 }
