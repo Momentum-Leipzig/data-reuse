@@ -110,7 +110,7 @@ export default function Footer() {
           >
             Legal Notice
           </Link>
-          <div className="flex flex-row items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center gap-3">
             <p>Funded by</p>
             <Image
               src="/assets/logo-vwstiftung-dark1.png"

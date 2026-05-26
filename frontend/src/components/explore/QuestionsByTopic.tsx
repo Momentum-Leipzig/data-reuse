@@ -44,7 +44,7 @@ export default function QuestionsByTopic({
       >
         {headline ?? "Questions by Topic"}
       </h2>
-      <div className="gap-10 w-full max-w-[80%]">
+      <div className="gap-10 w-full sm:max-w-[80%]">
         {topics.map((topic) => (
           <details
             key={topic.topic_name}
