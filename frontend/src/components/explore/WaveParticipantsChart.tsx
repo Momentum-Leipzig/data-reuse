@@ -192,14 +192,27 @@ export default function WaveParticipantsChart({
                     );
                   })
                 : chart.dated.map((d) => (
-                    <rect
-                      key={`bar-${d.wave}`}
-                      x={chart.xScale(d.date) - chart.barWidth / 2}
-                      y={chart.yScale(d.participants)}
-                      width={chart.barWidth}
-                      height={chart.innerHeight - chart.yScale(d.participants)}
-                      fill="#adde00"
-                    />
+                    <g key={`bar-${d.wave}`} className="group">
+                      <rect
+                        x={chart.xScale(d.date) - chart.barWidth / 2}
+                        y={chart.yScale(d.participants)}
+                        width={chart.barWidth}
+                        height={
+                          chart.innerHeight - chart.yScale(d.participants)
+                        }
+                        fill="#adde00"
+                      />
+                      <text
+                        x={chart.xScale(d.date)}
+                        y={chart.yScale(d.participants) - 5}
+                        textAnchor="middle"
+                        fontSize={12}
+                        fill="#001a3a"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        {formatY(d.participants)}
+                      </text>
+                    </g>
                   ))}
 
               {/* Y gridlines */}
@@ -224,7 +237,7 @@ export default function WaveParticipantsChart({
                   y1={0}
                   y2={chart.innerHeight + MARGIN.bottom - 18}
                   stroke="#001C42"
-                  strokeWidth={1}
+                  strokeWidth={0.75}
                 />
               ))}
 
