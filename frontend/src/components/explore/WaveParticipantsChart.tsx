@@ -155,6 +155,20 @@ export default function WaveParticipantsChart({
                 />
               ))}
 
+              {/* Transparent click targets in select mode — one per wave, full height */}
+              {selectMode &&
+                chart.globalDated.map((d) => (
+                  <rect
+                    key={`hit-${d.wave}`}
+                    x={chart.xScale(d.date) - chart.barWidth / 2}
+                    y={chart.yScale(chart.yMax)}
+                    width={chart.barWidth}
+                    height={chart.innerHeight - chart.yScale(chart.yMax)}
+                    fill="transparent"
+                    className="cursor-pointer"
+                    onClick={() => onWaveToggle?.(d.wave)}
+                  />
+                ))}
               {/* Green/blue bars — filtered data only; in select mode only selected waves are highlighted */}
               {selectMode
                 ? chart.globalDated.map((d) => {
@@ -168,7 +182,12 @@ export default function WaveParticipantsChart({
                         height={
                           chart.innerHeight - chart.yScale(d.participants)
                         }
-                        fill={isSelected ? "#adde00" : "#cbd4e2"}
+                        className={
+                          isSelected
+                            ? "fill-lmp-green"
+                            : "cursor-pointer fill-lmp-gray3 hover:fill-lmp-green/70"
+                        }
+                        onClick={() => onWaveToggle?.(d.wave)}
                       />
                     );
                   })
@@ -183,20 +202,6 @@ export default function WaveParticipantsChart({
                     />
                   ))}
 
-              {/* Transparent click targets in select mode — one per wave, full height */}
-              {selectMode &&
-                chart.globalDated.map((d) => (
-                  <rect
-                    key={`hit-${d.wave}`}
-                    x={chart.xScale(d.date) - chart.barWidth / 2}
-                    y={0}
-                    width={chart.barWidth}
-                    height={chart.innerHeight}
-                    fill="transparent"
-                    className="cursor-pointer"
-                    onClick={() => onWaveToggle?.(d.wave)}
-                  />
-                ))}
               {/* Y gridlines */}
               {chart.yTicks.map((tick) => (
                 <line

@@ -38,19 +38,19 @@ export default function QuestionsByTopic({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full">
       <h2
         className={compact ? "font-medium text-lg" : "font-semibold text-3xl"}
       >
         {headline ?? "Questions by Topic"}
       </h2>
-      <div className="sm:columns-2 gap-10 w-full">
+      <div className="gap-10 w-full max-w-[80%]">
         {topics.map((topic) => (
           <details
             key={topic.topic_name}
             name={expanded ? undefined : "topics"}
             open={expanded}
-            className="break-inside-avoid border-t border-lmp-gray3 pt-2 mb-3"
+            className="break-inside-avoid border-b border-lmp-gray3 py-2 mb-3"
           >
             <summary className="cursor-pointer">
               <span
