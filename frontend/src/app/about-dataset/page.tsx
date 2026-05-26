@@ -1,6 +1,7 @@
 import MetricsOverview from "@/components/explore/MetricsOverview";
 import { getGlobalMetrics } from "@/lib/graphql/metrics";
 import Link from "next/link";
+import { Image } from "@/components/Image";
 
 export default async function AboutDataset() {
   const metrics = await getGlobalMetrics().catch(() => null);
@@ -140,7 +141,14 @@ export default async function AboutDataset() {
             Explore the Dataset
           </Link>
         </div>
-        <div className="col-span-1 bg-lmp-gray1 p-6 flex flex-col gap-6 h-75 border border-lmp-text"></div>
+        <div className="col-span-1 flex flex-col gap-6 border border-lmp-text">
+          <Image
+            src="/assets/explore_screenshot.png"
+            alt="Description of the image"
+            width={630}
+            height={300}
+          />
+        </div>
       </div>
     </div>
   );
