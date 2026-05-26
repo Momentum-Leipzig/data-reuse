@@ -141,8 +141,9 @@ function MeasurementPointsContent() {
           {topicsLoading && (
             <div className="flex flex-col gap-4">
               <h2 className="font-semibold text-3xl">
-                Questions in Selected Wave{selectedIds.length > 1 ? "s" : ""} by
-                Topic, Construct, and Subfacet
+                Questions in Selected Measurement Point
+                {selectedIds.length > 1 ? "s" : ""} by Topic, Construct, and
+                Subfacet
               </h2>
               <p>Loading questions…</p>
             </div>
@@ -153,7 +154,7 @@ function MeasurementPointsContent() {
           {!topicsLoading && !topicsError && (
             <QuestionsByTopic
               topics={topics}
-              headline={`Questions in Selected Wave${selectedIds.length > 1 ? "s" : ""} by Topic, Construct, and Subfacet`}
+              headline={`Questions in Selected Measurement Point${selectedIds.length > 1 ? "s" : ""} by Topic, Construct, and Subfacet`}
             />
           )}
         </div>

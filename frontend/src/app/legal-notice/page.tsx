@@ -43,7 +43,7 @@ export default function LegalNoticePage() {
       <p className="font-semibold text-lg">Concept and Design</p>
       <p>
         <a
-          href="https://alicelandsiedel.de/"
+          href="https://www.alicelandsiedel.de/"
           target="_blank"
           className="underline"
         >
@@ -54,7 +54,7 @@ export default function LegalNoticePage() {
       <p className="font-semibold text-lg">Programming and Development</p>
       <p>
         <a
-          href="https://kristin-baumann.com/"
+          href="https://www.kristin-baumann.com/"
           target="_blank"
           className="underline"
         >
