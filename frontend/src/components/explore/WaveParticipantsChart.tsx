@@ -4,7 +4,7 @@ import { type WaveParticipants } from "@/lib/graphql/waves";
 import * as d3 from "d3";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const MARGIN = { top: 16, right: 16, bottom: 90, left: 45 };
+const MARGIN = { top: 16, right: 1, bottom: 90, left: 45 };
 
 // Module-level D3 formatters — created once, not on every render.
 const parseDate = d3.utcParse("%Y-%m-%d");
@@ -133,197 +133,202 @@ export default function WaveParticipantsChart({
       <p className="text-sm font-bold text-lmp-text">
         {headline || "Participants per Measurement Point for All Questions"}
       </p>
-      <div ref={containerRef} className="w-full h-80 relative">
-        {data === null || !chart ? (
-          <div className="absolute inset-0 rounded-2xl bg-lmp-gray1 animate-pulse" />
-        ) : (
-          <svg
-            width={chart.width}
-            height={chart.height}
-            viewBox={`0 0 ${chart.width} ${chart.height}`}
-          >
-            <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
-              {/* Grey background bars — all global waves, always visible */}
-              {chart.globalDated.map((d) => (
-                <rect
-                  key={`bg-${d.wave}`}
-                  x={chart.xScale(d.date) - chart.barWidth / 2}
-                  y={chart.yScale(chart.yMax)}
-                  width={chart.barWidth}
-                  height={chart.innerHeight - chart.yScale(chart.yMax)}
-                  fill="#F3F4F8"
-                />
-              ))}
-
-              {/* Transparent click targets in select mode — one per wave, full height */}
-              {selectMode &&
-                chart.globalDated.map((d) => (
+      <div className="overflow-x-auto">
+        <div ref={containerRef} className="min-w-300 pb-1 w-full h-80 relative">
+          {data === null || !chart ? (
+            <div className="absolute inset-0 rounded-2xl bg-lmp-gray1 animate-pulse" />
+          ) : (
+            <svg
+              width={chart.width}
+              height={chart.height}
+              viewBox={`0 0 ${chart.width} ${chart.height}`}
+            >
+              <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
+                {/* Grey background bars — all global waves, always visible */}
+                {chart.globalDated.map((d) => (
                   <rect
-                    key={`hit-${d.wave}`}
+                    key={`bg-${d.wave}`}
                     x={chart.xScale(d.date) - chart.barWidth / 2}
                     y={chart.yScale(chart.yMax)}
                     width={chart.barWidth}
                     height={chart.innerHeight - chart.yScale(chart.yMax)}
-                    fill="transparent"
-                    className="cursor-pointer"
-                    onClick={() => onWaveToggle?.(d.wave)}
+                    fill="#F3F4F8"
                   />
                 ))}
-              {/* Green/blue bars — filtered data only; in select mode only selected waves are highlighted */}
-              {selectMode
-                ? chart.globalDated.map((d) => {
-                    const isSelected = selectedWaves?.includes(d.wave);
-                    return (
-                      <rect
-                        key={`bar-${d.wave}`}
-                        x={chart.xScale(d.date) - chart.barWidth / 2}
-                        y={chart.yScale(d.participants)}
-                        width={chart.barWidth}
-                        height={
-                          chart.innerHeight - chart.yScale(d.participants)
-                        }
-                        className={
-                          isSelected
-                            ? "fill-lmp-green"
-                            : "cursor-pointer fill-lmp-gray3 hover:fill-lmp-green/70"
-                        }
-                        onClick={() => onWaveToggle?.(d.wave)}
-                      />
-                    );
-                  })
-                : chart.dated.map((d) => (
-                    <g key={`bar-${d.wave}`} className="group">
-                      <rect
-                        x={chart.xScale(d.date) - chart.barWidth / 2}
-                        y={chart.yScale(d.participants)}
-                        width={chart.barWidth}
-                        height={
-                          chart.innerHeight - chart.yScale(d.participants)
-                        }
-                        fill="#adde00"
-                      />
-                      <text
-                        x={chart.xScale(d.date)}
-                        y={chart.yScale(d.participants) - 5}
-                        textAnchor="middle"
-                        fontSize={12}
-                        fill="#001a3a"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        {formatY(d.participants)}
-                      </text>
-                    </g>
+
+                {/* Transparent click targets in select mode — one per wave, full height */}
+                {selectMode &&
+                  chart.globalDated.map((d) => (
+                    <rect
+                      key={`hit-${d.wave}`}
+                      x={chart.xScale(d.date) - chart.barWidth / 2}
+                      y={chart.yScale(chart.yMax)}
+                      width={chart.barWidth}
+                      height={chart.innerHeight - chart.yScale(chart.yMax)}
+                      fill="transparent"
+                      className="cursor-pointer"
+                      onClick={() => onWaveToggle?.(d.wave)}
+                    />
                   ))}
+                {/* Green/blue bars — filtered data only; in select mode only selected waves are highlighted */}
+                {selectMode
+                  ? chart.globalDated.map((d) => {
+                      const isSelected = selectedWaves?.includes(d.wave);
+                      return (
+                        <rect
+                          key={`bar-${d.wave}`}
+                          x={chart.xScale(d.date) - chart.barWidth / 2}
+                          y={chart.yScale(d.participants)}
+                          width={chart.barWidth}
+                          height={
+                            chart.innerHeight - chart.yScale(d.participants)
+                          }
+                          className={
+                            isSelected
+                              ? "fill-lmp-green"
+                              : "cursor-pointer fill-lmp-gray3 hover:fill-lmp-green/70"
+                          }
+                          onClick={() => onWaveToggle?.(d.wave)}
+                        />
+                      );
+                    })
+                  : chart.dated.map((d) => (
+                      <g key={`bar-${d.wave}`} className="group">
+                        <rect
+                          x={chart.xScale(d.date) - chart.barWidth / 2}
+                          y={chart.yScale(d.participants)}
+                          width={chart.barWidth}
+                          height={
+                            chart.innerHeight - chart.yScale(d.participants)
+                          }
+                          fill="#adde00"
+                        />
+                        <text
+                          x={chart.xScale(d.date)}
+                          y={chart.yScale(d.participants) - 5}
+                          textAnchor="middle"
+                          fontSize={12}
+                          fill="#001a3a"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          {formatY(d.participants)}
+                        </text>
+                      </g>
+                    ))}
 
-              {/* Y gridlines */}
-              {chart.yTicks.map((tick) => (
-                <line
-                  key={tick}
-                  x1={0}
-                  x2={chart.innerWidth}
-                  y1={chart.yScale(tick)}
-                  y2={chart.yScale(tick)}
-                  stroke="#001C42"
-                  strokeOpacity={0.5}
-                  strokeWidth={0.25}
-                />
-              ))}
-              {/* Year-change vertical dividers */}
-              {chart.yearLines.map((date) => (
-                <line
-                  key={date.getTime()}
-                  x1={chart.xScale(date) - chart.oneMonthPx / 2}
-                  x2={chart.xScale(date) - chart.oneMonthPx / 2}
-                  y1={0}
-                  y2={chart.innerHeight + MARGIN.bottom - 18}
-                  stroke="#001C42"
-                  strokeWidth={0.75}
-                />
-              ))}
+                {/* Y gridlines */}
+                {chart.yTicks.map((tick) => (
+                  <line
+                    key={tick}
+                    x1={0}
+                    x2={chart.innerWidth}
+                    y1={chart.yScale(tick)}
+                    y2={chart.yScale(tick)}
+                    stroke="#001C42"
+                    strokeOpacity={0.5}
+                    strokeWidth={0.25}
+                  />
+                ))}
+                {/* Year-change vertical dividers */}
+                {chart.yearLines.map((date) => (
+                  <line
+                    key={date.getTime()}
+                    x1={chart.xScale(date) - chart.oneMonthPx / 2}
+                    x2={chart.xScale(date) - chart.oneMonthPx / 2}
+                    y1={0}
+                    y2={chart.innerHeight + MARGIN.bottom - 18}
+                    stroke="#001C42"
+                    strokeWidth={0.75}
+                  />
+                ))}
 
-              {/* Wave labels — rotated upward, starting at the bar's bottom edge */}
-              {chart.globalDated.map((d) => (
-                <g
-                  key={`wl-${d.wave}`}
-                  transform={`translate(${chart.xScale(d.date)},${chart.innerHeight})`}
+                {/* Wave labels — rotated upward, starting at the bar's bottom edge */}
+                {chart.globalDated.map((d) => (
+                  <g
+                    key={`wl-${d.wave}`}
+                    transform={`translate(${chart.xScale(d.date)},${chart.innerHeight})`}
+                  >
+                    <text
+                      dx="0.3em"
+                      dy="0.35em"
+                      transform="rotate(-90)"
+                      textAnchor="start"
+                      fontSize={11}
+                      fill="#001a3a"
+                    >
+                      {d.wave}
+                    </text>
+                  </g>
+                ))}
+
+                {/* X axis tick labels — one per month, rotated upward */}
+                {chart.xTicks.map((tick) => (
+                  <g
+                    key={tick.getTime()}
+                    transform={`translate(${chart.xScale(tick)},${chart.innerHeight})`}
+                  >
+                    <text
+                      dx="-0.5em"
+                      dy="0.35em"
+                      transform="rotate(-90)"
+                      textAnchor="end"
+                      fontSize={14}
+                      fill={
+                        chart.dataMonthSet.has(formatMonth(tick))
+                          ? "#001a3a"
+                          : "#cbd4e2"
+                      }
+                    >
+                      {formatLabel(tick)}
+                    </text>
+                  </g>
+                ))}
+
+                {/* Y axis tick marks and labels */}
+                {chart.yTicks.map((tick) => (
+                  <g
+                    key={tick}
+                    transform={`translate(0,${chart.yScale(tick)})`}
+                  >
+                    {/* <line x1={-4} x2={0} stroke="#cbd4e2" /> */}
+                    <text
+                      x={-8}
+                      dy="0.32em"
+                      textAnchor="end"
+                      fontSize={14}
+                      fill="#001a3a"
+                    >
+                      {formatY(tick)}
+                    </text>
+                  </g>
+                ))}
+
+                {/* Y axis title — top left, above the plot area */}
+                <text
+                  x={-MARGIN.left + 2}
+                  y={-6}
+                  textAnchor="start"
+                  fontSize={12}
+                  fill="#001a3a"
                 >
-                  <text
-                    dx="0.3em"
-                    dy="0.35em"
-                    transform="rotate(-90)"
-                    textAnchor="start"
-                    fontSize={11}
-                    fill="#001a3a"
-                  >
-                    {d.wave}
-                  </text>
-                </g>
-              ))}
+                  Number of Participants
+                </text>
 
-              {/* X axis tick labels — one per month, rotated upward */}
-              {chart.xTicks.map((tick) => (
-                <g
-                  key={tick.getTime()}
-                  transform={`translate(${chart.xScale(tick)},${chart.innerHeight})`}
+                {/* X axis title — bottom left, below the tick labels */}
+                <text
+                  x={12}
+                  y={chart.innerHeight + MARGIN.bottom - 6}
+                  textAnchor="start"
+                  fontSize={12}
+                  fill="#001a3a"
+                  dominantBaseline="middle"
                 >
-                  <text
-                    dx="-0.5em"
-                    dy="0.35em"
-                    transform="rotate(-90)"
-                    textAnchor="end"
-                    fontSize={14}
-                    fill={
-                      chart.dataMonthSet.has(formatMonth(tick))
-                        ? "#001a3a"
-                        : "#cbd4e2"
-                    }
-                  >
-                    {formatLabel(tick)}
-                  </text>
-                </g>
-              ))}
-
-              {/* Y axis tick marks and labels */}
-              {chart.yTicks.map((tick) => (
-                <g key={tick} transform={`translate(0,${chart.yScale(tick)})`}>
-                  {/* <line x1={-4} x2={0} stroke="#cbd4e2" /> */}
-                  <text
-                    x={-8}
-                    dy="0.32em"
-                    textAnchor="end"
-                    fontSize={14}
-                    fill="#001a3a"
-                  >
-                    {formatY(tick)}
-                  </text>
-                </g>
-              ))}
-
-              {/* Y axis title — top left, above the plot area */}
-              <text
-                x={-MARGIN.left + 2}
-                y={-6}
-                textAnchor="start"
-                fontSize={12}
-                fill="#001a3a"
-              >
-                Number of Participants
-              </text>
-
-              {/* X axis title — bottom left, below the tick labels */}
-              <text
-                x={12}
-                y={chart.innerHeight + MARGIN.bottom - 6}
-                textAnchor="start"
-                fontSize={12}
-                fill="#001a3a"
-                dominantBaseline="middle"
-              >
-                Measurement points
-              </text>
-            </g>
-          </svg>
-        )}
+                  Measurement points
+                </text>
+              </g>
+            </svg>
+          )}
+        </div>
       </div>
     </div>
   );
