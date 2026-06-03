@@ -21,7 +21,7 @@ class ResponseOptionType extends ObjectType
                     'description' => 'Auto-increment primary key',
                 ],
                 'label' => [
-                    'type'        => Type::nonNull(Type::string()),
+                    'type'        => Type::string(),
                     'description' => 'Human-readable label for the response option',
                 ],
                 'numeric_value' => [

@@ -71,19 +71,23 @@ export default function QuestionDetailCard({
       {question.scale_name && (
         <div>
           <p className="text-sm font-medium">Response Scale</p>
-          {question.response_options.length > 0 && (
-            <ol className="flex flex-row flex-wrap gap-1 list-none">
-              {question.response_options.map((opt) => (
-                <li key={opt.option_id} className="flex gap-1 text-sm">
-                  {opt.numeric_value !== null && (
-                    <span className="font-mono w-6 text-right shrink-0">
-                      {opt.numeric_value}
-                    </span>
-                  )}
-                  <span>= {opt.label}</span>
-                </li>
-              ))}
-            </ol>
+          {question.response_options.some((opt) => opt.label === null) ? (
+            <p className="text-sm ml-4">Free text</p>
+          ) : (
+            question.response_options.length > 0 && (
+              <ol className="flex flex-row flex-wrap gap-1 list-none">
+                {question.response_options.map((opt) => (
+                  <li key={opt.option_id} className="flex gap-1 text-sm">
+                    {opt.numeric_value !== null && (
+                      <span className="font-mono w-6 text-right shrink-0">
+                        {opt.numeric_value}
+                      </span>
+                    )}
+                    <span>= {opt.label}</span>
+                  </li>
+                ))}
+              </ol>
+            )
           )}
         </div>
       )}
