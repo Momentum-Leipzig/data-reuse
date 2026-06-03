@@ -37,6 +37,11 @@ export default function QuestionsByTopic({
     return `/explore-dataset/questions?ids=${nextSelectedQuestionIds.join(",")}`;
   }
 
+  function getSelectAllHref(questionIds: string[]) {
+    const merged = Array.from(new Set([...selectedQuestionIds, ...questionIds]));
+    return `/explore-dataset/questions?ids=${merged.join(",")}`;
+  }
+
   return (
     <div className="flex flex-col gap-4 w-full">
       <h2
@@ -117,10 +122,24 @@ export default function QuestionsByTopic({
                               {subfacet.description}
                             </span>
                           </summary>
+                          <Link
+                            href={getSelectAllHref(subfacet.questions.map((q) => q.item_name))}
+                            className="text-sm ml-4 underline hover:text-lmp-text/70 transition"
+                          >
+                            Select All
+                          </Link>
                           {questions}
                         </details>
                       ) : (
-                        <div key={si}>{questions}</div>
+                        <div key={si}>
+                          <Link
+                            href={getSelectAllHref(subfacet.questions.map((q) => q.item_name))}
+                            className="text-sm ml-4 underline hover:text-lmp-text/70 transition"
+                          >
+                            Select All
+                          </Link>
+                          <div>{questions}</div>
+                        </div>
                       );
                     })}
                   </div>

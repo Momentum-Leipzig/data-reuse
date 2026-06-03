@@ -255,6 +255,7 @@ export default function WaveParticipantsChart({
                       textAnchor="start"
                       fontSize={11}
                       fill="#001a3a"
+                      className="pointer-events-none"
                     >
                       {d.wave}
                     </text>

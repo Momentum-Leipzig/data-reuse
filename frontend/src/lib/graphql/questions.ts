@@ -3,7 +3,7 @@ import type { Study } from "@/lib/graphql/studies";
 
 export type ResponseOption = {
   option_id: number;
-  label: string;
+  label: string | null;
   numeric_value: number | null;
 };
 
