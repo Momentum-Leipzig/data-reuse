@@ -56,13 +56,21 @@ class QuestionDetailType extends ObjectType
                     'type'        => Type::string(),
                     'description' => 'Full citation text for the instrument',
                 ],
-                'instrument_intro_en' => [
+                'instrument_translation' => [
                     'type'        => Type::string(),
-                    'description' => 'English general introduction for the instrument',
+                    'description' => 'Translation note for the instrument',
                 ],
-                'instrument_intro_de' => [
+                'instrument_comment' => [
                     'type'        => Type::string(),
-                    'description' => 'German general introduction for the instrument',
+                    'description' => 'Additional comment about the instrument',
+                ],
+                'instrument_intro' => [
+                    'type'        => Type::string(),
+                    'description' => 'General introduction for the instrument in the requested language',
+                ],
+                'instruction_id' => [
+                    'type'        => Type::string(),
+                    'description' => 'Instruction identifier for the item (nullable)',
                 ],
                 'studies' => [
                     'type'        => Type::nonNull(Type::listOf(Type::nonNull($studyType))),

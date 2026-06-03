@@ -36,6 +36,10 @@ class QuestionType extends ObjectType
                     'type'        => Type::string(),
                     'description' => 'Data type of the response (integer, float, string, boolean, date)',
                 ],
+                'instruction_id' => [
+                    'type'        => Type::string(),
+                    'description' => 'Instruction identifier for the item (nullable)',
+                ],
             ],
         ]);
     }

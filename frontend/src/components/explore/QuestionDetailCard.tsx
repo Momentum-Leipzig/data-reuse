@@ -19,15 +19,24 @@ export default function QuestionDetailCard({
   context,
   onDeselect,
 }: Props) {
+  console.log("Rendering QuestionDetailCard with question:", question);
   return (
     <div className="flex flex-col items-start gap-4 border border-lmp-text rounded-2xl p-6">
       {/* Breadcrumb */}
       {context && (context.topic_name || context.construct_name) && (
-        <p className="text-sm">
+        <p className="text-base">
           {[context.topic_name, context.construct_name, context.subfacet_name]
             .filter(Boolean)
             .join(" › ")}
         </p>
+      )}
+
+      {/* Instrument general intro */}
+      {question.instrument_intro && (
+        <div>
+          <p className="text-sm font-medium">General Introduction</p>
+          <p className="text-sm ml-4">{question.instrument_intro}</p>
+        </div>
       )}
 
       {/* Question ID + text — styled like SelectedEntity, with deselect */}
@@ -43,26 +52,25 @@ export default function QuestionDetailCard({
           className="mr-2 shrink-0"
         />
         <span className="font-mono text-gray-500">[{question.item_name}]</span>
-        <span className="font-bold">{question.item_text ?? "—"}</span>
-        {question.reverse_coded && (
-          <span className="text-xs text-gray-400 italic self-center">
-            (reverse-coded)
-          </span>
-        )}
+        <span className="font-bold">
+          {question.instruction_id === "SF_12"
+            ? "[SF12v2 copyright]"
+            : (question.item_text ?? "—")}
+        </span>
       </div>
+      {question.reverse_coded && (
+        <div>
+          <p className="text-sm font-medium">Reverse Coded</p>
+          <p className="text-sm ml-4">
+            {question.reverse_coded ? "Yes" : "No"}
+          </p>
+        </div>
+      )}
 
       {/* Scale + response options */}
       {question.scale_name && (
-        <div className="flex flex-col gap-2">
-          <p className="text-lg font-medium">Scale</p>
-          <p className="text-sm font-medium">
-            <span className="font-normal">{question.scale_name}</span>
-            {/* {question.scale_type && (
-              <span className="ml-2 text-xs text-gray-400">
-                ({question.scale_type})
-              </span>
-            )} */}
-          </p>
+        <div>
+          <p className="text-sm font-medium">Response Scale</p>
           {question.response_options.length > 0 && (
             <ol className="flex flex-row flex-wrap gap-1 list-none">
               {question.response_options.map((opt) => (
@@ -80,14 +88,28 @@ export default function QuestionDetailCard({
         </div>
       )}
 
-      {/* Instrument */}
-      {question.instrument_name && (
+      {/* Instrument Citation / Translation / Comment */}
+      {(question.instrument_citation ||
+        question.instrument_translation ||
+        question.instrument_comment) && (
         <div className="flex flex-col gap-1">
-          {/* <p className="text-sm font-medium">Instrument</p>
-          <p className="text-sm text-gray-700">{question.instrument_name}</p>
-          {intro && <p className="text-sm text-gray-600 italic">{intro}</p>} */}
           {question.instrument_citation && (
-            <p className="text-sm">{question.instrument_citation}</p>
+            <>
+              <p className="text-sm font-medium">Instrument Citation</p>
+              <p className="text-sm ml-4">{question.instrument_citation}</p>
+            </>
+          )}
+          {question.instrument_translation && (
+            <>
+              <p className="text-sm font-medium">Instrument Translation</p>
+              <p className="text-sm ml-4">{question.instrument_translation}</p>
+            </>
+          )}
+          {question.instrument_comment && (
+            <>
+              <p className="text-sm font-medium">Instrument Comment</p>
+              <p className="text-sm ml-4">{question.instrument_comment}</p>
+            </>
           )}
         </div>
       )}
@@ -95,11 +117,11 @@ export default function QuestionDetailCard({
       {/* Studies */}
       {question.studies.length > 0 && (
         <div className="flex flex-col gap-2">
-          <p className="text-lg font-medium">
-            Used in {question.studies.length} stud
+          <p className="text-sm font-medium">
+            Used in {question.studies.length} Stud
             {question.studies.length === 1 ? "y" : "ies"}
           </p>
-          <ul className="flex flex-col items-start gap-2 list-none p-0 m-0">
+          <ul className="flex flex-col items-start gap-2 list-none p-0 m-0 ml-4">
             {question.studies.map((study) => (
               <Link
                 key={study.study_name}
@@ -108,8 +130,7 @@ export default function QuestionDetailCard({
               >
                 <p>{study.study_name.split("20")[0].trim()}</p>●
                 <p>{study.publication_year ?? "No publication year"}</p>●
-                <p className="font-bold">{study.title ?? "No title"}</p>●
-                <p>{study.doi ?? "No DOI"}</p>
+                <p className="font-bold">{study.title ?? "No title"}</p>
               </Link>
             ))}
           </ul>

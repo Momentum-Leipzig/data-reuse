@@ -36,7 +36,8 @@ class QuestionResolver
                 i.item_language,
                 i.item_text,
                 i.reverse_coded,
-                i.data_type
+                i.data_type,
+                i.instruction_id
             FROM study_item_wave siw
             JOIN  item_wave iw   ON iw.item_wave_id   = siw.item_wave_id
             JOIN  item      i    ON i.item_name        = iw.item_name
@@ -102,7 +103,8 @@ class QuestionResolver
                 i.item_language,
                 i.item_text,
                 i.reverse_coded,
-                i.data_type
+                i.data_type,
+                i.instruction_id
             FROM item_wave iw
             JOIN  item      i    ON i.item_name        = iw.item_name
             LEFT JOIN subfacet  s    ON s.subfacet_name     = i.subfacet_name
@@ -158,7 +160,8 @@ class QuestionResolver
                 i.item_language,
                 i.item_text,
                 i.reverse_coded,
-                i.data_type
+                i.data_type,
+                i.instruction_id
             FROM item i
             LEFT JOIN subfacet  s    ON s.subfacet_name     = i.subfacet_name
             LEFT JOIN construct c_sf ON c_sf.construct_name = s.construct_name
@@ -229,11 +232,12 @@ class QuestionResolver
             }
 
             $topics[$tKey]['constructs'][$cKey]['subfacets'][$sKey]['questions'][] = [
-                'item_name'     => $row['item_name'],
-                'item_language' => $row['item_language'],
-                'item_text'     => $row['item_text'],
-                'reverse_coded' => isset($row['reverse_coded']) ? (bool) $row['reverse_coded'] : null,
-                'data_type'     => $row['data_type'],
+                'item_name'      => $row['item_name'],
+                'item_language'  => $row['item_language'],
+                'item_text'      => $row['item_text'],
+                'reverse_coded'  => isset($row['reverse_coded']) ? (bool) $row['reverse_coded'] : null,
+                'data_type'      => $row['data_type'],
+                'instruction_id' => $row['instruction_id'] ?? null,
             ];
         }
 
@@ -279,11 +283,13 @@ class QuestionResolver
                 i.reverse_coded,
                 i.data_type,
                 i.scale_name,
+                i.instruction_id,
                 sc.scale_type,
                 i.instrument_name,
                 inst.citation        AS instrument_citation,
-                inst.general_intro_en,
-                inst.general_intro_de,
+                inst.translation     AS instrument_translation,
+                inst.comment         AS instrument_comment,
+                CASE WHEN ? = 'de' THEN inst.general_intro_de ELSE inst.general_intro_en END AS instrument_intro,
                 ro.option_id,
                 ro.label             AS option_label,
                 ro.numeric_value     AS option_value
@@ -305,7 +311,7 @@ class QuestionResolver
             ORDER BY i.item_name, ro.numeric_value, ro.option_id
         ";
 
-        $params1 = array_merge(array_values($itemNames), [$language, $language]);
+        $params1 = array_merge([$language], array_values($itemNames), [$language, $language]);
         $stmt1   = $pdo->prepare($sql1);
         $stmt1->execute($params1);
         $rows1 = $stmt1->fetchAll();
@@ -324,9 +330,11 @@ class QuestionResolver
                     'scale_name'          => $row['scale_name'],
                     'scale_type'          => $row['scale_type'],
                     'instrument_name'     => $row['instrument_name'],
-                    'instrument_citation' => $row['instrument_citation'],
-                    'instrument_intro_en' => $row['general_intro_en'],
-                    'instrument_intro_de' => $row['general_intro_de'],
+                    'instrument_citation'    => $row['instrument_citation'],
+                    'instrument_translation' => $row['instrument_translation'],
+                    'instrument_comment'     => $row['instrument_comment'],
+                    'instrument_intro'       => $row['instrument_intro'],
+                    'instruction_id'         => $row['instruction_id'] ?? null,
                     'response_options'    => [],
                     'studies'             => [],
                 ];

@@ -103,8 +103,7 @@ export default function StudiesList({
             >
               <p>{study.study_name.split("20")[0].trim()}</p>●
               <p>{study.publication_year ?? "No publication year"}</p>●
-              <p className="font-bold">{study.title ?? "No title"}</p>●
-              <p>{study.doi ?? "No DOI"}</p>
+              <p className="font-bold">{study.title ?? "No title"}</p>
             </Link>
           ))}
         </ul>

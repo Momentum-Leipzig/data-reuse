@@ -93,7 +93,9 @@ export default function QuestionsByTopic({
                               <span className="font-mono text-xs text-gray-500 mr-2">
                                 [{q.item_name}]
                               </span>
-                              {q.item_text ?? "—"}
+                              {q.instruction_id === "SF_12"
+                                ? "[SF12v2 copyright]"
+                                : (q.item_text ?? "—")}
                             </Link>
                           ))}
                         </ul>

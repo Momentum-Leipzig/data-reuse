@@ -16,6 +16,7 @@ export type Question = {
   item_text: string | null;
   reverse_coded: boolean | null;
   data_type: string | null;
+  instruction_id: string | null;
 };
 
 export type SubfacetGroup = {
@@ -80,6 +81,7 @@ const GET_STUDY_QUESTIONS_QUERY = `
             item_text
             reverse_coded
             data_type
+            instruction_id
           }
         }
       }
@@ -118,6 +120,7 @@ const GET_WAVE_QUESTIONS_QUERY = `
             item_text
             reverse_coded
             data_type
+            instruction_id
           }
         }
       }
@@ -156,6 +159,7 @@ const GET_ALL_QUESTIONS_QUERY = `
             item_text
             reverse_coded
             data_type
+            instruction_id
           }
         }
       }
