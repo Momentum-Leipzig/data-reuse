@@ -1,4 +1,5 @@
 import type { TopicGroup } from "@/lib/graphql/studies";
+import { Image } from "@/components/Image";
 import Link from "next/link";
 
 type Props = {
@@ -31,14 +32,16 @@ export default function QuestionsByTopic({
 
   function getQuestionHref(itemName: string) {
     const nextSelectedQuestionIds = selectedQuestionIds.includes(itemName)
-      ? selectedQuestionIds
+      ? selectedQuestionIds.filter((id) => id !== itemName)
       : [...selectedQuestionIds, itemName];
 
     return `/explore-dataset/questions?ids=${nextSelectedQuestionIds.join(",")}`;
   }
 
   function getSelectAllHref(questionIds: string[]) {
-    const merged = Array.from(new Set([...selectedQuestionIds, ...questionIds]));
+    const merged = Array.from(
+      new Set([...selectedQuestionIds, ...questionIds]),
+    );
     return `/explore-dataset/questions?ids=${merged.join(",")}`;
   }
 
@@ -89,20 +92,41 @@ export default function QuestionsByTopic({
                     {construct.subfacets.map((subfacet, si) => {
                       const questions = (
                         <ul className="pl-4 mt-1 flex flex-col gap-1 list-none">
-                          {subfacet.questions.map((q) => (
-                            <Link
-                              key={`${q.item_name}-${q.item_language}`}
-                              href={getQuestionHref(q.item_name)}
-                              className="text-sm bg-lmp-gray3 hover:bg-lmp-gray3/70 rounded-xl px-3 py-2 transition"
-                            >
-                              <span className="font-mono text-xs text-gray-500 mr-2">
-                                [{q.item_name}]
-                              </span>
-                              {q.instruction_id === "SF_12"
-                                ? "[SF12v2 copyright]"
-                                : (q.item_text ?? "—")}
-                            </Link>
-                          ))}
+                          {subfacet.questions.map((q) => {
+                            const isSelected = selectedQuestionIds.includes(
+                              q.item_name,
+                            );
+                            return (
+                              <Link
+                                key={`${q.item_name}-${q.item_language}`}
+                                href={getQuestionHref(q.item_name)}
+                                scroll={false}
+                                className={`text-sm rounded-xl px-3 py-2 transition flex items-start gap-2 ${
+                                  isSelected
+                                    ? "bg-lmp-gray3 hover:bg-lmp-gray3/70"
+                                    : "bg-lmp-gray3 hover:bg-lmp-gray3/70"
+                                }`}
+                              >
+                                {isSelected && (
+                                  <Image
+                                    src="/assets/x_circle.svg"
+                                    alt="Deselect"
+                                    width={16}
+                                    height={16}
+                                    className="shrink-0 mt-0.5"
+                                  />
+                                )}
+                                <span>
+                                  <span className="font-mono text-xs text-gray-500 mr-2">
+                                    [{q.item_name}]
+                                  </span>
+                                  {q.instruction_id === "SF_12"
+                                    ? "[SF12v2 copyright]"
+                                    : (q.item_text ?? "—")}
+                                </span>
+                              </Link>
+                            );
+                          })}
                         </ul>
                       );
 
@@ -123,7 +147,10 @@ export default function QuestionsByTopic({
                             </span>
                           </summary>
                           <Link
-                            href={getSelectAllHref(subfacet.questions.map((q) => q.item_name))}
+                            href={getSelectAllHref(
+                              subfacet.questions.map((q) => q.item_name),
+                            )}
+                            scroll={false}
                             className="text-sm ml-4 underline hover:text-lmp-text/70 transition"
                           >
                             Select All
@@ -133,7 +160,10 @@ export default function QuestionsByTopic({
                       ) : (
                         <div key={si}>
                           <Link
-                            href={getSelectAllHref(subfacet.questions.map((q) => q.item_name))}
+                            href={getSelectAllHref(
+                              subfacet.questions.map((q) => q.item_name),
+                            )}
+                            scroll={false}
                             className="text-sm ml-4 underline hover:text-lmp-text/70 transition"
                           >
                             Select All
