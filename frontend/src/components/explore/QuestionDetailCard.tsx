@@ -9,17 +9,18 @@ type Context = {
 };
 
 type Props = {
-  question: QuestionDetail;
+  questions: QuestionDetail[];
   context?: Context;
-  onDeselect: () => void;
+  onDeselect: (itemName: string) => void;
 };
 
 export default function QuestionDetailCard({
-  question,
+  questions,
   context,
   onDeselect,
 }: Props) {
-  console.log("Rendering QuestionDetailCard with question:", question);
+  const shared = questions[0];
+
   return (
     <div className="flex flex-col items-start gap-4 border border-lmp-text rounded-2xl p-6">
       {/* Breadcrumb */}
@@ -32,51 +33,55 @@ export default function QuestionDetailCard({
       )}
 
       {/* Instrument general intro */}
-      {question.instrument_intro && (
+      {shared.instrument_intro && (
         <div>
           <p className="text-sm font-medium">General Introduction</p>
-          <p className="text-sm ml-4">{question.instrument_intro}</p>
+          <p className="text-sm ml-4">{shared.instrument_intro}</p>
         </div>
       )}
 
-      {/* Question ID + text — styled like SelectedEntity, with deselect */}
-      <div
-        className="rounded-2xl p-3 bg-lmp-gray3 flex flex-wrap gap-1 cursor-pointer hover:bg-lmp-gray3/70 transition text-sm"
-        onClick={onDeselect}
-      >
-        <Image
-          src="/assets/x_circle.svg"
-          alt="Deselect"
-          width={20}
-          height={20}
-          className="mr-2 shrink-0"
-        />
-        <span className="font-mono text-gray-500">[{question.item_name}]</span>
-        <span className="font-bold">
-          {question.instruction_id === "SF_12"
-            ? "[SF12v2 copyright]"
-            : (question.item_text ?? "—")}
-        </span>
+      {/* Question pills — one per question with individual deselect */}
+      <div className="flex flex-col gap-2 w-full">
+        {questions.map((question) => (
+          <div
+            key={question.item_name}
+            className="rounded-2xl p-3 bg-lmp-gray3 flex flex-wrap gap-1 cursor-pointer hover:bg-lmp-gray3/70 transition text-sm"
+            onClick={() => onDeselect(question.item_name)}
+          >
+            <Image
+              src="/assets/x_circle.svg"
+              alt="Deselect"
+              width={20}
+              height={20}
+              className="mr-2 shrink-0"
+            />
+            <span className="font-mono text-gray-500">
+              [{question.item_name}]
+            </span>
+            <span className="font-bold">
+              {question.instruction_id === "SF_12"
+                ? "[SF12v2 copyright]"
+                : (question.item_text ?? "—")}
+            </span>
+            {question.reverse_coded && (
+              <span className="text-xs text-gray-500 self-center">
+                (reverse coded)
+              </span>
+            )}
+          </div>
+        ))}
       </div>
-      {question.reverse_coded && (
-        <div>
-          <p className="text-sm font-medium">Reverse Coded</p>
-          <p className="text-sm ml-4">
-            {question.reverse_coded ? "Yes" : "No"}
-          </p>
-        </div>
-      )}
 
       {/* Scale + response options */}
-      {question.scale_name && (
+      {shared.scale_name && (
         <div>
           <p className="text-sm font-medium">Response Scale</p>
-          {question.response_options.some((opt) => opt.label === null) ? (
+          {shared.response_options.some((opt) => opt.label === null) ? (
             <p className="text-sm ml-4">Free text</p>
           ) : (
-            question.response_options.length > 0 && (
+            shared.response_options.length > 0 && (
               <ol className="flex flex-row flex-wrap gap-1 list-none">
-                {question.response_options.map((opt) => (
+                {shared.response_options.map((opt) => (
                   <li key={opt.option_id} className="flex gap-1 text-sm">
                     {opt.numeric_value !== null && (
                       <span className="font-mono w-6 text-right shrink-0">
@@ -93,40 +98,40 @@ export default function QuestionDetailCard({
       )}
 
       {/* Instrument Citation / Translation / Comment */}
-      {(question.instrument_citation ||
-        question.instrument_translation ||
-        question.instrument_comment) && (
+      {(shared.instrument_citation ||
+        shared.instrument_translation ||
+        shared.instrument_comment) && (
         <div className="flex flex-col gap-1">
-          {question.instrument_citation && (
+          {shared.instrument_citation && (
             <>
               <p className="text-sm font-medium">Instrument Citation</p>
-              <p className="text-sm ml-4">{question.instrument_citation}</p>
+              <p className="text-sm ml-4">{shared.instrument_citation}</p>
             </>
           )}
-          {question.instrument_translation && (
+          {shared.instrument_translation && (
             <>
               <p className="text-sm font-medium">Instrument Translation</p>
-              <p className="text-sm ml-4">{question.instrument_translation}</p>
+              <p className="text-sm ml-4">{shared.instrument_translation}</p>
             </>
           )}
-          {question.instrument_comment && (
+          {shared.instrument_comment && (
             <>
               <p className="text-sm font-medium">Instrument Comment</p>
-              <p className="text-sm ml-4">{question.instrument_comment}</p>
+              <p className="text-sm ml-4">{shared.instrument_comment}</p>
             </>
           )}
         </div>
       )}
 
       {/* Studies */}
-      {question.studies.length > 0 && (
+      {shared.studies.length > 0 && (
         <div className="flex flex-col gap-2">
           <p className="text-sm font-medium">
-            Used in {question.studies.length} Stud
-            {question.studies.length === 1 ? "y" : "ies"}
+            Used in {shared.studies.length} Stud
+            {shared.studies.length === 1 ? "y" : "ies"}
           </p>
           <ul className="flex flex-col items-start gap-2 list-none p-0 m-0 ml-4">
-            {question.studies.map((study) => (
+            {shared.studies.map((study) => (
               <Link
                 key={study.study_name}
                 href={`/explore-dataset/studies?ids=${encodeURIComponent(study.study_name)}`}

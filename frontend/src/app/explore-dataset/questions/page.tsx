@@ -28,6 +28,42 @@ import {
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
+type ContextMap = Map<string, { topic_name: string | null; construct_name: string | null; subfacet_name: string | null }>;
+
+function groupQuestionDetails(details: QuestionDetail[], contextMap: ContextMap): QuestionDetail[][] {
+  const groups: QuestionDetail[][] = [];
+  const keyToGroupIndex = new Map<string, number>();
+
+  for (const qd of details) {
+    const ctx = contextMap.get(qd.item_name);
+    const subfacet = ctx?.subfacet_name ?? null;
+
+    const construct = ctx?.construct_name ?? null;
+
+    let key: string;
+    if (!subfacet && !construct) {
+      key = `solo::${qd.item_name}`;
+    } else {
+      const studyKey = [...qd.studies]
+        .map((s) => s.study_name)
+        .sort()
+        .join("|");
+      const groupLevel = subfacet ?? construct;
+      key = `${groupLevel}::${qd.scale_name ?? ""}::${qd.instrument_name ?? ""}::${studyKey}`;
+    }
+
+    const existing = keyToGroupIndex.get(key);
+    if (existing !== undefined) {
+      groups[existing].push(qd);
+    } else {
+      keyToGroupIndex.set(key, groups.length);
+      groups.push([qd]);
+    }
+  }
+
+  return groups;
+}
+
 function QuestionsContent() {
   const router = useRouter();
   const pathname = usePathname();
@@ -333,14 +369,16 @@ function QuestionsContent() {
             </div>
             {detailsLoading && <p>Loading details…</p>}
             {!detailsLoading &&
-              questionDetails.map((qd) => (
-                <QuestionDetailCard
-                  key={qd.item_name}
-                  question={qd}
-                  context={contextByItemName.get(qd.item_name)}
-                  onDeselect={() => deselectQuestion(qd.item_name)}
-                />
-              ))}
+              groupQuestionDetails(questionDetails, contextByItemName).map(
+                (group) => (
+                  <QuestionDetailCard
+                    key={group.map((qd) => qd.item_name).join(",")}
+                    questions={group}
+                    context={contextByItemName.get(group[0].item_name)}
+                    onDeselect={deselectQuestion}
+                  />
+                ),
+              )}
           </div>
 
           {/* all questions section */}
