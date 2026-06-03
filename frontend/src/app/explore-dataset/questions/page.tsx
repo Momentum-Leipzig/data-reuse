@@ -287,7 +287,9 @@ function QuestionsContent() {
                   <p>
                     [{question.item_name}]
                     <span className="font-bold ml-2">
-                      {question.item_text ?? "No text"}
+                      {question.instruction_id === "SF_12"
+                        ? "[SF12v2 copyright]"
+                        : (question.item_text ?? "—")}
                     </span>
                   </p>
                 </SelectedEntity>

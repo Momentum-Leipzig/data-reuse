@@ -206,8 +206,7 @@ function StudiesContent() {
           <div className="flex flex-wrap gap-1 text-sm">
             <p>{study.study_name.split("20")[0].trim()}</p>●
             <p>{study.publication_year ?? "No publication year"}</p>●
-            <p className="font-bold">{study.title ?? "No title"}</p>●
-            <p>{study.doi ?? "No DOI"}</p>
+            <p className="font-bold">{study.title ?? "No title"}</p>
           </div>
         )}
       />
@@ -234,7 +233,6 @@ function StudiesContent() {
                     <span className="ml-1 mr-1 font-bold">
                       {study.title ?? "No title"}
                     </span>
-                    ●<span className="ml-1">{study.doi ?? "No DOI"}</span>
                   </div>
                 </SelectedEntity>
               ))}

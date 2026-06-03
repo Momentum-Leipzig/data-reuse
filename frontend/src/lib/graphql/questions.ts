@@ -18,8 +18,10 @@ export type QuestionDetail = {
   response_options: ResponseOption[];
   instrument_name: string | null;
   instrument_citation: string | null;
-  instrument_intro_en: string | null;
-  instrument_intro_de: string | null;
+  instrument_translation: string | null;
+  instrument_comment: string | null;
+  instrument_intro: string | null;
+  instruction_id: string | null;
   studies: Study[];
 };
 
@@ -44,8 +46,10 @@ const GET_QUESTION_DETAILS_QUERY = `
       }
       instrument_name
       instrument_citation
-      instrument_intro_en
-      instrument_intro_de
+      instrument_translation
+      instrument_comment
+      instrument_intro
+      instruction_id
       studies {
         study_name
         title
