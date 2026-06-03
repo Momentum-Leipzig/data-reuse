@@ -28,9 +28,19 @@ import {
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
-type ContextMap = Map<string, { topic_name: string | null; construct_name: string | null; subfacet_name: string | null }>;
+type ContextMap = Map<
+  string,
+  {
+    topic_name: string | null;
+    construct_name: string | null;
+    subfacet_name: string | null;
+  }
+>;
 
-function groupQuestionDetails(details: QuestionDetail[], contextMap: ContextMap): QuestionDetail[][] {
+function groupQuestionDetails(
+  details: QuestionDetail[],
+  contextMap: ContextMap,
+): QuestionDetail[][] {
   const groups: QuestionDetail[][] = [];
   const keyToGroupIndex = new Map<string, number>();
 
@@ -367,9 +377,14 @@ function QuestionsContent() {
                 </button>
               </div>
             </div>
-            {detailsLoading && <p>Loading details…</p>}
-            {!detailsLoading &&
-              groupQuestionDetails(questionDetails, contextByItemName).map(
+            <div
+              className={
+                detailsLoading
+                  ? "flex flex-col gap-4 opacity-50 pointer-events-none"
+                  : "flex flex-col gap-4"
+              }
+            >
+              {groupQuestionDetails(questionDetails, contextByItemName).map(
                 (group) => (
                   <QuestionDetailCard
                     key={group.map((qd) => qd.item_name).join(",")}
@@ -379,6 +394,7 @@ function QuestionsContent() {
                   />
                 ),
               )}
+            </div>
           </div>
 
           {/* all questions section */}
