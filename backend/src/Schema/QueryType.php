@@ -11,6 +11,7 @@ use App\Types\MetricsType;
 use App\Types\QuestionDetailType;
 use App\Types\QuestionType;
 use App\Types\ResponseOptionType;
+use App\Types\WaveInstructionType;
 use App\Types\StudyType;
 use App\Types\SubfacetGroupType;
 use App\Types\TopicGroupType;
@@ -40,8 +41,9 @@ class QueryType extends ObjectType
         $topicGroupType    = new TopicGroupType($constructGroupType);
         $questionResolver  = new QuestionResolver();
 
-        $responseOptionType = new ResponseOptionType();
-        $questionDetailType = new QuestionDetailType($responseOptionType, $studyType);
+        $responseOptionType  = new ResponseOptionType();
+        $waveInstructionType = new WaveInstructionType();
+        $questionDetailType  = new QuestionDetailType($responseOptionType, $studyType, $waveInstructionType);
 
         parent::__construct([
             'name'   => 'Query',

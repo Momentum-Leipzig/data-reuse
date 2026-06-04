@@ -1,6 +1,11 @@
 import { graphqlRequest } from "@/lib/graphql/client";
 import type { Study } from "@/lib/graphql/studies";
 
+export type WaveInstruction = {
+  wave: string;
+  instruction_text: string | null;
+};
+
 export type ResponseOption = {
   option_id: number;
   label: string | null;
@@ -22,6 +27,7 @@ export type QuestionDetail = {
   instrument_comment: string | null;
   instrument_intro: string | null;
   instruction_id: string | null;
+  instruction_waves: WaveInstruction[];
   studies: Study[];
 };
 
@@ -50,6 +56,10 @@ const GET_QUESTION_DETAILS_QUERY = `
       instrument_comment
       instrument_intro
       instruction_id
+      instruction_waves {
+        wave
+        instruction_text
+      }
       studies {
         study_name
         title

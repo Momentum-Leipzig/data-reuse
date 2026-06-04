@@ -41,6 +41,33 @@ export default function QuestionDetailCard({
         </div>
       )}
 
+      {/* Instruction per wave */}
+      {shared.instruction_waves.some((w) => w.instruction_text) && (
+        <div>
+          <p className="text-sm font-medium">
+            Instruction per Measurement Point
+          </p>
+          <ul className="flex flex-col gap-2 ml-4 list-none">
+            {Object.entries(
+              shared.instruction_waves
+                .filter((w) => w.instruction_text)
+                .reduce<Record<string, string[]>>((acc, w) => {
+                  const text = w.instruction_text!;
+                  (acc[text] ??= []).push(w.wave);
+                  return acc;
+                }, {}),
+            ).map(([text, waves]) => (
+              <li key={text} className="text-sm">
+                <span className="font-bold">{text}</span>
+                <span className="font-mono text-sm ml-2">
+                  ({waves.join(" | ")})
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Question pills — one per question with individual deselect */}
       <div className="flex flex-col gap-2">
         {questions.map((question) => (
