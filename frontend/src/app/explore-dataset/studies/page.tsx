@@ -35,7 +35,7 @@ function StudiesContent() {
   const selectedIds = useMemo(() => {
     return ids
       ? ids
-          .split(",")
+          .split("|")
           .map((value) => value.trim())
           .filter(Boolean)
       : [];
@@ -173,7 +173,7 @@ function StudiesContent() {
     const nextSearchParams = new URLSearchParams(searchParams.toString());
 
     if (nextSelectedIds.length > 0) {
-      nextSearchParams.set("ids", nextSelectedIds.join(","));
+      nextSearchParams.set("ids", nextSelectedIds.join("|"));
     } else {
       nextSearchParams.delete("ids");
       setLogic("or");
@@ -192,7 +192,7 @@ function StudiesContent() {
       ? selectedIds
       : [...selectedIds, studyId];
 
-    nextSearchParams.set("ids", nextSelectedIds.join(","));
+    nextSearchParams.set("ids", nextSelectedIds.join("|"));
 
     const nextQueryString = nextSearchParams.toString();
     router.replace(
