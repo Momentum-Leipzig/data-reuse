@@ -157,7 +157,7 @@ export default function QuestionDetailCard({
       {shared.studies.length > 0 && (
         <div className="flex flex-col gap-2">
           <p className="text-sm font-medium">
-            Used in {shared.studies.length} Stud
+            Used in Stud
             {shared.studies.length === 1 ? "y" : "ies"}
           </p>
           <ul className="flex flex-col items-start gap-2 list-none p-0 m-0 ml-4">
