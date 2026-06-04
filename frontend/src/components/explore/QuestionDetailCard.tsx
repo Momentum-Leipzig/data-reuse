@@ -47,7 +47,7 @@ export default function QuestionDetailCard({
           <p className="text-sm font-medium">
             Instruction per Measurement Point
           </p>
-          <ul className="flex flex-col gap-2 ml-4 list-none">
+          <ul className="flex flex-col gap-0 ml-4 list-none">
             {Object.entries(
               shared.instruction_waves
                 .filter((w) => w.instruction_text)
