@@ -6,6 +6,7 @@ import QuestionsByTopic from "@/components/explore/QuestionsByTopic";
 import SelectedEntity from "@/components/explore/SelectedEntity";
 import WaveParticipantsChart from "@/components/explore/WaveParticipantsChart";
 import SearchPreview from "@/components/search/SearchPreview";
+import { FormattedItemText } from "@/lib/formatItemText";
 import {
   getAllQuestions,
   type Question,
@@ -312,11 +313,12 @@ function QuestionsContent() {
               {q.construct_name ? ` › ${q.construct_name}` : ""}
               {q.subfacet_name ? ` › ${q.subfacet_name}` : ""}
             </p>
-            <div className="flex flex-wrap gap-2 items-center">
-              <span className="font-mono text-xs text-gray-600">
-                [{q.item_name}]
-              </span>
-              <span className="font-medium">{q.item_text ?? "No text"}</span>
+            <div className="">
+              <span className="text-xs">[{q.item_name}]</span>{" "}
+              <FormattedItemText
+                className="font-medium"
+                text={q.item_text ?? "No text"}
+              />
             </div>
           </div>
         )}
@@ -364,9 +366,11 @@ function QuestionsContent() {
                   <p>
                     [{question.item_name}]
                     <span className="font-bold ml-2">
-                      {question.instruction_id === "SF_12"
-                        ? "[SF12v2 copyright]"
-                        : (question.item_text ?? "—")}
+                      {question.instruction_id === "SF_12" ? (
+                        "[SF12v2 copyright]"
+                      ) : (
+                        <FormattedItemText text={question.item_text ?? "—"} />
+                      )}
                     </span>
                   </p>
                 </SelectedEntity>

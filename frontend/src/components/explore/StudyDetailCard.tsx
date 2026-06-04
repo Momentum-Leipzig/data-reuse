@@ -46,7 +46,7 @@ export default function StudyDetailCard({
         {study.publication_year && (
           <>
             <p className="font-medium text-lg">Year</p>
-            <p className="text-lg min-w-0 break-words">
+            <p className="text-lg min-w-0 wrap-break-word">
               {study.publication_year}
             </p>
           </>
@@ -54,7 +54,7 @@ export default function StudyDetailCard({
         {study.journal && (
           <>
             <p className="font-medium text-lg">Journal</p>
-            <p className="text-lg min-w-0 break-words">{study.journal}</p>
+            <p className="text-lg min-w-0 wrap-break-word">{study.journal}</p>
           </>
         )}
         {study.doi && (
@@ -75,7 +75,7 @@ export default function StudyDetailCard({
         {study.citation && (
           <>
             <p className="font-medium text-lg">Citation</p>
-            <p className="text-lg min-w-0 break-words">{study.citation}</p>
+            <p className="text-lg min-w-0 wrap-break-word">{study.citation}</p>
           </>
         )}
       </div>
