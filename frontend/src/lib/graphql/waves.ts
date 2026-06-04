@@ -40,6 +40,22 @@ const WAVE_PARTICIPANTS_BY_QUESTIONS_QUERY = `
   }
 `;
 
+const WAVE_PARTICIPANTS_BY_STUDIES_AND_QUERY = `
+  query WaveParticipantsByStudiesAnd($study_names: [String!]!) {
+    waveParticipantsByStudiesAnd(study_names: $study_names) {
+      ${WAVE_FIELDS}
+    }
+  }
+`;
+
+const WAVE_PARTICIPANTS_BY_QUESTIONS_AND_QUERY = `
+  query WaveParticipantsByQuestionsAnd($item_names: [String!]!) {
+    waveParticipantsByQuestionsAnd(item_names: $item_names) {
+      ${WAVE_FIELDS}
+    }
+  }
+`;
+
 // ---------------------------------------------------------------------------
 // Fetch functions
 // ---------------------------------------------------------------------------
@@ -73,4 +89,24 @@ export async function getWaveParticipantsByQuestions(
     { item_names: string[] }
   >(WAVE_PARTICIPANTS_BY_QUESTIONS_QUERY, { item_names: itemNames });
   return data.waveParticipantsByQuestions;
+}
+
+export async function getWaveParticipantsByStudiesAnd(
+  studyNames: string[],
+): Promise<WaveParticipants[]> {
+  const data = await graphqlRequest<
+    { waveParticipantsByStudiesAnd: WaveParticipants[] },
+    { study_names: string[] }
+  >(WAVE_PARTICIPANTS_BY_STUDIES_AND_QUERY, { study_names: studyNames });
+  return data.waveParticipantsByStudiesAnd;
+}
+
+export async function getWaveParticipantsByQuestionsAnd(
+  itemNames: string[],
+): Promise<WaveParticipants[]> {
+  const data = await graphqlRequest<
+    { waveParticipantsByQuestionsAnd: WaveParticipants[] },
+    { item_names: string[] }
+  >(WAVE_PARTICIPANTS_BY_QUESTIONS_AND_QUERY, { item_names: itemNames });
+  return data.waveParticipantsByQuestionsAnd;
 }

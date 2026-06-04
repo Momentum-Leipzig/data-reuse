@@ -18,11 +18,13 @@ import {
 import {
   getGlobalMetrics,
   getMetricsByQuestions,
+  getMetricsByQuestionsAnd,
   type Metrics,
 } from "@/lib/graphql/metrics";
 import {
   getGlobalWaveParticipants,
   getWaveParticipantsByQuestions,
+  getWaveParticipantsByQuestionsAnd,
   type WaveParticipants,
 } from "@/lib/graphql/waves";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -95,6 +97,7 @@ function QuestionsContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [logic, setLogic] = useState<"or" | "and">("or");
   const [language, setLanguage] = useState<"en" | "de">("en");
   const [questionDetails, setQuestionDetails] = useState<QuestionDetail[]>([]);
   const [detailsLoading, setDetailsLoading] = useState(false);
@@ -156,7 +159,7 @@ function QuestionsContent() {
     getGlobalWaveParticipants().then(setGlobalWaveData);
   }, []);
 
-  // Re-fetch metrics and wave data whenever the selection changes.
+  // Re-fetch metrics and wave data whenever the selection or logic mode changes.
   useEffect(() => {
     if (selectedIds.length === 0) {
       // Selection cleared — restore global data (already cached).
@@ -166,12 +169,19 @@ function QuestionsContent() {
     }
     setMetrics(null);
     setWaveData(null);
-    getMetricsByQuestions(selectedIds).then((fetched) => {
-      // Override questions count with the number of selected IDs (client-side decision).
+    const fetchMetrics =
+      logic === "and" && selectedIds.length > 1
+        ? getMetricsByQuestionsAnd
+        : getMetricsByQuestions;
+    const fetchWaves =
+      logic === "and" && selectedIds.length > 1
+        ? getWaveParticipantsByQuestionsAnd
+        : getWaveParticipantsByQuestions;
+    fetchMetrics(selectedIds).then((fetched) => {
       setMetrics({ ...fetched, questions: selectedIds.length });
     });
-    getWaveParticipantsByQuestions(selectedIds).then(setWaveData);
-  }, [selectedIds]);
+    fetchWaves(selectedIds).then(setWaveData);
+  }, [selectedIds, logic]);
 
   function selectQuestion(itemName: string) {
     const nextSearchParams = new URLSearchParams(searchParams.toString());
@@ -193,6 +203,7 @@ function QuestionsContent() {
       nextSearchParams.set("ids", nextSelectedIds.join(","));
     } else {
       nextSearchParams.delete("ids");
+      setLogic("or");
     }
 
     const nextQueryString = nextSearchParams.toString();
@@ -323,7 +334,27 @@ function QuestionsContent() {
         <div className="flex flex-col gap-12">
           {/* Selection  */}
           <div className="flex flex-col gap-2 items-start">
-            <p className="font-bold">Selection</p>
+            <div className="flex items-center gap-6 flex-wrap">
+              <p className="font-bold">Selection</p>
+              {selectedIds.length > 1 && (
+                <div className="flex rounded-lg border border-lmp-text overflow-hidden text-sm">
+                  <button
+                    onClick={() => setLogic("or")}
+                    title="OR – count participants who answered at least one of the selected questions"
+                    className={`px-4 py-1.5 transition cursor-pointer ${logic === "or" ? "bg-lmp-text text-white" : "hover:bg-lmp-gray3"}`}
+                  >
+                    OR
+                  </button>
+                  <button
+                    onClick={() => setLogic("and")}
+                    title="AND – count participants who answered all of the selected questions"
+                    className={`px-4 py-1.5 transition cursor-pointer ${logic === "and" ? "bg-lmp-text text-white" : "hover:bg-lmp-gray3"}`}
+                  >
+                    AND
+                  </button>
+                </div>
+              )}
+            </div>
             <div className="flex flex-col gap-2">
               {selectedQuestions.map((question) => (
                 <SelectedEntity
@@ -352,7 +383,13 @@ function QuestionsContent() {
           <WaveParticipantsChart
             data={waveData}
             globalData={globalWaveData}
-            headline={`Participants per Measurement Points that Answered ${selectedIds.length > 1 ? "Any of the Selected Questions" : "the Selected Question"}`}
+            headline={`Participants per Measurement Points that Answered ${
+              selectedIds.length > 1
+                ? logic === "and"
+                  ? "All of the Selected Questions"
+                  : "Any of the Selected Questions"
+                : "the Selected Question"
+            }`}
           />
 
           {/* Details on the selected questions */}

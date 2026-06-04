@@ -15,11 +15,13 @@ import {
 import {
   getGlobalMetrics,
   getMetricsByStudies,
+  getMetricsByStudiesAnd,
   type Metrics,
 } from "@/lib/graphql/metrics";
 import {
   getGlobalWaveParticipants,
   getWaveParticipantsByStudies,
+  getWaveParticipantsByStudiesAnd,
   type WaveParticipants,
 } from "@/lib/graphql/waves";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -39,6 +41,7 @@ function StudiesContent() {
       : [];
   }, [ids]);
   const mode = selectedIds.length > 0 ? "selected" : "all";
+  const [logic, setLogic] = useState<"or" | "and">("or");
   const [studies, setStudies] = useState<Study[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -93,7 +96,7 @@ function StudiesContent() {
     getGlobalWaveParticipants().then(setGlobalWaveData);
   }, []);
 
-  // Re-fetch metrics and wave data whenever the selection changes.
+  // Re-fetch metrics and wave data whenever the selection or logic mode changes.
   useEffect(() => {
     if (selectedIds.length === 0) {
       getGlobalMetrics().then(setMetrics);
@@ -102,9 +105,17 @@ function StudiesContent() {
     }
     setMetrics(null);
     setWaveData(null);
-    getMetricsByStudies(selectedIds).then(setMetrics);
-    getWaveParticipantsByStudies(selectedIds).then(setWaveData);
-  }, [selectedIds]);
+    const fetchMetrics =
+      logic === "and" && selectedIds.length > 1
+        ? getMetricsByStudiesAnd
+        : getMetricsByStudies;
+    const fetchWaves =
+      logic === "and" && selectedIds.length > 1
+        ? getWaveParticipantsByStudiesAnd
+        : getWaveParticipantsByStudies;
+    fetchMetrics(selectedIds).then(setMetrics);
+    fetchWaves(selectedIds).then(setWaveData);
+  }, [selectedIds, logic]);
 
   useEffect(() => {
     if (selectedIds.length === 0) {
@@ -165,6 +176,7 @@ function StudiesContent() {
       nextSearchParams.set("ids", nextSelectedIds.join(","));
     } else {
       nextSearchParams.delete("ids");
+      setLogic("or");
     }
 
     const nextQueryString = nextSearchParams.toString();
@@ -214,7 +226,27 @@ function StudiesContent() {
       {mode === "selected" ? (
         <div className="flex flex-col gap-15">
           <div className="flex flex-col gap-2">
-            <p className="font-bold">Selection</p>
+            <div className="flex items-center gap-6 flex-wrap">
+              <p className="font-bold">Selection</p>
+              {selectedIds.length > 1 && (
+                <div className="flex rounded-lg border border-lmp-text overflow-hidden text-sm">
+                  <button
+                    onClick={() => setLogic("or")}
+                    title="OR – count participants who answered questions in at least one of the selected studies"
+                    className={`px-4 py-1.5 transition cursor-pointer ${logic === "or" ? "bg-lmp-text text-white" : "hover:bg-lmp-gray3"}`}
+                  >
+                    OR
+                  </button>
+                  <button
+                    onClick={() => setLogic("and")}
+                    title="AND – count participants who answered questions in all of the selected studies"
+                    className={`px-4 py-1.5 transition cursor-pointer ${logic === "and" ? "bg-lmp-text text-white" : "hover:bg-lmp-gray3"}`}
+                  >
+                    AND
+                  </button>
+                </div>
+              )}
+            </div>
             <div className="flex flex-col gap-2">
               {selectedStudies.map((study) => (
                 <SelectedEntity
@@ -246,7 +278,13 @@ function StudiesContent() {
           <WaveParticipantsChart
             data={waveData}
             globalData={globalWaveData}
-            headline={`Participants per Measurement Point that Answered Questions ${selectedStudies.length > 1 ? "in Any of the Selected Studies" : "in the Selected Study"}`}
+            headline={`Participants per Measurement Point that Answered Questions ${
+                selectedStudies.length > 1
+                  ? logic === "and"
+                    ? "in All of the Selected Studies"
+                    : "in Any of the Selected Studies"
+                  : "in the Selected Study"
+              }`}
           />
 
           {/* Study detail cards */}

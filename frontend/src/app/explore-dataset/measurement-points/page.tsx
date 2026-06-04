@@ -7,9 +7,14 @@ import WaveParticipantsChart from "@/components/explore/WaveParticipantsChart";
 import {
   getGlobalMetrics,
   getMetricsByWaves,
+  getMetricsByWavesAnd,
   type Metrics,
 } from "@/lib/graphql/metrics";
-import { getQuestionsByWaves, type TopicGroup } from "@/lib/graphql/studies";
+import {
+  getQuestionsByWaves,
+  getQuestionsByWavesAnd,
+  type TopicGroup,
+} from "@/lib/graphql/studies";
 import {
   getGlobalWaveParticipants,
   type WaveParticipants,
@@ -33,13 +38,14 @@ function MeasurementPointsContent() {
     [ids],
   );
 
+  const [logic, setLogic] = useState<"or" | "and">("or");
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [waveData, setWaveData] = useState<WaveParticipants[] | null>(null);
   const [topics, setTopics] = useState<TopicGroup[]>([]);
   const [topicsKey, setTopicsKey] = useState<string>("");
   const [topicsError, setTopicsError] = useState<string | null>(null);
 
-  const currentTopicsKey = selectedIds.join(",");
+  const currentTopicsKey = selectedIds.join(",") + logic;
   const topicsLoading =
     selectedIds.length > 0 && topicsKey !== currentTopicsKey;
 
@@ -60,39 +66,43 @@ function MeasurementPointsContent() {
     const fetch =
       selectedIds.length === 0
         ? getGlobalMetrics()
-        : getMetricsByWaves(selectedIds);
+        : logic === "and" && selectedIds.length > 1
+          ? getMetricsByWavesAnd(selectedIds)
+          : getMetricsByWaves(selectedIds);
     fetch.then((result) => {
       if (active) setMetrics(result);
     });
     return () => {
       active = false;
     };
-  }, [selectedIds]);
+  }, [selectedIds, logic]);
 
   useEffect(() => {
     let active = true;
+    const fetchFn =
+      logic === "and" && selectedIds.length > 1
+        ? getQuestionsByWavesAnd
+        : getQuestionsByWaves;
     const load =
-      selectedIds.length === 0
-        ? Promise.resolve<TopicGroup[]>([])
-        : getQuestionsByWaves(selectedIds);
+      selectedIds.length === 0 ? Promise.resolve<TopicGroup[]>([]) : fetchFn(selectedIds);
     load
       .then((result) => {
         if (active) {
           setTopics(result);
-          setTopicsKey(selectedIds.join(","));
+          setTopicsKey(selectedIds.join(",") + logic);
           setTopicsError(null);
         }
       })
       .catch((err) => {
         if (active) {
           setTopicsError(err instanceof Error ? err.message : "Unknown error");
-          setTopicsKey(selectedIds.join(","));
+          setTopicsKey(selectedIds.join(",") + logic);
         }
       });
     return () => {
       active = false;
     };
-  }, [selectedIds]);
+  }, [selectedIds, logic]);
 
   function toggleWave(wave: string) {
     const nextIds = selectedIds.includes(wave)
@@ -103,6 +113,7 @@ function MeasurementPointsContent() {
       nextSearchParams.set("ids", nextIds.join(","));
     } else {
       nextSearchParams.delete("ids");
+      setLogic("or");
     }
     const qs = nextSearchParams.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname);
@@ -121,7 +132,27 @@ function MeasurementPointsContent() {
       </div>
       {mode === "selected" && (
         <div className="flex flex-col gap-2 items-start">
-          <p className="font-bold">Selection</p>
+          <div className="flex items-center gap-6 flex-wrap">
+            <p className="font-bold">Selection</p>
+            {selectedIds.length > 1 && (
+              <div className="flex rounded-lg border border-lmp-text overflow-hidden text-sm">
+                <button
+                  onClick={() => setLogic("or")}
+                  title="OR – show questions that appear in at least one of the selected measurement points"
+                  className={`px-4 py-1.5 transition cursor-pointer ${logic === "or" ? "bg-lmp-text text-white" : "hover:bg-lmp-gray3"}`}
+                >
+                  OR
+                </button>
+                <button
+                  onClick={() => setLogic("and")}
+                  title="AND – show only questions that appear in all of the selected measurement points"
+                  className={`px-4 py-1.5 transition cursor-pointer ${logic === "and" ? "bg-lmp-text text-white" : "hover:bg-lmp-gray3"}`}
+                >
+                  AND
+                </button>
+              </div>
+            )}
+          </div>
           <div className="flex flex-wrap gap-2">
             {[...selectedIds].sort().map((wave) => (
               <SelectedEntity key={wave} deselect={() => toggleWave(wave)}>
@@ -141,9 +172,10 @@ function MeasurementPointsContent() {
           {topicsLoading && (
             <div className="flex flex-col gap-4">
               <h2 className="font-semibold text-3xl">
-                Questions in Selected Measurement Point
-                {selectedIds.length > 1 ? "s" : ""} by Topic, Construct, and
-                Subfacet
+                {selectedIds.length > 1
+                  ? `Questions in ${logic === "and" ? "All" : "Any"} of the Selected Measurement Points`
+                  : "Questions in the Selected Measurement Point"}{" "}
+                by Topic, Construct, and Subfacet
               </h2>
               <p>Loading questions…</p>
             </div>
@@ -154,7 +186,11 @@ function MeasurementPointsContent() {
           {!topicsLoading && !topicsError && (
             <QuestionsByTopic
               topics={topics}
-              headline={`Questions in Selected Measurement Point${selectedIds.length > 1 ? "s" : ""} by Topic, Construct, and Subfacet`}
+              headline={
+                selectedIds.length > 1
+                  ? `Questions in ${logic === "and" ? "All" : "Any"} of the Selected Measurement Points by Topic, Construct, and Subfacet`
+                  : "Questions in the Selected Measurement Point by Topic, Construct, and Subfacet"
+              }
             />
           )}
         </div>
