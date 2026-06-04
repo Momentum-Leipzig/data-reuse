@@ -115,6 +115,79 @@ class MetricsResolver
     }
 
     /**
+     * Counts restricted to participants who participated in ALL of the given studies.
+     *
+     * @param string[] $studyNames
+     */
+    public function getByStudiesAnd(array $studyNames): array
+    {
+        if (empty($studyNames)) {
+            return $this->zeros();
+        }
+
+        if (count($studyNames) === 1) {
+            return $this->getByStudies($studyNames);
+        }
+
+        $pdo          = Connection::get();
+        $placeholders = implode(',', array_fill(0, count($studyNames), '?'));
+        $n            = count($studyNames);
+
+        $sql = "
+            SELECT
+                (
+                    SELECT COUNT(DISTINCT iw.item_name)
+                    FROM   study_item_wave siw
+                    JOIN   item_wave iw ON iw.item_wave_id = siw.item_wave_id
+                    WHERE  siw.study_name IN ($placeholders)
+                ) AS questions,
+                (
+                    SELECT COUNT(DISTINCT participant_id)
+                    FROM (
+                        SELECT r.participant_id
+                        FROM   study_item_wave siw
+                        JOIN   response r ON r.item_wave_id = siw.item_wave_id
+                        WHERE  siw.study_name IN ($placeholders)
+                        GROUP  BY r.participant_id
+                        HAVING COUNT(DISTINCT siw.study_name) = $n
+                    ) AS sub
+                ) AS participants,
+                (
+                    SELECT COUNT(DISTINCT iw.wave)
+                    FROM   study_item_wave siw
+                    JOIN   item_wave iw ON iw.item_wave_id = siw.item_wave_id
+                    WHERE  siw.study_name IN ($placeholders)
+                ) AS measurementPoints,
+                (
+                    SELECT COUNT(*)
+                    FROM   study_item_wave siw
+                    JOIN   response r ON r.item_wave_id = siw.item_wave_id
+                    WHERE  siw.study_name IN ($placeholders)
+                      AND  r.participant_id IN (
+                        SELECT r2.participant_id
+                        FROM   study_item_wave siw2
+                        JOIN   response r2 ON r2.item_wave_id = siw2.item_wave_id
+                        WHERE  siw2.study_name IN ($placeholders)
+                        GROUP  BY r2.participant_id
+                        HAVING COUNT(DISTINCT siw2.study_name) = $n
+                      )
+                ) AS dataPoints
+        ";
+
+        $params = array_merge(
+            array_values($studyNames),
+            array_values($studyNames),
+            array_values($studyNames),
+            array_values($studyNames),
+            array_values($studyNames),
+        );
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $this->mapRow($stmt->fetch());
+    }
+
+    /**
      * Counts restricted to the given item_names (questions).
      *
      * @param string[] $itemNames
@@ -151,6 +224,78 @@ class MetricsResolver
                     FROM   item_wave iw
                     JOIN   response r ON r.item_wave_id = iw.item_wave_id
                     WHERE  iw.item_name IN ($placeholders)
+                ) AS dataPoints
+        ";
+
+        $params = array_merge(
+            array_values($itemNames),
+            array_values($itemNames),
+            array_values($itemNames),
+            array_values($itemNames),
+        );
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $this->mapRow($stmt->fetch());
+    }
+
+    /**
+     * Counts restricted to participants who answered ALL of the given questions.
+     *
+     * @param string[] $itemNames
+     */
+    public function getByQuestionsAnd(array $itemNames): array
+    {
+        if (empty($itemNames)) {
+            return $this->zeros();
+        }
+
+        if (count($itemNames) === 1) {
+            return $this->getByQuestions($itemNames);
+        }
+
+        $pdo          = Connection::get();
+        $placeholders = implode(',', array_fill(0, count($itemNames), '?'));
+        $n            = count($itemNames);
+
+        // $n is injected directly (it's an integer from count(), never user input).
+        $sql = "
+            SELECT
+                $n AS questions,
+                (
+                    SELECT COUNT(DISTINCT participant_id)
+                    FROM (
+                        SELECT r.participant_id
+                        FROM   item_wave iw
+                        JOIN   response r ON r.item_wave_id = iw.item_wave_id
+                        WHERE  iw.item_name IN ($placeholders)
+                        GROUP  BY r.participant_id
+                        HAVING COUNT(DISTINCT iw.item_name) = $n
+                    ) AS sub
+                ) AS participants,
+                (
+                    SELECT COUNT(DISTINCT wave)
+                    FROM (
+                        SELECT iw.wave
+                        FROM   item_wave iw
+                        WHERE  iw.item_name IN ($placeholders)
+                        GROUP  BY iw.wave
+                        HAVING COUNT(DISTINCT iw.item_name) = $n
+                    ) AS sub
+                ) AS measurementPoints,
+                (
+                    SELECT COUNT(*)
+                    FROM   item_wave iw
+                    JOIN   response r ON r.item_wave_id = iw.item_wave_id
+                    WHERE  iw.item_name IN ($placeholders)
+                      AND  r.participant_id IN (
+                        SELECT r2.participant_id
+                        FROM   item_wave iw2
+                        JOIN   response r2 ON r2.item_wave_id = iw2.item_wave_id
+                        WHERE  iw2.item_name IN ($placeholders)
+                        GROUP  BY r2.participant_id
+                        HAVING COUNT(DISTINCT iw2.item_name) = $n
+                      )
                 ) AS dataPoints
         ";
 
@@ -209,6 +354,79 @@ class MetricsResolver
         ";
 
         $params = array_merge(
+            array_values($waveNames),
+            array_values($waveNames),
+            array_values($waveNames),
+            array_values($waveNames),
+        );
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $this->mapRow($stmt->fetch());
+    }
+
+    /**
+     * Counts restricted to participants who participated in ALL of the given waves.
+     *
+     * @param string[] $waveNames
+     */
+    public function getByWavesAnd(array $waveNames): array
+    {
+        if (empty($waveNames)) {
+            return $this->zeros();
+        }
+
+        if (count($waveNames) === 1) {
+            return $this->getByWaves($waveNames);
+        }
+
+        $pdo          = Connection::get();
+        $placeholders = implode(',', array_fill(0, count($waveNames), '?'));
+        $n            = count($waveNames);
+
+        $sql = "
+            SELECT
+                (
+                    SELECT COUNT(DISTINCT iw.item_name)
+                    FROM   item_wave iw
+                    WHERE  iw.wave IN ($placeholders)
+                      AND  (
+                        SELECT COUNT(DISTINCT iw2.wave)
+                        FROM item_wave iw2
+                        WHERE iw2.item_name = iw.item_name
+                          AND iw2.wave IN ($placeholders)
+                      ) = $n
+                ) AS questions,
+                (
+                    SELECT COUNT(DISTINCT participant_id)
+                    FROM (
+                        SELECT r.participant_id
+                        FROM   item_wave iw
+                        JOIN   response r ON r.item_wave_id = iw.item_wave_id
+                        WHERE  iw.wave IN ($placeholders)
+                        GROUP  BY r.participant_id
+                        HAVING COUNT(DISTINCT iw.wave) = $n
+                    ) AS sub
+                ) AS participants,
+                $n AS measurementPoints,
+                (
+                    SELECT COUNT(*)
+                    FROM   item_wave iw
+                    JOIN   response r ON r.item_wave_id = iw.item_wave_id
+                    WHERE  iw.wave IN ($placeholders)
+                      AND  r.participant_id IN (
+                        SELECT r2.participant_id
+                        FROM   item_wave iw2
+                        JOIN   response r2 ON r2.item_wave_id = iw2.item_wave_id
+                        WHERE  iw2.wave IN ($placeholders)
+                        GROUP  BY r2.participant_id
+                        HAVING COUNT(DISTINCT iw2.wave) = $n
+                      )
+                ) AS dataPoints
+        ";
+
+        $params = array_merge(
+            array_values($waveNames),
             array_values($waveNames),
             array_values($waveNames),
             array_values($waveNames),

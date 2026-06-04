@@ -138,6 +138,41 @@ export async function getQuestionsByWaves(
   return data.waveQuestions;
 }
 
+const GET_WAVE_QUESTIONS_AND_QUERY = `
+  query GetWaveQuestionsAnd($wave_names: [String!]!) {
+    waveQuestionsByWavesAnd(wave_names: $wave_names) {
+      topic_name
+      description
+      constructs {
+        construct_name
+        description
+        subfacets {
+          subfacet_name
+          description
+          questions {
+            item_name
+            item_language
+            item_text
+            reverse_coded
+            data_type
+            instruction_id
+          }
+        }
+      }
+    }
+  }
+`;
+
+export async function getQuestionsByWavesAnd(
+  waveNames: string[],
+): Promise<TopicGroup[]> {
+  const data = await graphqlRequest<
+    { waveQuestionsByWavesAnd: TopicGroup[] },
+    { wave_names: string[] }
+  >(GET_WAVE_QUESTIONS_AND_QUERY, { wave_names: waveNames });
+  return data.waveQuestionsByWavesAnd;
+}
+
 type GetAllQuestionsResponse = {
   allQuestions: TopicGroup[];
 };

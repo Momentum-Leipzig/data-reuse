@@ -42,6 +42,30 @@ const METRICS_BY_QUESTIONS_QUERY = `
   }
 `;
 
+const METRICS_BY_WAVES_AND_QUERY = `
+  query MetricsByWavesAnd($wave_names: [String!]!) {
+    metricsByWavesAnd(wave_names: $wave_names) {
+      ${METRICS_FIELDS}
+    }
+  }
+`;
+
+const METRICS_BY_STUDIES_AND_QUERY = `
+  query MetricsByStudiesAnd($study_names: [String!]!) {
+    metricsByStudiesAnd(study_names: $study_names) {
+      ${METRICS_FIELDS}
+    }
+  }
+`;
+
+const METRICS_BY_QUESTIONS_AND_QUERY = `
+  query MetricsByQuestionsAnd($item_names: [String!]!) {
+    metricsByQuestionsAnd(item_names: $item_names) {
+      ${METRICS_FIELDS}
+    }
+  }
+`;
+
 const METRICS_BY_WAVES_QUERY = `
   query MetricsByWaves($wave_names: [String!]!) {
     metricsByWaves(wave_names: $wave_names) {
@@ -84,6 +108,36 @@ export async function getMetricsByQuestions(
     { item_names: string[] }
   >(METRICS_BY_QUESTIONS_QUERY, { item_names: itemNames });
   return data.metricsByQuestions;
+}
+
+export async function getMetricsByWavesAnd(
+  waveNames: string[],
+): Promise<Metrics> {
+  const data = await graphqlRequest<
+    { metricsByWavesAnd: Metrics },
+    { wave_names: string[] }
+  >(METRICS_BY_WAVES_AND_QUERY, { wave_names: waveNames });
+  return data.metricsByWavesAnd;
+}
+
+export async function getMetricsByStudiesAnd(
+  studyNames: string[],
+): Promise<Metrics> {
+  const data = await graphqlRequest<
+    { metricsByStudiesAnd: Metrics },
+    { study_names: string[] }
+  >(METRICS_BY_STUDIES_AND_QUERY, { study_names: studyNames });
+  return data.metricsByStudiesAnd;
+}
+
+export async function getMetricsByQuestionsAnd(
+  itemNames: string[],
+): Promise<Metrics> {
+  const data = await graphqlRequest<
+    { metricsByQuestionsAnd: Metrics },
+    { item_names: string[] }
+  >(METRICS_BY_QUESTIONS_AND_QUERY, { item_names: itemNames });
+  return data.metricsByQuestionsAnd;
 }
 
 export async function getMetricsByWaves(waveNames: string[]): Promise<Metrics> {

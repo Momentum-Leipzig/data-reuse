@@ -80,6 +80,45 @@ class QueryType extends ObjectType
                     'resolve' => fn($root, array $args) => $metricsResolver->getByQuestions($args['item_names']),
                 ],
 
+                // Query: { metricsByStudiesAnd(study_names: ["..."]){ questions participants ... } }
+                'metricsByStudiesAnd' => [
+                    'type'        => Type::nonNull($metricsType),
+                    'description' => 'Aggregate counts restricted to participants who participated in ALL of the given studies',
+                    'args'        => [
+                        'study_names' => [
+                            'type'        => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+                            'description' => 'List of study_name values – only participants who answered in every one are counted',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $metricsResolver->getByStudiesAnd($args['study_names']),
+                ],
+
+                // Query: { metricsByWavesAnd(wave_names: ["..."]){ questions participants ... } }
+                'metricsByWavesAnd' => [
+                    'type'        => Type::nonNull($metricsType),
+                    'description' => 'Aggregate counts restricted to participants who participated in ALL of the given waves',
+                    'args'        => [
+                        'wave_names' => [
+                            'type'        => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+                            'description' => 'List of wave names – only participants present in every wave are counted',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $metricsResolver->getByWavesAnd($args['wave_names']),
+                ],
+
+                // Query: { metricsByQuestionsAnd(item_names: ["..."]){ questions participants ... } }
+                'metricsByQuestionsAnd' => [
+                    'type'        => Type::nonNull($metricsType),
+                    'description' => 'Aggregate counts restricted to participants who answered ALL of the given questions',
+                    'args'        => [
+                        'item_names' => [
+                            'type'        => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+                            'description' => 'List of item_name values – only participants who answered every one are counted',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $metricsResolver->getByQuestionsAnd($args['item_names']),
+                ],
+
                 // Query: { metricsByWaves(wave_names: ["..."]){ questions participants ... } }
                 'metricsByWaves' => [
                     'type'        => Type::nonNull($metricsType),
@@ -177,6 +216,45 @@ class QueryType extends ObjectType
                         ],
                     ],
                     'resolve' => fn($root, array $args) => $waveResolver->getByQuestions($args['item_names']),
+                ],
+
+                // Query: { waveQuestionsByWavesAnd(wave_names: ["..."]){ topic_name constructs { ... } } }
+                'waveQuestionsByWavesAnd' => [
+                    'type'        => Type::nonNull(Type::listOf(Type::nonNull($topicGroupType))),
+                    'description' => 'Questions that appear in ALL of the given waves, grouped by topic → construct → subfacet',
+                    'args'        => [
+                        'wave_names' => [
+                            'type'        => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+                            'description' => 'List of wave names – only questions present in every wave are returned',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $questionResolver->getByWavesAnd($args['wave_names']),
+                ],
+
+                // Query: { waveParticipantsByStudiesAnd(study_names: ["..."]){ wave month participants } }
+                'waveParticipantsByStudiesAnd' => [
+                    'type'        => Type::nonNull(Type::listOf(Type::nonNull($waveParticipantsType))),
+                    'description' => 'Participant count per wave for participants who participated in ALL of the given studies in that wave',
+                    'args'        => [
+                        'study_names' => [
+                            'type'        => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+                            'description' => 'List of study_name values to filter by (AND logic)',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $waveResolver->getByStudiesAnd($args['study_names']),
+                ],
+
+                // Query: { waveParticipantsByQuestionsAnd(item_names: ["..."]){ wave month participants } }
+                'waveParticipantsByQuestionsAnd' => [
+                    'type'        => Type::nonNull(Type::listOf(Type::nonNull($waveParticipantsType))),
+                    'description' => 'Participant count per wave for participants who answered ALL of the given questions in that wave',
+                    'args'        => [
+                        'item_names' => [
+                            'type'        => Type::nonNull(Type::listOf(Type::nonNull(Type::string()))),
+                            'description' => 'List of item_name values to filter by (AND logic)',
+                        ],
+                    ],
+                    'resolve' => fn($root, array $args) => $waveResolver->getByQuestionsAnd($args['item_names']),
                 ],
 
                 // Query: { studiesByQuestions(item_names: ["a", "b"]) { study_name title } }

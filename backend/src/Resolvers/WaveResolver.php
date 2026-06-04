@@ -104,6 +104,85 @@ class WaveResolver
         return $this->mapRows($stmt->fetchAll());
     }
 
+    /**
+     * Participant counts per wave, restricted to participants who participated
+     * in ALL of the given studies within that wave.
+     *
+     * @param string[] $studyNames
+     */
+    public function getByStudiesAnd(array $studyNames): array
+    {
+        if (empty($studyNames)) {
+            return [];
+        }
+
+        if (count($studyNames) === 1) {
+            return $this->getByStudies($studyNames);
+        }
+
+        $pdo          = Connection::get();
+        $placeholders = implode(',', array_fill(0, count($studyNames), '?'));
+        $n            = count($studyNames);
+
+        $stmt = $pdo->prepare("
+            SELECT sub.wave, w.month, COUNT(DISTINCT sub.participant_id) AS participants
+            FROM (
+                SELECT r.participant_id, iw.wave
+                FROM   study_item_wave siw
+                JOIN   item_wave iw ON iw.item_wave_id = siw.item_wave_id
+                JOIN   response r  ON r.item_wave_id  = siw.item_wave_id
+                WHERE  siw.study_name IN ($placeholders)
+                GROUP  BY r.participant_id, iw.wave
+                HAVING COUNT(DISTINCT siw.study_name) = ?
+            ) sub
+            JOIN wave w ON w.label = sub.wave
+            GROUP BY sub.wave, w.month
+            ORDER BY w.month
+        ");
+
+        $stmt->execute([...array_values($studyNames), $n]);
+        return $this->mapRows($stmt->fetchAll());
+    }
+
+    /**
+     * Participant counts per wave, restricted to participants who answered
+     * ALL of the given item_names within that wave.
+     *
+     * @param string[] $itemNames
+     */
+    public function getByQuestionsAnd(array $itemNames): array
+    {
+        if (empty($itemNames)) {
+            return [];
+        }
+
+        if (count($itemNames) === 1) {
+            return $this->getByQuestions($itemNames);
+        }
+
+        $pdo          = Connection::get();
+        $placeholders = implode(',', array_fill(0, count($itemNames), '?'));
+        $n            = count($itemNames);
+
+        $stmt = $pdo->prepare("
+            SELECT sub.wave, w.month, COUNT(DISTINCT sub.participant_id) AS participants
+            FROM (
+                SELECT r.participant_id, iw.wave
+                FROM   item_wave iw
+                JOIN   response r ON r.item_wave_id = iw.item_wave_id
+                WHERE  iw.item_name IN ($placeholders)
+                GROUP  BY r.participant_id, iw.wave
+                HAVING COUNT(DISTINCT iw.item_name) = ?
+            ) sub
+            JOIN wave w ON w.label = sub.wave
+            GROUP BY sub.wave, w.month
+            ORDER BY w.month
+        ");
+
+        $stmt->execute([...array_values($itemNames), $n]);
+        return $this->mapRows($stmt->fetchAll());
+    }
+
     // -------------------------------------------------------------------------
 
     private function mapRows(array $rows): array
