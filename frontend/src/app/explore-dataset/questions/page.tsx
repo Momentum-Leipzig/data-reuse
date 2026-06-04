@@ -383,6 +383,7 @@ function QuestionsContent() {
           <WaveParticipantsChart
             data={waveData}
             globalData={globalWaveData}
+            hasActiveFilter={selectedIds.length > 0}
             headline={`Participants per Measurement Points that Answered ${
               selectedIds.length > 1
                 ? logic === "and"
