@@ -459,6 +459,52 @@ class QuestionResolver
             }
         }
 
+        // ── Query 3: per-wave instruction text per item ──────────────────────────
+        // For each wave the item appears in, resolve the instruction text:
+        // prefer the wave-specific instruction from the instruction table;
+        // fall back to item.instruction_text when no wave-specific one exists.
+        $sql3 = "
+            SELECT DISTINCT
+                i.item_name,
+                iw.wave,
+                COALESCE(ins.text, i.instruction_text) AS instruction_text
+            FROM item i
+            JOIN item_wave iw ON iw.item_name = i.item_name
+            LEFT JOIN instruction ins ON ins.instruction_id = iw.instruction_id
+                                     AND ins.reference      = iw.reference
+                                     AND ins.language       = ?
+            WHERE i.item_name IN ($placeholders)
+              AND (
+                  i.item_language = ?
+                  OR NOT EXISTS (
+                      SELECT 1 FROM item i2
+                      WHERE i2.item_name     = i.item_name
+                        AND i2.item_language = ?
+                  )
+              )
+            ORDER BY i.item_name, iw.wave
+        ";
+
+        $params3 = array_merge([$language], array_values($itemNames), [$language, $language]);
+        $stmt3   = $pdo->prepare($sql3);
+        $stmt3->execute($params3);
+        $rows3 = $stmt3->fetchAll();
+
+        foreach ($details as $key => &$detail) {
+            $detail['instruction_waves'] = [];
+        }
+        unset($detail);
+
+        foreach ($rows3 as $row) {
+            $key = $row['item_name'];
+            if (isset($details[$key])) {
+                $details[$key]['instruction_waves'][] = [
+                    'wave'             => $row['wave'],
+                    'instruction_text' => $row['instruction_text'],
+                ];
+            }
+        }
+
         // Return in the same order the caller passed item_names
         $ordered = [];
         foreach ($itemNames as $name) {

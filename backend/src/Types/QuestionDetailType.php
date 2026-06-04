@@ -11,7 +11,7 @@ use GraphQL\Type\Definition\Type;
  */
 class QuestionDetailType extends ObjectType
 {
-    public function __construct(ResponseOptionType $responseOptionType, StudyType $studyType)
+    public function __construct(ResponseOptionType $responseOptionType, StudyType $studyType, WaveInstructionType $waveInstructionType)
     {
         parent::__construct([
             'name'   => 'QuestionDetail',
@@ -71,6 +71,10 @@ class QuestionDetailType extends ObjectType
                 'instruction_id' => [
                     'type'        => Type::string(),
                     'description' => 'Instruction identifier for the item (nullable)',
+                ],
+                'instruction_waves' => [
+                    'type'        => Type::nonNull(Type::listOf(Type::nonNull($waveInstructionType))),
+                    'description' => 'Per-wave instruction texts in the requested language',
                 ],
                 'studies' => [
                     'type'        => Type::nonNull(Type::listOf(Type::nonNull($studyType))),
