@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FormattedItemText } from "@/lib/formatItemText";
 import { Image } from "@/components/Image";
 import type { QuestionDetail } from "@/lib/graphql/questions";
 
@@ -41,7 +42,7 @@ export default function QuestionDetailCard({
       )}
 
       {/* Question pills — one per question with individual deselect */}
-      <div className="flex flex-col gap-2 w-full">
+      <div className="flex flex-col gap-2">
         {questions.map((question) => (
           <div
             key={question.item_name}
@@ -55,14 +56,16 @@ export default function QuestionDetailCard({
               height={20}
               className="mr-2 shrink-0"
             />
-            <span className="font-mono text-gray-500">
-              [{question.item_name}]
-            </span>
-            <span className="font-bold">
-              {question.instruction_id === "SF_12"
-                ? "[SF12v2 copyright]"
-                : (question.item_text ?? "—")}
-            </span>
+            <div>
+              <span>[{question.item_name}]</span>{" "}
+              <span className="font-bold">
+                {question.instruction_id === "SF_12" ? (
+                  "[SF12v2 copyright]"
+                ) : (
+                  <FormattedItemText text={question.item_text ?? "—"} />
+                )}
+              </span>
+            </div>
             {question.reverse_coded && (
               <span className="text-xs text-gray-500 self-center">
                 (reverse coded)

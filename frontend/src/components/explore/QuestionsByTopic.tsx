@@ -1,4 +1,5 @@
 import type { TopicGroup } from "@/lib/graphql/studies";
+import { FormattedItemText } from "@/lib/formatItemText";
 import { Image } from "@/components/Image";
 import Link from "next/link";
 
@@ -91,7 +92,7 @@ export default function QuestionsByTopic({
                   <div className="pl-8 mt-1 flex flex-col gap-2">
                     {construct.subfacets.map((subfacet, si) => {
                       const questions = (
-                        <ul className="pl-4 mt-1 flex flex-col gap-1 list-none">
+                        <ul className="pl-4 mt-1 flex flex-col gap-1 list-none items-start">
                           {subfacet.questions.map((q) => {
                             const isSelected = selectedQuestionIds.includes(
                               q.item_name,
@@ -117,12 +118,16 @@ export default function QuestionsByTopic({
                                   />
                                 )}
                                 <span>
-                                  <span className="font-mono text-xs text-gray-500 mr-2">
+                                  <span className="text-xs mr-2">
                                     [{q.item_name}]
                                   </span>
-                                  {q.instruction_id === "SF_12"
-                                    ? "[SF12v2 copyright]"
-                                    : (q.item_text ?? "—")}
+                                  {q.instruction_id === "SF_12" ? (
+                                    "[SF12v2 copyright]"
+                                  ) : (
+                                    <FormattedItemText
+                                      text={q.item_text ?? "—"}
+                                    />
+                                  )}
                                 </span>
                               </Link>
                             );
