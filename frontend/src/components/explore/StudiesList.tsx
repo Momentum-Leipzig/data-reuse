@@ -1,7 +1,7 @@
 "use client";
 
 import { getStudies, type Study } from "@/lib/graphql/studies";
-import Link from "next/link";
+import { Image } from "@/components/Image";
 import { useEffect, useMemo, useState } from "react";
 
 type StudiesListProps = {
@@ -11,6 +11,8 @@ type StudiesListProps = {
   loading?: boolean;
   error?: string | null;
   selectedStudyIds?: string[];
+  onSelect?: (studyId: string) => void;
+  onDeselect?: (studyId: string) => void;
 };
 
 export default function StudiesList({
@@ -20,13 +22,9 @@ export default function StudiesList({
   loading: externalLoading,
   error: externalError,
   selectedStudyIds = [],
+  onSelect,
+  onDeselect,
 }: StudiesListProps) {
-  function getStudyHref(studyName: string) {
-    const next = selectedStudyIds.includes(studyName)
-      ? selectedStudyIds
-      : [...selectedStudyIds, studyName];
-    return `/explore-dataset/studies?ids=${next.map(encodeURIComponent).join(",")}`;
-  }
   const [internalStudies, setInternalStudies] = useState<Study[]>([]);
   const [internalLoading, setInternalLoading] = useState(
     externalStudies ? false : true,
@@ -95,17 +93,33 @@ export default function StudiesList({
 
       {!loading && !error && visibleStudies.length > 0 && (
         <ul className="flex flex-col items-start gap-2 m-0 p-0 list-none">
-          {visibleStudies.map((study) => (
-            <Link
-              href={getStudyHref(study.study_name)}
-              key={study.study_name}
-              className="rounded-2xl px-4 py-2 bg-lmp-gray3 flex flex-wrap gap-1 cursor-pointer hover:bg-lmp-gray3/70 transition text-sm"
-            >
-              <p>{study.study_name.split("20")[0].trim()}</p>●
-              <p>{study.publication_year ?? "No publication year"}</p>●
-              <p className="font-bold">{study.title ?? "No title"}</p>
-            </Link>
-          ))}
+          {visibleStudies.map((study) => {
+            const isSelected = selectedStudyIds.includes(study.study_name);
+            return (
+              <li
+                key={study.study_name}
+                onClick={() =>
+                  isSelected
+                    ? onDeselect?.(study.study_name)
+                    : onSelect?.(study.study_name)
+                }
+                className="rounded-2xl px-4 py-2 bg-lmp-gray3 flex flex-wrap gap-1 cursor-pointer hover:bg-lmp-gray3/70 transition text-sm items-center"
+              >
+                {isSelected && (
+                  <Image
+                    src="/assets/x_circle.svg"
+                    alt="Deselect"
+                    width={20}
+                    height={20}
+                    className="mr-2 shrink-0"
+                  />
+                )}
+                <p>{study.study_name.split("20")[0].trim()}</p>●
+                <p>{study.publication_year ?? "No publication year"}</p>●
+                <p className="font-bold">{study.title ?? "No title"}</p>
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>

@@ -182,6 +182,7 @@ function StudiesContent() {
     const nextQueryString = nextSearchParams.toString();
     router.replace(
       nextQueryString ? `${pathname}?${nextQueryString}` : pathname,
+      { scroll: false },
     );
   }
 
@@ -196,6 +197,7 @@ function StudiesContent() {
     const nextQueryString = nextSearchParams.toString();
     router.replace(
       nextQueryString ? `${pathname}?${nextQueryString}` : pathname,
+      { scroll: false },
     );
   }
 
@@ -311,6 +313,8 @@ function StudiesContent() {
             loading={loading}
             error={error}
             selectedStudyIds={selectedIds}
+            onSelect={selectStudy}
+            onDeselect={deselectStudy}
           />
         </div>
       ) : null}
@@ -324,6 +328,8 @@ function StudiesContent() {
             loading={loading}
             error={error}
             selectedStudyIds={selectedIds}
+            onSelect={selectStudy}
+            onDeselect={deselectStudy}
           />
         </div>
       ) : null}
