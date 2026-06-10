@@ -69,37 +69,43 @@ export default function QuestionDetailCard({
       )}
 
       {/* Question pills — one per question with individual deselect */}
-      <div className="flex flex-col gap-2">
-        {questions.map((question) => (
-          <div
-            key={question.item_name}
-            className="rounded-2xl p-3 bg-lmp-gray3 flex flex-wrap gap-1 cursor-pointer hover:bg-lmp-gray3/70 transition text-sm"
-            onClick={() => onDeselect(question.item_name)}
-          >
-            <Image
-              src="/assets/x_circle.svg"
-              alt="Deselect"
-              width={20}
-              height={20}
-              className="mr-2 shrink-0"
-            />
-            <div>
-              <span>[{question.item_name}]</span>{" "}
-              <span className="font-bold">
-                {question.instruction_id === "SF_12" ? (
-                  "[SF12v2 copyright]"
-                ) : (
-                  <FormattedItemText text={question.item_text ?? "—"} />
-                )}
-              </span>
+      <div>
+        <p className="text-sm font-medium">
+          Question{questions.length > 1 ? "s" : ""}
+        </p>
+
+        <div className="flex flex-col gap-2 ml-4">
+          {questions.map((question) => (
+            <div
+              key={question.item_name}
+              className="rounded-2xl p-3 bg-lmp-gray3 flex flex-wrap gap-1 cursor-pointer hover:bg-lmp-gray3/70 transition text-sm"
+              onClick={() => onDeselect(question.item_name)}
+            >
+              <Image
+                src="/assets/x_circle.svg"
+                alt="Deselect"
+                width={20}
+                height={20}
+                className="mr-2 shrink-0"
+              />
+              <div>
+                <span>[{question.item_name}]</span>{" "}
+                <span className="font-bold">
+                  {question.instruction_id === "SF_12" ? (
+                    "[SF12v2 copyright]"
+                  ) : (
+                    <FormattedItemText text={question.item_text ?? "—"} />
+                  )}
+                </span>
+              </div>
+              {question.reverse_coded && (
+                <span className="text-xs text-gray-500 self-center">
+                  (reverse coded)
+                </span>
+              )}
             </div>
-            {question.reverse_coded && (
-              <span className="text-xs text-gray-500 self-center">
-                (reverse coded)
-              </span>
-            )}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Scale + response options */}
