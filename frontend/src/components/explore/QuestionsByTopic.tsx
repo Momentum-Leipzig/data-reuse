@@ -117,8 +117,14 @@ export default function QuestionsByTopic({
                                 key={`${q.item_name}-${q.item_language}`}
                                 href={getQuestionHref(q.item_name)}
                                 scroll={false}
-                                target={openQuestionsInNewTab ? "_blank" : undefined}
-                                rel={openQuestionsInNewTab ? "noopener noreferrer" : undefined}
+                                target={
+                                  openQuestionsInNewTab ? "_blank" : undefined
+                                }
+                                rel={
+                                  openQuestionsInNewTab
+                                    ? "noopener noreferrer"
+                                    : undefined
+                                }
                                 className={`text-sm rounded-xl px-3 py-2 transition flex items-start gap-2 ${
                                   isSelected
                                     ? "bg-lmp-gray3 hover:bg-lmp-gray3/70"
@@ -144,6 +150,11 @@ export default function QuestionsByTopic({
                                     <FormattedItemText
                                       text={q.item_text ?? "—"}
                                     />
+                                  )}{" "}
+                                  {q.waves && q.waves.length > 0 && (
+                                    <span className="text-xs mr-2 text-gray-500">
+                                      ({q.waves.join(", ")})
+                                    </span>
                                   )}
                                 </span>
                               </Link>

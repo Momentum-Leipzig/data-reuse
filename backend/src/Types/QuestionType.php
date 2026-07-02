@@ -40,6 +40,10 @@ class QuestionType extends ObjectType
                     'type'        => Type::string(),
                     'description' => 'Instruction identifier for the item (nullable)',
                 ],
+                'waves' => [
+                    'type'        => Type::listOf(Type::string()),
+                    'description' => 'Measurement points (waves) in which this question was used in the study (only populated for study-scoped queries)',
+                ],
             ],
         ]);
     }

@@ -17,6 +17,7 @@ export type Question = {
   reverse_coded: boolean | null;
   data_type: string | null;
   instruction_id: string | null;
+  waves?: string[] | null;
 };
 
 export type SubfacetGroup = {
@@ -82,6 +83,7 @@ const GET_STUDY_QUESTIONS_QUERY = `
             reverse_coded
             data_type
             instruction_id
+            waves
           }
         }
       }
