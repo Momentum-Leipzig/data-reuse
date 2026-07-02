@@ -15,7 +15,7 @@ export default function ExploreNavigation() {
     { href: "/explore-dataset/studies", label: "by Studies" },
   ];
   return (
-    <nav className="pt-4 pb-10 flex flex-wrap justify-start items-center gap-4">
+    <nav className="pt-4 pb-4 flex flex-wrap justify-start items-center gap-4">
       <h1 className="text-balance text-3xl font-bold mr-8">
         Explore the Dataset
       </h1>

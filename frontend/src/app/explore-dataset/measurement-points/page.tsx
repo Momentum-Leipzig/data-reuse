@@ -131,6 +131,16 @@ function MeasurementPointsContent() {
 
   return (
     <section className="flex flex-col gap-15">
+      <p className="text-sm text-gray-600 max-w-3xl">
+        To explore the dataset by measurement points, click on one or more
+        measurement points in the diagram. An overview of all items measured
+        at all of the selected measurement points (&ldquo;AND&rdquo;), or at
+        least one of them (&ldquo;OR&rdquo;), will then be shown below. By
+        clicking on an item, you will be redirected to the &ldquo;Questions
+        &amp; Constructs&rdquo; page where you can see the details about that
+        item.
+      </p>
+
       <div>
         <p className="font-bold">Select one or more Measurement Points</p>
         <WaveParticipantsChart
