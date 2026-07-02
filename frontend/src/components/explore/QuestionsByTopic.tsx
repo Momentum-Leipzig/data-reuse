@@ -59,7 +59,6 @@ export default function QuestionsByTopic({
         {topics.map((topic) => (
           <details
             key={topic.topic_name}
-            name={expanded ? undefined : "topics"}
             open={expanded}
             className="break-inside-avoid border-b border-lmp-gray3 py-2 mb-3"
           >
@@ -78,7 +77,6 @@ export default function QuestionsByTopic({
               {topic.constructs.map((construct) => (
                 <details
                   key={construct.construct_name}
-                  name={expanded ? undefined : "constructs"}
                   open={expanded}
                   className="break-inside-avoid"
                 >
@@ -155,7 +153,6 @@ export default function QuestionsByTopic({
                       return subfacet.subfacet_name ? (
                         <details
                           key={subfacet.subfacet_name}
-                          name={expanded ? undefined : "subfacets"}
                           open={expanded}
                           className="break-inside-avoid"
                         >
