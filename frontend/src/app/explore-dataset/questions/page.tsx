@@ -334,15 +334,7 @@ function QuestionsContent() {
         )}
       />
 
-      {mode === "all" ? (
-        <div className="flex flex-col gap-15">
-          <MetricsOverview metrics={metrics} />
-
-          <WaveParticipantsChart data={waveData} globalData={globalWaveData} />
-
-          {allQuestionsBlock}
-        </div>
-      ) : (
+      {mode === "selected" && (
         <div className="flex flex-col gap-12">
           {/* Selection  */}
           <div className="flex flex-col gap-2 items-start">
@@ -456,11 +448,18 @@ function QuestionsContent() {
               )}
             </div>
           </div>
-
-          {/* all questions section */}
-          {allQuestionsBlock}
         </div>
       )}
+
+      {mode === "all" && (
+        <div className="flex flex-col gap-15">
+          <MetricsOverview metrics={metrics} />
+
+          <WaveParticipantsChart data={waveData} globalData={globalWaveData} />
+        </div>
+      )}
+
+      {allQuestionsBlock}
     </section>
   );
 }
