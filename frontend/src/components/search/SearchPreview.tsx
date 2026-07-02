@@ -37,7 +37,7 @@ export default function SearchPreview<T>({
   const canSearch = normalizedQuery.length >= MIN_CHARACTERS;
 
   useEffect(() => {
-    function handlePointerDown(event: MouseEvent) {
+    function handleClick(event: MouseEvent) {
       if (!containerRef.current) {
         return;
       }
@@ -47,10 +47,14 @@ export default function SearchPreview<T>({
       }
     }
 
-    document.addEventListener("mousedown", handlePointerDown);
+    // Use "click" (not "mousedown") so the dropdown closes after any
+    // click-triggered action outside it has already fired — closing on
+    // mousedown shifts the layout before the click completes, which can
+    // cause the click to miss its target (e.g. a "Deselect all" button).
+    document.addEventListener("click", handleClick);
 
     return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("click", handleClick);
     };
   }, []);
 

@@ -106,6 +106,14 @@ function MeasurementPointsContent() {
     };
   }, [selectedIds, logic]);
 
+  function deselectAll() {
+    const nextSearchParams = new URLSearchParams(searchParams.toString());
+    nextSearchParams.delete("ids");
+    setLogic("or");
+    const qs = nextSearchParams.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname);
+  }
+
   function toggleWave(wave: string) {
     const nextIds = selectedIds.includes(wave)
       ? selectedIds.filter((id) => id !== wave)
@@ -153,6 +161,14 @@ function MeasurementPointsContent() {
                   AND
                 </button>
               </div>
+            )}
+            {selectedIds.length > 1 && (
+              <button
+                onClick={deselectAll}
+                className="text-sm underline cursor-pointer hover:text-lmp-gray3"
+              >
+                Deselect all
+              </button>
             )}
           </div>
           <div className="flex flex-wrap gap-2">
