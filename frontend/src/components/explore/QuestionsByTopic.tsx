@@ -9,6 +9,7 @@ type Props = {
   expanded?: boolean;
   selectedQuestionIds?: string[];
   compact?: boolean;
+  openQuestionsInNewTab?: boolean;
 };
 
 export default function QuestionsByTopic({
@@ -17,6 +18,7 @@ export default function QuestionsByTopic({
   expanded,
   selectedQuestionIds = [],
   compact = false,
+  openQuestionsInNewTab = false,
 }: Props) {
   if (topics.length === 0) {
     return (
@@ -102,6 +104,8 @@ export default function QuestionsByTopic({
                                 key={`${q.item_name}-${q.item_language}`}
                                 href={getQuestionHref(q.item_name)}
                                 scroll={false}
+                                target={openQuestionsInNewTab ? "_blank" : undefined}
+                                rel={openQuestionsInNewTab ? "noopener noreferrer" : undefined}
                                 className={`text-sm rounded-xl px-3 py-2 transition flex items-start gap-2 ${
                                   isSelected
                                     ? "bg-lmp-gray3 hover:bg-lmp-gray3/70"

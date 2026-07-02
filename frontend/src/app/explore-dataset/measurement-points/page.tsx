@@ -209,6 +209,7 @@ function MeasurementPointsContent() {
                   ? `Questions in ${logic === "and" ? "All" : "Any"} of the Selected Measurement Points by Topic, Construct, and Subfacet`
                   : "Questions in the Selected Measurement Point by Topic, Construct, and Subfacet"
               }
+              openQuestionsInNewTab
             />
           )}
         </div>
