@@ -91,6 +91,19 @@ export default function QuestionsByTopic({
                       {construct.description}
                     </span>
                   </summary>
+                  {construct.subfacets.some((s) => s.subfacet_name) && (
+                    <Link
+                      href={getSelectAllHref(
+                        construct.subfacets.flatMap((s) =>
+                          s.questions.map((q) => q.item_name),
+                        ),
+                      )}
+                      scroll={false}
+                      className="text-sm ml-4 underline hover:text-lmp-text/70 transition"
+                    >
+                      Select All
+                    </Link>
+                  )}
                   <div className="pl-8 mt-1 flex flex-col gap-2">
                     {construct.subfacets.map((subfacet, si) => {
                       const questions = (
