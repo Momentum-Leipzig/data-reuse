@@ -1,6 +1,7 @@
 import type { TopicGroup } from "@/lib/graphql/studies";
 import { FormattedItemText } from "@/lib/formatItemText";
 import { Image } from "@/components/Image";
+import { slugify } from "@/lib/slugify";
 import Link from "next/link";
 
 type Props = {
@@ -77,6 +78,7 @@ export default function QuestionsByTopic({
               {topic.constructs.map((construct) => (
                 <details
                   key={construct.construct_name}
+                  id={`construct-${slugify(construct.construct_name)}`}
                   open={expanded}
                   className="break-inside-avoid"
                 >

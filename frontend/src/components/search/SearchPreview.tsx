@@ -100,13 +100,20 @@ export default function SearchPreview<T>({
               {filteredResults.map((item) => (
                 <li key={getItemKey(item)}>
                   {onSelect ? (
-                    <button
-                      type="button"
+                    <div
+                      role="button"
+                      tabIndex={0}
                       onClick={() => onSelect(item)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          onSelect(item);
+                        }
+                      }}
                       className="cursor-pointer rounded-xl px-3 py-2 text-left bg-lmp-gray3 hover:bg-lmp-gray3/70 transition"
                     >
                       {renderItem(item)}
-                    </button>
+                    </div>
                   ) : (
                     <div className="rounded-xl px-3 py-2 bg-lmp-gray3">
                       {renderItem(item)}
