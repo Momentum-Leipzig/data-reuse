@@ -33,9 +33,14 @@ export default async function AboutDataset() {
               daily diary (i.e., experience sampling) study conducted in August
               2022 with participants from the longitudinal study. Participants
               were recruited from a nationally representative panel in Germany.
-              The dataset includes a wide range of variables and constructs
-              related to demographics, employment, personality, aging, health
-              and wellbeing, and work characteristics.
+              In addition to the approximately 2,000 individuals who completed
+              the survey in December 2019 and were invited to all subsequent
+              surveys, two refresher samples of 500 individuals each completed
+              the surveys in July and October 2020, respectively, and were
+              invited to all subsequent surveys. The dataset includes a wide
+              range of variables and constructs related to demographics,
+              employment, personality, aging, health and wellbeing, and work
+              characteristics.
             </p>
           </div>
         </div>
@@ -47,6 +52,7 @@ export default async function AboutDataset() {
               <li>
                 54 measurement points over 5 years, with different time lags
               </li>
+              <li>plus a daily diary study with 11 measurement points</li>
               <li>
                 Data collection covering pre-, during and post-COVID-19 pandemic
                 periods
@@ -74,6 +80,12 @@ export default async function AboutDataset() {
             participation varies across waves and not all questions were
             included at every timepoint, the dataset combines repeated
             structures with changing coverage over the course of the study.
+            Items that were only measured once or twice were not included in the
+            published dataset (except for demographics and employment
+            characteristics). Therefore, some items that were used in published
+            studies are not accessible in the documentation. However, most items
+            can be accessed through the repositories associated with the
+            respective publications.
           </p>
         </div>
         <div className="col-span-1 bg-lmp-gray1 p-6 flex flex-col gap-6">
@@ -91,15 +103,54 @@ export default async function AboutDataset() {
       </div>
 
       <div className="flex flex-col gap-6 sm:max-w-[70%]">
-        <h3 className="text-3xl font-medium">
-          What the exploration tool provides
-        </h3>
+        <h3 className="text-3xl font-medium">Possible usage of the tool</h3>
         <p className="leading-relaxed">
-          The tool supports structured exploration of metadata, enabling
-          researchers to assess the suitability of the dataset for their
-          purposes and to download the dataset. It does not provide access to
-          raw data or support statistical analysis.
+          You can use this tool to assess whether the dataset provides the data
+          needed to answer a specific question that you may have in mind.
+          Additionally, you can use the tool to generate research questions.
+          Several potential use cases of the dataset exist:
         </p>
+        <ul>
+          <li>
+            Research in industrial and organizational psychology can use the
+            dataset to study work characteristics, leadership, employee behavior
+            (e.g., performance, proactivity), employee attitudes (e.g., job
+            satisfaction), motivation, and well-being over time.
+          </li>
+          <li>
+            Research in health psychology and public health can examine a range
+            of health outcomes (physical, mental, social, occupational) and
+            their determinants, including short- and long-term as well as
+            cumulative effects
+          </li>
+          <li>
+            Research in personality and lifespan development can investigate
+            trajectories of personality traits and work experiences over time,
+            as well as factors shaping individual development and adaptation.
+          </li>
+          <li>
+            Research in aging and organizational behavior can address
+            age-related constructs (e.g., subjective age, aging beliefs,
+            retirement intentions) as well as work-related topics such as
+            leadership, organizational support, and performance.
+          </li>
+          <li>
+            Research in economics and sociology can use demographic and
+            employment data to analyze labor market dynamics, including job
+            stability, career mobility, and economic well-being (e.g., income,
+            job and life satisfaction).
+          </li>
+          <li>
+            Given that the study spans the pre-, during-, and post-COVID-19
+            period, the dataset can be used to study the societal impact of the
+            pandemic and evaluate related policy measures.
+          </li>
+          <li>
+            The dataset can further be used in methodological research,
+            teaching, and training, including case studies and applied data
+            analysis based on its intensive longitudinal design.
+          </li>
+        </ul>
       </div>
 
       <div className="flex flex-col sm:grid grid-cols-2 gap-6">
