@@ -41,7 +41,7 @@ function StudiesContent() {
       : [];
   }, [ids]);
   const mode = selectedIds.length > 0 ? "selected" : "all";
-  const [logic, setLogic] = useState<"or" | "and">("or");
+  const [logic, setLogic] = useState<"or" | "and">("and");
   const [studies, setStudies] = useState<Study[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -281,12 +281,12 @@ function StudiesContent() {
             data={waveData}
             globalData={globalWaveData}
             headline={`Participants per Measurement Point that Answered Questions ${
-                selectedStudies.length > 1
-                  ? logic === "and"
-                    ? "in All of the Selected Studies"
-                    : "in Any of the Selected Studies"
-                  : "in the Selected Study"
-              }`}
+              selectedStudies.length > 1
+                ? logic === "and"
+                  ? "in All of the Selected Studies"
+                  : "in Any of the Selected Studies"
+                : "in the Selected Study"
+            }`}
           />
 
           {/* Study detail cards */}
