@@ -25,7 +25,7 @@ class QuestionResolver
         // instrument_construct table (subfacet_name IS NULL rows) to resolve
         // construct and topic so those items are still included.
         $sql = '
-            SELECT DISTINCT
+            SELECT
                 COALESCE(t_sf.topic_name,     t_ic.topic_name)     AS topic_name,
                 COALESCE(t_sf.description,    t_ic.description)    AS topic_description,
                 COALESCE(c_sf.construct_name, c_ic.construct_name) AS construct_name,
@@ -37,7 +37,8 @@ class QuestionResolver
                 i.item_text,
                 i.reverse_coded,
                 i.data_type,
-                i.instruction_id
+                i.instruction_id,
+                GROUP_CONCAT(DISTINCT iw.wave ORDER BY iw.wave SEPARATOR \',\') AS waves
             FROM study_item_wave siw
             JOIN  item_wave iw   ON iw.item_wave_id   = siw.item_wave_id
             JOIN  item      i    ON i.item_name        = iw.item_name
@@ -60,6 +61,11 @@ class QuestionResolver
                   SELECT 1 FROM item i2
                   WHERE i2.item_name = i.item_name AND i2.item_language = \'en\'
               ))
+            GROUP BY
+                t_sf.topic_name, t_ic.topic_name, t_sf.description, t_ic.description,
+                c_sf.construct_name, c_ic.construct_name, c_sf.description, c_ic.description,
+                s.subfacet_name, s.description,
+                i.item_name, i.item_language, i.item_text, i.reverse_coded, i.data_type, i.instruction_id
             ORDER BY
                 COALESCE(t_sf.topic_name,     t_ic.topic_name),
                 COALESCE(c_sf.construct_name, c_ic.construct_name),
@@ -312,6 +318,7 @@ class QuestionResolver
                 'reverse_coded'  => isset($row['reverse_coded']) ? (bool) $row['reverse_coded'] : null,
                 'data_type'      => $row['data_type'],
                 'instruction_id' => $row['instruction_id'] ?? null,
+                'waves'          => !empty($row['waves']) ? explode(',', $row['waves']) : null,
             ];
         }
 
