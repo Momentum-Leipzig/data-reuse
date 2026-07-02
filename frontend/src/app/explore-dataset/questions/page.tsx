@@ -196,6 +196,16 @@ function QuestionsContent() {
     );
   }
 
+  function deselectAll() {
+    const nextSearchParams = new URLSearchParams(searchParams.toString());
+    nextSearchParams.delete("ids");
+    setLogic("or");
+    const nextQueryString = nextSearchParams.toString();
+    router.replace(
+      nextQueryString ? `${pathname}?${nextQueryString}` : pathname,
+    );
+  }
+
   function deselectQuestion(itemName: string) {
     const nextSelectedIds = selectedIds.filter((id) => id !== itemName);
     const nextSearchParams = new URLSearchParams(searchParams.toString());
@@ -355,6 +365,14 @@ function QuestionsContent() {
                     AND
                   </button>
                 </div>
+              )}
+              {selectedIds.length > 1 && (
+                <button
+                  onClick={deselectAll}
+                  className="text-sm underline cursor-pointer hover:text-lmp-gray3"
+                >
+                  Deselect all
+                </button>
               )}
             </div>
             <div className="flex flex-col gap-2">

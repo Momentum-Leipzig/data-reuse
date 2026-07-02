@@ -186,6 +186,17 @@ function StudiesContent() {
     );
   }
 
+  function deselectAll() {
+    const nextSearchParams = new URLSearchParams(searchParams.toString());
+    nextSearchParams.delete("ids");
+    setLogic("or");
+    const nextQueryString = nextSearchParams.toString();
+    router.replace(
+      nextQueryString ? `${pathname}?${nextQueryString}` : pathname,
+      { scroll: false },
+    );
+  }
+
   function selectStudy(studyId: string) {
     const nextSearchParams = new URLSearchParams(searchParams.toString());
     const nextSelectedIds = selectedIds.includes(studyId)
@@ -247,6 +258,14 @@ function StudiesContent() {
                     AND
                   </button>
                 </div>
+              )}
+              {selectedIds.length > 1 && (
+                <button
+                  onClick={deselectAll}
+                  className="text-sm underline cursor-pointer hover:text-lmp-gray3"
+                >
+                  Deselect all
+                </button>
               )}
             </div>
             <div className="flex flex-col gap-2">
