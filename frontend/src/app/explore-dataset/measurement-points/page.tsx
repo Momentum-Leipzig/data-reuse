@@ -38,7 +38,7 @@ function MeasurementPointsContent() {
     [ids],
   );
 
-  const [logic, setLogic] = useState<"or" | "and">("or");
+  const [logic, setLogic] = useState<"or" | "and">("and");
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [waveData, setWaveData] = useState<WaveParticipants[] | null>(null);
   const [topics, setTopics] = useState<TopicGroup[]>([]);
@@ -84,7 +84,9 @@ function MeasurementPointsContent() {
         ? getQuestionsByWavesAnd
         : getQuestionsByWaves;
     const load =
-      selectedIds.length === 0 ? Promise.resolve<TopicGroup[]>([]) : fetchFn(selectedIds);
+      selectedIds.length === 0
+        ? Promise.resolve<TopicGroup[]>([])
+        : fetchFn(selectedIds);
     load
       .then((result) => {
         if (active) {

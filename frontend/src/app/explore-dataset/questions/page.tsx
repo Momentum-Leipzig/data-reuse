@@ -98,7 +98,7 @@ function QuestionsContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [logic, setLogic] = useState<"or" | "and">("or");
+  const [logic, setLogic] = useState<"or" | "and">("and");
   const [language, setLanguage] = useState<"en" | "de">("en");
   const [questionDetails, setQuestionDetails] = useState<QuestionDetail[]>([]);
   const [detailsLoading, setDetailsLoading] = useState(false);
