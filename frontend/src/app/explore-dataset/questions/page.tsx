@@ -7,6 +7,7 @@ import SelectedEntity from "@/components/explore/SelectedEntity";
 import WaveParticipantsChart from "@/components/explore/WaveParticipantsChart";
 import SearchPreview from "@/components/search/SearchPreview";
 import { FormattedItemText } from "@/lib/formatItemText";
+import { slugify } from "@/lib/slugify";
 import {
   getAllQuestions,
   type Question,
@@ -184,6 +185,26 @@ function QuestionsContent() {
     fetchWaves(selectedIds).then(setWaveData);
   }, [selectedIds, logic]);
 
+  function scrollToConstruct(constructName: string) {
+    const target = document.getElementById(
+      `construct-${slugify(constructName)}`,
+    );
+    if (!target) return;
+
+    let ancestor = target.parentElement;
+    while (ancestor) {
+      if (ancestor instanceof HTMLDetailsElement) {
+        ancestor.open = true;
+      }
+      ancestor = ancestor.parentElement;
+    }
+    if (target instanceof HTMLDetailsElement) {
+      target.open = true;
+    }
+
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   function selectQuestion(itemName: string) {
     const nextSearchParams = new URLSearchParams(searchParams.toString());
     const nextSelectedIds = selectedIds.includes(itemName)
@@ -320,7 +341,23 @@ function QuestionsContent() {
           <div className="flex flex-col gap-0.5 text-sm">
             <p className="text-xs text-gray-600">
               {q.topic_name}
-              {q.construct_name ? ` › ${q.construct_name}` : ""}
+              {q.construct_name ? (
+                <>
+                  {" › "}
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      scrollToConstruct(q.construct_name as string);
+                    }}
+                    className="underline hover:text-lmp-text transition cursor-pointer"
+                  >
+                    {q.construct_name}
+                  </button>
+                </>
+              ) : (
+                ""
+              )}
               {q.subfacet_name ? ` › ${q.subfacet_name}` : ""}
             </p>
             <div className="">
