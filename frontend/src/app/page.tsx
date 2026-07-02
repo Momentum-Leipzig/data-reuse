@@ -23,11 +23,11 @@ const TEAM_MEMBERS = [
     contact: "richard.janzen@uni-leipzig.de",
   },
   {
-    name: "Dr. Cort W. Rudolph",
+    name: "Prof. Dr. Cort W. Rudolph",
     imageSrc: "/assets/Team_Cort_Rudolph.png",
     description:
-      "Industrial and Organizational Psychologist and Professor of Psychology at Wayne State University in Detroit, MI (USA). His research research focuses broadly on topics ranging from aging workers and lifespan development, to occupational health, employee wellbeing, environmental sustainability, and leadership.",
-    contact: null,
+      "Industrial and Organizational Psychologist and Professor of Psychology at Wayne State University in Detroit, MI (USA). His research focuses broadly on topics ranging from aging workers and lifespan development, to occupational health, employee wellbeing, environmental sustainability, and leadership.",
+    contact: "cort.rudolph@wayne.edu",
   },
 ];
 
@@ -156,8 +156,9 @@ export default function Home() {
             <h3 className="text-3xl font-medium">Dataset facts</h3>
             <ul>
               <li>
-                54 measurement points over 5 years, with different time lags
+                54 measurement points over 5 years , with different time lags
               </li>
+              <li>plus a daily diary study with 11 measurement points</li>
               <li>
                 Data collection covering pre-, during and post-COVID-19 pandemic
                 periods
@@ -171,7 +172,7 @@ export default function Home() {
           <div className="flex flex-col gap-6 bg-lmp-gray1 p-6">
             <h3 className="text-3xl font-medium">Project facts</h3>
             <ul>
-              <li>Duration: 2025–2027</li>
+              <li>Duration: 2019–2024</li>
               <li>Funding: Volkswagen Foundation</li>
               <li>Data collection completed</li>
               <li>5-year longitudinal survey study</li>
