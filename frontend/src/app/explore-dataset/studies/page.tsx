@@ -214,14 +214,13 @@ function StudiesContent() {
 
   return (
     <section className="flex flex-col gap-15">
-      <p className="text-sm text-gray-600 max-w-3xl">
-        To explore the dataset by studies, either search for specific
-        keywords, such as study titles or authors, or browse the overview of
-        studies below. By clicking on a study, you can see detailed
-        information on which items and measurement points were used in that
-        study. By clicking on an item, you will be redirected to the
-        &ldquo;Questions &amp; Constructs&rdquo; page where you can see the
-        details about that item.
+      <p className="text-sm text-gray-600 max-w-233">
+        To explore the dataset by studies, either search for specific keywords,
+        such as study titles or authors, or browse the overview of studies
+        below. By clicking on a study, you can see detailed information on which
+        items and measurement points were used in that study. By clicking on an
+        item, you will be redirected to the &ldquo;Questions &amp;
+        Constructs&rdquo; page where you can see the details about that item.
       </p>
 
       <SearchPreview

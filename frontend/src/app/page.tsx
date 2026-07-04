@@ -158,7 +158,7 @@ export default function Home() {
               <li>
                 54 measurement points over 5 years , with different time lags
               </li>
-              <li>plus a daily diary study with 11 measurement points</li>
+              <li>Plus a daily diary study with 11 measurement points</li>
               <li>
                 Data collection covering pre-, during and post-COVID-19 pandemic
                 periods
@@ -202,7 +202,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-6">
+      <div id="project-team" className="flex flex-col gap-6">
         <h3 className="text-3xl font-medium">Project team</h3>
         <div className="flex flex-row gap-4 flex-wrap">
           {TEAM_MEMBERS.map(({ name, imageSrc, description, contact }) => (

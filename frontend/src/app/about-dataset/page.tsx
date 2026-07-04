@@ -52,7 +52,7 @@ export default async function AboutDataset() {
               <li>
                 54 measurement points over 5 years, with different time lags
               </li>
-              <li>plus a daily diary study with 11 measurement points</li>
+              <li>Plus a daily diary study with 11 measurement points</li>
               <li>
                 Data collection covering pre-, during and post-COVID-19 pandemic
                 periods
@@ -102,15 +102,15 @@ export default async function AboutDataset() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-6 sm:max-w-[70%]">
+      <div className="flex flex-col gap-6">
         <h3 className="text-3xl font-medium">Possible usage of the tool</h3>
-        <p className="leading-relaxed">
+        <p className="leading-relaxed sm:max-w-[70%]">
           You can use this tool to assess whether the dataset provides the data
           needed to answer a specific question that you may have in mind.
           Additionally, you can use the tool to generate research questions.
           Several potential use cases of the dataset exist:
         </p>
-        <ul>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4">
           <li>
             Research in industrial and organizational psychology can use the
             dataset to study work characteristics, leadership, employee behavior

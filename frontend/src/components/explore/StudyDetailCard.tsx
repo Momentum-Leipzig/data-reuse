@@ -101,6 +101,7 @@ export default function StudyDetailCard({
           headline="Included Questions"
           expanded
           compact
+          openQuestionsInNewTab
         />
       )}
     </div>
