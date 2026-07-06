@@ -26,7 +26,7 @@ const TEAM_MEMBERS = [
     name: "Prof. Dr. Cort W. Rudolph",
     imageSrc: "/assets/Team_Cort_Rudolph.png",
     description:
-      "Industrial and Organizational Psychologist and Professor of Psychology at Wayne State University in Detroit, MI (USA). His research focuses broadly on topics ranging from aging workers and lifespan development, to occupational health, employee wellbeing, environmental sustainability, and leadership.",
+      "Industrial and Organizational Psychologist and Professor of Psychology at Wayne State University in Detroit, MI (USA). His research focuses broadly on topics ranging from aging workers and lifespan development, to occupational health, employee well-being, environmental sustainability, and leadership.",
     contact: "cort.rudolph@wayne.edu",
   },
 ];
@@ -75,19 +75,21 @@ export default function Home() {
           <div className="flex flex-col gap-6">
             <h3 className="text-3xl font-medium">Research background</h3>
             <p className="leading-relaxed">
-              The 54-wave was collected from full-time employees in Germany
-              between December 2019 and December 2024 as part of a large-scale
-              longitudinal online survey study. Data collection was conducted
-              within the research project{" "}
+              Data were collected from full-time employees in Germany between
+              December 2019 and December 2024 as part of a large-scale
+              longitudinal online survey study. The dataset comprises data
+              collected at 65 measurement points (a 54-wave panel, T01–T54, and
+              an 11-point daily diary component with 1 baseline and 10 daily
+              assessments) within the research project{" "}
               <a
                 href="https://projektdatenbank.volkswagenstiftung.de/projekt/0065586"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-lmp-text hover:text-lmp-text/70 font-bold transition underline"
+                className="text-lmp-text hover:text-lmp-text/70 font-bold transition underline text-nowrap"
               >
                 “The Role of Work in the Development of Civilization Diseases”
-                at Leipzig University.
-              </a>
+              </a>{" "}
+              at Leipzig University.
               <br />
               <br />
               The aim of the study was to investigate links between work
@@ -105,7 +107,7 @@ export default function Home() {
               2022 and June 2023 due to a temporary funding gap.
               <br />
               <br />
-              The longitudinal dataset comprises data collected at 54
+              The longitudinal dataset comprises data collected at 65
               measurement points and includes variables and constructs related
               to demographic, employment, personality, aging, health and
               well-being, and work characteristics, and were assessed using
@@ -140,13 +142,13 @@ export default function Home() {
             <p className="leading-relaxed">
               The data exploration tool is designed for researchers in
               psychology, public health, business administration and management,
-              economics, sociology, and related fields as well as for methods
-              teaching and simulation. It helps researchers search the dataset
-              for information that fits their research questions and to discover
-              data that might lead to the development of novel research
-              questions. The data can be used to study topics such as health,
-              aging, personality development, organizational behavior, and labor
-              market dynamics, as well as for teaching and simulation.
+              economics, sociology, and related fields as well as for
+              methodologists and teachers. It helps researchers search the
+              dataset for data relevant to their research questions and discover
+              data that may inspire novel research questions. The data can be
+              used to study topics such as health, aging, personality
+              development, organizational behavior, and labor market dynamics,
+              as well as for teaching and simulation.
             </p>
           </div>
         </div>
@@ -156,9 +158,9 @@ export default function Home() {
             <h3 className="text-3xl font-medium">Dataset facts</h3>
             <ul>
               <li>
-                54 measurement points over 5 years , with different time lags
+                65 measurement points over 5 years, with different time lags,
+                including a daily diary study with 11 measurement points
               </li>
-              <li>Plus a daily diary study with 11 measurement points</li>
               <li>
                 Data collection covering pre-, during and post-COVID-19 pandemic
                 periods
@@ -184,7 +186,7 @@ export default function Home() {
               <li>Demographic and employment characteristics</li>
               <li>Personality traits and individual differences</li>
               <li>Aging</li>
-              <li>Health and wellbeing</li>
+              <li>Health and well-being</li>
               <li>Employee attitudes and behaviors</li>
               <li>Work characteristics and work-family life</li>
               <li>COVID-19 related variables</li>

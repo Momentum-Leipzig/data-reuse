@@ -43,7 +43,8 @@ export default function WaveParticipantsChart({
   // On the measurement page (selectMode): auto-expand when a daily wave is among the selected waves.
   const autoExpand = selectMode
     ? !!selectedWaves?.some((w) => w.toLowerCase().includes("dd"))
-    : !!hasActiveFilter && !!data?.some((d) => d.wave.toLowerCase().includes("dd"));
+    : !!hasActiveFilter &&
+      !!data?.some((d) => d.wave.toLowerCase().includes("dd"));
   const effectiveShowDaily = showDaily || autoExpand;
 
   useEffect(() => {
@@ -206,7 +207,7 @@ export default function WaveParticipantsChart({
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm font-bold text-lmp-text">
-        {headline || "Participants per Measurement Point for All Questions"}
+        {headline || "Participants per Measurement Point for all Questions"}
       </p>
       <div className="overflow-x-auto">
         <div ref={containerRef} className="min-w-300 pb-1 w-full h-80 relative">
@@ -399,7 +400,7 @@ export default function WaveParticipantsChart({
                   fill="#001a3a"
                   dominantBaseline="middle"
                 >
-                  Measurement points
+                  Measurement Points
                 </text>
 
                 {/* Expand/collapse arrow below Aug 2022 — only shown when daily waves exist */}
@@ -421,6 +422,16 @@ export default function WaveParticipantsChart({
                       className="select-none"
                     >
                       {effectiveShowDaily ? "▲" : "▼"}
+                    </text>
+                    <text
+                      x={16}
+                      textAnchor="start"
+                      dominantBaseline="central"
+                      fontSize={12}
+                      fill="#001a3a"
+                      className="select-none font-medium"
+                    >
+                      Daily Diary Study
                     </text>
                   </g>
                 )}
@@ -502,7 +513,9 @@ export default function WaveParticipantsChart({
                       return (
                         <rect
                           key={`dbar-${d.wave}`}
-                          x={chart.dailyXScale(d.date) - chart.dailyBarWidth / 2}
+                          x={
+                            chart.dailyXScale(d.date) - chart.dailyBarWidth / 2
+                          }
                           y={chart.dailyYScale(d.participants)}
                           width={chart.dailyBarWidth}
                           height={
@@ -521,7 +534,9 @@ export default function WaveParticipantsChart({
                   : chart.filteredDailyDated.map((d) => (
                       <g key={`dbar-${d.wave}`} className="group">
                         <rect
-                          x={chart.dailyXScale(d.date) - chart.dailyBarWidth / 2}
+                          x={
+                            chart.dailyXScale(d.date) - chart.dailyBarWidth / 2
+                          }
                           y={chart.dailyYScale(d.participants)}
                           width={chart.dailyBarWidth}
                           height={
@@ -591,7 +606,7 @@ export default function WaveParticipantsChart({
                   fill="#001a3a"
                   dominantBaseline="middle"
                 >
-                  August 2022 (extra daily measurement points of diary study)
+                  August 2022 (Measurement Points of Daily Diary Study)
                 </text>
 
                 {/* Y axis title */}

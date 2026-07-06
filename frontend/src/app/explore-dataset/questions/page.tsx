@@ -322,7 +322,7 @@ function QuestionsContent() {
 
   return (
     <section className="flex flex-col gap-15">
-      <p className="text-sm text-gray-600 max-w-233">
+      <p className="text-sm text-gray-600 max-w-233  -mb-4">
         To explore the dataset by questions and constructs, either search for
         specific keywords, such as construct names or item wordings, or browse
         the overview of questions below. By clicking on an item, you can see
