@@ -131,7 +131,7 @@ function MeasurementPointsContent() {
 
   return (
     <section className="flex flex-col gap-15">
-      <p className="text-sm text-gray-600 max-w-233">
+      <p className="text-sm text-gray-600 max-w-233 -mb-4">
         To explore the dataset by measurement points, click on one or more
         measurement points in the diagram. An overview of all items measured at
         all of the selected measurement points (&ldquo;AND&rdquo;), or at least
@@ -216,7 +216,7 @@ function MeasurementPointsContent() {
               headline={
                 selectedIds.length > 1
                   ? `Questions in ${logic === "and" ? "All" : "Any"} of the Selected Measurement Points by Topic, Construct, and Subfacet`
-                  : "Questions in the Selected Measurement Point by Topic, Construct, and Subfacet"
+                  : "Questions in all of the Selected Measurement Point by Topic, Construct, and Subfacet"
               }
               openQuestionsInNewTab
             />

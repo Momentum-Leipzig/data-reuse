@@ -34,6 +34,10 @@ const FOOTER_CONTACTS = [
     name: "Richard Janzen",
     email: "richard.janzen@uni-leipzig.de",
   },
+  {
+    name: "Prof. Dr. Cort W. Rudolph",
+    email: "cort.rudolph@wayne.edu",
+  },
 ];
 
 export default function Footer() {

@@ -13,7 +13,7 @@ export default async function AboutDataset() {
             The Dataset
           </h1>
           <h2 className="text-xl font-medium">
-            Structure, scope and content at a glance
+            Overview of structure, scope, and content of the data
           </h2>
         </div>
       </div>
@@ -22,7 +22,7 @@ export default async function AboutDataset() {
           <div className="flex flex-col gap-6">
             <h3 className="text-3xl font-medium">Longitudinal structure</h3>
             <p className="leading-relaxed">
-              The dataset comprises 54-wave survey data collected from full-time
+              The dataset comprises 65-wave survey data collected from full-time
               employees in Germany between December 2019 and December 2024. The
               survey study was originally designed with four measurement waves
               separated by three months, but was adapted to monthly assessments
@@ -39,7 +39,7 @@ export default async function AboutDataset() {
               the surveys in July and October 2020, respectively, and were
               invited to all subsequent surveys. The dataset includes a wide
               range of variables and constructs related to demographics,
-              employment, personality, aging, health and wellbeing, and work
+              employment, personality, aging, health and well-being, and work
               characteristics.
             </p>
           </div>
@@ -50,9 +50,9 @@ export default async function AboutDataset() {
             <h3 className="text-3xl font-medium">Key characteristics</h3>
             <ul>
               <li>
-                54 measurement points over 5 years, with different time lags
+                65 measurement points over 5 years, with different time lags,
+                including a daily diary study with 11 measurement points
               </li>
-              <li>Plus a daily diary study with 11 measurement points</li>
               <li>
                 Data collection covering pre-, during and post-COVID-19 pandemic
                 periods
@@ -94,7 +94,7 @@ export default async function AboutDataset() {
             <li>Demographic and employment characteristics</li>
             <li>Personality traits and individual differences</li>
             <li>Aging</li>
-            <li>Health and wellbeing</li>
+            <li>Health and well-being</li>
             <li>Employee attitudes and behaviors</li>
             <li>Work characteristics and work-family life</li>
             <li>COVID-19 related variables</li>
