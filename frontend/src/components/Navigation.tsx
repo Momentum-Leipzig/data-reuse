@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Image } from "@/components/Image";
+import DownloadUnavailableModal from "@/components/DownloadUnavailableModal";
 
 export const Navigation: React.FC = () => {
   const pathname = usePathname();
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
 
   const navItems = [
     { href: "/", label: "About the Project" },
@@ -13,7 +16,6 @@ export const Navigation: React.FC = () => {
     { href: "/explore-dataset/", label: "Explore the Dataset" },
     {
       label: "Download the Dataset",
-      href: "https://osf.io/rabzm/overview",
       isButton: true,
     },
   ];
@@ -42,22 +44,21 @@ export const Navigation: React.FC = () => {
           return (
             <li key={href || label}>
               {isButton ? (
-                <Link
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  onClick={() => setIsDownloadModalOpen(true)}
                   className="text-lmp-text hover:text-lmp-text text-sm font-bold bg-lmp-gray3 hover:bg-lmp-gray3/70 px-6 py-3 rounded-3xl cursor-pointer transition"
                 >
                   {label}
-                </Link>
+                </button>
               ) : (
                 <Link
-                  href={href}
+                  href={href!}
                   className={`text-lmp-text hover:text-lmp-text/70 text-sm font-bold cursor-pointer py-2 transition ${
                     (
                       href === "/"
                         ? pathname === href
-                        : pathname.startsWith(href)
+                        : pathname.startsWith(href!)
                     )
                       ? "border-b-[5px] border-lmp-green"
                       : ""
@@ -70,6 +71,11 @@ export const Navigation: React.FC = () => {
           );
         })}
       </ul>
+      {isDownloadModalOpen && (
+        <DownloadUnavailableModal
+          onClose={() => setIsDownloadModalOpen(false)}
+        />
+      )}
     </nav>
   );
 };
