@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import { Image } from "@/components/Image";
 import Link from "next/link";
+import DownloadUnavailableModal from "@/components/DownloadUnavailableModal";
 
 const FOOTER_PAGES = [
   {
@@ -16,8 +20,7 @@ const FOOTER_PAGES = [
   },
   {
     label: "Download the Dataset",
-    href: "https://osf.io/rabzm/overview",
-    openInNewTab: true,
+    isButton: true,
   },
 ];
 
@@ -41,6 +44,8 @@ const FOOTER_CONTACTS = [
 ];
 
 export default function Footer() {
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+
   return (
     <footer className="w-full bg-lmp-gray3 py-10 px-4 mt-12">
       <div className="w-full max-w-7xl mx-auto flex flex-col gap-12">
@@ -72,17 +77,26 @@ export default function Footer() {
           </p>
 
           <div>
-            {FOOTER_PAGES.map(({ href, label, openInNewTab }) => (
-              <Link
-                key={href}
-                href={href}
-                target={openInNewTab ? "_blank" : undefined}
-                rel={openInNewTab ? "noopener noreferrer" : undefined}
-                className="text-lmp-text hover:text-lmp-text/70 text-sm font-bold cursor-pointer py-2 transition block underline"
-              >
-                {label}
-              </Link>
-            ))}
+            {FOOTER_PAGES.map(({ href, label, isButton }) =>
+              isButton ? (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => setIsDownloadModalOpen(true)}
+                  className="text-lmp-text hover:text-lmp-text/70 text-sm font-bold cursor-pointer py-2 transition block underline"
+                >
+                  {label}
+                </button>
+              ) : (
+                <Link
+                  key={href}
+                  href={href!}
+                  className="text-lmp-text hover:text-lmp-text/70 text-sm font-bold cursor-pointer py-2 transition block underline"
+                >
+                  {label}
+                </Link>
+              ),
+            )}
           </div>
           <div>
             <h2 className="text-lmp-text text-sm font-bold mb-4">Contact</h2>
@@ -126,6 +140,11 @@ export default function Footer() {
           </div>
         </div>
       </div>
+      {isDownloadModalOpen && (
+        <DownloadUnavailableModal
+          onClose={() => setIsDownloadModalOpen(false)}
+        />
+      )}
     </footer>
   );
 }
