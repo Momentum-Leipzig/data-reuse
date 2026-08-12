@@ -21,14 +21,14 @@ export default function DownloadUnavailableModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6"
       onClick={onClose}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="download-unavailable-title"
-        className="relative w-full max-w-lg rounded-2xl bg-white p-6 sm:p-8 shadow-xl"
+        className="relative w-full max-w-xs sm:max-w-lg rounded-2xl bg-white p-5 sm:p-8 shadow-xl"
         onClick={(event) => event.stopPropagation()}
       >
         <button

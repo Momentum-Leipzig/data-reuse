@@ -11,6 +11,11 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 body {
   color: var(--color-lmp-text);
   font-family:
