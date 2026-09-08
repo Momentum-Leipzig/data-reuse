@@ -9,7 +9,7 @@
 ## Backend
 
 - Using PHP and GraphQL to access the MySQL database
-- Terminal 1: Open SSH tunnel to forward port: `ssh -L 4406:localhost:4406 <user>@<internal-host> -N`
+- Terminal 1: Open SSH tunnel to forward port: `ssh -L 4406:localhost:4406 <user>@<internal-host> -N` (see internal docs for credentials/host)
 - Terminal 2: Run locally `php -S localhost:8080` in the backend folder
 - Terminal 3: CURL endpoint
 - Test graphQL endpoints
