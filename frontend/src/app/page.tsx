@@ -244,7 +244,7 @@ export default function Home() {
           >
             Volkswagen Foundation
           </a>
-          . The funding suppported the preparation, documentation, and
+          . The funding supported the preparation, documentation, and
           open-access sharing of the dataset, as well as the development of an
           exploration tool that helps other researchers assess the structure and
           suitability of the data for secondary use.
